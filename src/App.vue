@@ -1,0 +1,145 @@
+<template>
+  <div class="app">
+    <!-- first panel -->
+    <section class='sec1 bb b--light-silver flex items-stretch' >
+      <div class=' w-30 flex justify-center items-center' >
+        <span class='flex  .items-stretch ba b--light-silver w-80'>
+          <input type="text" v-model="SearchString" style="border:0;outline:none;" placeholder="Search records" class='pa1'>
+          <i class="fa fa-search pa2" aria-hidden="true"></i>
+        </span>
+      </div>
+      <div class='bl b--light-silver flex justify-center items-center' style='flex:1 0 0;'>
+        <ul class=" flex justify-between w-50">
+          <li><button class='btn-spl' :class='{"btn-rev" : (ActiveView === "Employee")}' @click='ActiveView = "Employee",ActiveSubView = "Create"'>Employee</button></li>
+          <li><button  class='btn-spl' :class='{"btn-rev" : ActiveView === "Department"}' @click='ActiveView = "Department",ActiveSubView = "Create"'>Department</button></li>
+          <li><button class='btn-spl' :class='{"btn-rev" : ActiveView === "Designation"}' @click='ActiveView = "Designation",ActiveSubView = "Create"'>Designation</button></li>
+          
+        </ul>
+        
+        <!-- <button :class='BtnClass'>Import</button> -->
+      </div>
+      
+    </section>
+    <!-- second panel -->
+    <section class='sec2 bb b--light-silver'>
+      <!-- <div v-if='SearchString !== ""' class='pa1'>Results for <b>{{ SearchString}}</b> <span @click='SearchString = ""' class='fr gray' style="cursor:pointer;">Clear <b>X</b></span></div> -->
+      <data-table :ListData='SelectedList'
+                  :ViewType='ActiveView'
+                  :Query='SearchString'
+                  @rowClicked='setSubView'
+                  @ActionDone='GetFreshData'></data-table>
+    </section>
+    <!-- Third -->
+    <section class='sec3 bl b--light-silver'>
+      <data-form :ViewType='ActiveView' 
+                 :ActiveData='ActiveViewData'
+                 :SubViewType='ActiveSubView'
+                 :DeptData='DepartList'
+                 @ActionDone='GetFreshData'
+                 @CancelViewType='ActiveSubView = "Create"'
+                 ></data-form>
+    </section>
+  </div>
+</template>
+
+<script>
+import DataTable from './components/DataTable'
+import DataForm from './components/DataForm'
+// import $.get  from '$.get'
+import api from './assets/api'
+
+export default {
+  name: 'App',
+  components: {
+    DataTable,DataForm
+  },
+  data(){
+    return {
+      SourceList: [],
+      DepartList: [],
+      DesignList: [],
+      ToDelete: [],
+      ActiveView : 'Employee',
+      ActiveSubView : 'Create',
+      ActiveViewData : {},
+      SearchString: '',
+      BtnClass: 'f6 dim br2 ph3 pv2 mb2 dib white bg-dark-blue',
+      
+    }
+  },
+
+  computed : {
+    SelectedList(){
+      if(this.ActiveView === 'Employee') return this.SourceList
+      if(this.ActiveView === 'Department') return this.DepartList
+      if(this.ActiveView === 'Designation') return this.DesignList
+    }
+  },
+
+  methods: {
+    setSubView: function(data){
+      this.ActiveViewData = data;
+      this.ActiveSubView = 'Update';
+    },
+    SetDelete : function(data){
+      this.ToDelete = data;
+    },
+    GetFreshData: function(){
+      var self = this;
+      self.getData(api.emp.read,function(data){
+          self.SourceList = data;
+        
+      });
+      self.getData(api.depart.read,function(data){
+        
+          self.DepartList = data;
+
+      });
+      self.getData(api.design.read,function(data){
+    
+          self.DesignList = data;
+        
+      });
+    },
+    getData: function(url,callback){
+      $.get(url).done(x =>{
+        try{
+          var data = (typeof x === "object") ? x : JSON.parse(x); //development purpose problem
+        }catch(e){
+          alert(e);
+        }
+         callback(data)
+      }).fail(function(x,s,err){
+        console.log(err)
+      })
+    },
+  },
+
+  created(){
+    const self  = this;
+   
+    self.getData(api.emp.read,function(data){
+      self.SourceList = data;
+    });
+    self.getData(api.depart.read,function(data){
+      self.DepartList = data;
+    });
+  
+    self.getData(api.design.read,function(data){
+      self.DesignList = data;
+    });
+  },
+}
+</script>
+
+<style src='./assets/app.css'>
+/* #app {
+  display: grid;
+  grid-template-columns: 1fr 1fr 3fr;
+  display: -ms-grid;
+  min-height: 560px;
+  box-shadow: 0px 1px 3px 0px rgba(13, 37, 69, .1);
+  padding:5px;
+  border: 1px solid  rgba(13, 37, 69, .1);
+} */
+</style>

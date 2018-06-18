@@ -1,0 +1,4 @@
+const emp = {
+    create: '',
+    fail: ''
+}

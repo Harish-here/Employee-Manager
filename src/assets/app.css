@@ -1,0 +1,62 @@
+.app {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    grid-template-rows : 55px 45% 45%;
+    grid-template-areas:"a a c"
+                        "b b c"
+                        "b b c";
+    height: 570px;
+    box-shadow: 0px 1px 3px 0px rgba(13, 37, 69, .1);
+    border: 1px solid  rgba(13, 37, 69, .1);
+    background-color: #fff;
+    font-size: 12px !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+table{font-size: 12px;}
+.page{  padding: 2em 2em; }
+.sec1{  grid-area: a; }
+.sec2{ grid-area: b; }
+.sec3{ grid-area: c; }
+.b--light-silver{border-color: #e7e7e7;}
+ul li ,ul{list-style: none; margin:0px ;padding:0px;}
+
+.btn-rev{
+    background: #00a0c2 !important;
+    color: #fff !important;  
+}
+.btn-spl{
+    background-color: #fff;
+    color:#00a0c2;
+    padding: 5px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid #00a0c2;
+}
+.btn-dlt{
+    background-color: red;
+    border: 1px solid red;
+    color:#fff;
+}
+.btn{
+    padding: 5px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+}
+.--green{
+    background-color: aquamarine;
+    color:#fff;
+    border: 1px solid aquamarine;
+}
+.--green-n{
+    color: aquamarine;
+    background-color:#fff; 
+}
+tr:hover,th{background-color: #f9f9f9;}
+/* Table cell  */
+._flx_1 { flex-grow: 1;}
+._flx_15 { flex-grow: 1.3; }
+._flx_05 { flex-grow: 0.5; }
+.dlt{ visibility: hidden; }
+.dlt:hover{visibility: visible;}
+.red{ background-color: #fff !important; }
+.app select, .app input[type='text'],.app input[type='email'],.app input[type='number']{ height:28px; }
