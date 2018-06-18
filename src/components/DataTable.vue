@@ -18,12 +18,12 @@
                         {{ i.virtualName }}
                     </span>
                 </td>
-                <td class='_flx_15'>{{ i.department.departmentName }}</td>
-                <td class='_flx_15'>{{ i.designation.label }}</td>
-                <td class='_flx_1'>{{ i.benefitBundle.label }}</td>
-                <td class='_flx_1 tc'>{{ i.hierarchyId }}</td>
+                <td class='_flx_15'>{{ (i.department !== null ) ? i.department.departmentName : '<span class="light-red">Unassigned</span>' }}</td>
+                <td class='_flx_15'>{{ (i.designation !== null ) ? i.designation.label : '<span class="light-red">Unassigned</span>' }}</td>
+                <td class='_flx_1'>{{ (i.benefitBundle !== null) ? i.benefitBundle.label : '<span class="light-red">Unassigned</span>' }}</td>
+                <td class='_flx_1 tc'>{{ (i.hierarchyId !== null) ? i.hierarchyId : '<span class="light-red">Unassigned</span>' }}</td>
                 <td class='_flx_1'>
-                    <button class="btn --green" @click='sendThis(i)'>Edit</button>
+                    <button class="btn btn-xs btn-primary" @click='sendThis(i)'>Edit</button>
                 </td>
             </tr>
             <tr class='flex justify-center bb b--light-silver' v-if='List.length === 0'>
