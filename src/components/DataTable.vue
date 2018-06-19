@@ -18,10 +18,10 @@
                         {{ i.virtualName }}
                     </span>
                 </td>
-                <td class='_flx_15'>{{ (i.department !== null ) ? i.department.departmentName : '<span class="light-red">Unassigned</span>' }}</td>
-                <td class='_flx_15'>{{ (i.designation !== null ) ? i.designation.label : '<span class="light-red">Unassigned</span>' }}</td>
-                <td class='_flx_1'>{{ (i.benefitBundle !== null) ? i.benefitBundle.label : '<span class="light-red">Unassigned</span>' }}</td>
-                <td class='_flx_1 tc'>{{ (i.hierarchyId !== null) ? i.hierarchyId : '<span class="light-red">Unassigned</span>' }}</td>
+                <td class='_flx_15' :class='{"light-red": i.department === null}'>{{ (i.department !== null ) ? i.department.departmentName : 'Unassigned' }}</td>
+                <td class='_flx_15' :class='{"light-red": i.designation === null}'>{{ (i.designation !== null ) ? i.designation.label : 'Unassigned' }}</td>
+                <td class='_flx_1' :class='{"light-red": i.benefitBundle === null}'>{{ (i.benefitBundle !== null) ? i.benefitBundle.label : 'Unassigned' }}</td>
+                <td class='_flx_1 tc' :class='{"light-red": i.hierarchyId === null}'>{{ (i.hierarchyId !== null) ? i.hierarchyId : 'Unassigned' }}</td>
                 <td class='_flx_1'>
                     <button class="btn btn-xs btn-primary" @click='sendThis(i)'>Edit</button>
                 </td>

@@ -207,7 +207,7 @@ export default {
          if(this.ActiveData.virtualName !== undefined){
             //err to be flushed when view changes
          //this is done bcoz when emp obj matches with  model design dropdwon & bundle need to be populated
-          if(this.ActiveData.department !== null){ //avoid null conflict if it the obj has null
+          if(this.ActiveData.department !== null && this.ActiveData.designation !== null){ //avoid null conflict if it the obj has null
              this.GetDesignation(this.ActiveData.department.departmentId);
             this.GetBundle(this.ActiveData.designation.value);
           }
