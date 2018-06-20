@@ -13,7 +13,7 @@
       <form>
         <!-- Employee Form View -->
        <ul v-if='ViewType === "Employee"'>
-        <li v-for='(i,index) in EmployeeForm.data' :key='index' v-if="EmployeeForm.label[index].label !== undefined && EmployeeForm.label[index].label !== ''" class='pa2'> 
+        <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa2'> 
           <span class='flex' >
             <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }}</label>
             <div class='w-60 flex flex-column'>
@@ -59,7 +59,7 @@
 
         <!-- Department Form View -->
        <ul v-if='ViewType === "Department"'>
-        <li v-for='(i,index) in DepartmentForm.data' :key='index' v-if="DepartmentForm.label[index].label !== undefined && DepartmentForm.label[index].label !== ''" class='pa2'> 
+        <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa2'> 
           <span class='flex' >
             <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }}</label>
             <div class='w-60 flex flex-column'>
@@ -86,7 +86,7 @@
        </ul>
        <!-- Designation Form View -->
        <ul v-if='ViewType === "Designation"'>
-        <li v-for='(i,index) in DesignationForm.data' :key='index' v-if="DesignationForm.label[index].label !== undefined && DesignationForm.label[index].label !== ''" class='pa2'> 
+        <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa2'> 
           <span class='flex' >
             <label class='fl w-40 pa1'>{{ DesignationForm.label[index].label }}</label>
             <input v-if='index === "designationCode" || index === "designationName"' 
@@ -272,9 +272,9 @@ export default {
 
    methods : {
      flush: function(){
-       if(this.ViewType === 'Employee') this.EmployeeForm.data = JSON.parse(JSON.stringify(struct.employee.data))
-       if(this.ViewType === 'Department') this.DepartmentForm.data = JSON.parse(JSON.stringify(struct.department.data))
-       if(this.ViewType === 'Employee') this.DesignationForm.data = JSON.parse(JSON.stringify(struct.designation.data))
+       if(this.ViewType === 'Employee'){ this.EmployeeForm.data = JSON.parse(JSON.stringify(struct.employee.data))}
+       if(this.ViewType === 'Department'){ this.DepartmentForm.data = JSON.parse(JSON.stringify(struct.department.data))}
+       if(this.ViewType === 'Employee'){ this.DesignationForm.data = JSON.parse(JSON.stringify(struct.designation.data))}
      },
 
      CheckForDep: function(obj,index){
@@ -394,27 +394,28 @@ export default {
       //data sending functions
      CreateData: function(){ //general create operation
        var self = this;
-       //error checking code when onblur is not at fired
-        if(self.Error.length === 0){
-          for(var i in self.SendData){
-            if(self.SendData[i] === '') {
-              self.ThroughAlert('None of the fields should be Empty!','bg-light-red');
-              return
-            }
-          }
-        }
        //error checking
        if(self.Error.length > 0){
          self.ThroughAlert('Rectify the erros,then submit.. cheers!','bg-light-red');
          return
        }
+       //error checking code when onblur is not at fired
+        if(self.Error.length === 0){
+          for(var i in self.SendData){
+            if(self.SendData[i] === '' || self.SendData[i] === null) {
+              self.ThroughAlert('None of the fields should be Empty!','bg-light-red');
+              return
+            }
+          }
+        }
+       
       $.post(this.CreateUrl,this.SendData).done(function(data){
           if(data.toString().includes('true')){
             self.ActionDone();
             self.flush();
             self.ThroughAlert('Woow ! Done..!','bg-green');
           }else{
-            self.ThroughAlert('Sorry we meesed up! try again Pls','bg-light-red');
+            self.ThroughAlert(data.split('|')[1],'bg-light-red');
           }
          //flag need to be shown from the backend
         }).fail(function(x,s,err){
@@ -424,17 +425,27 @@ export default {
 
      UpdateData: function(){
        var self = this;
+        //error checking
        if(self.Error.length > 0){
          self.ThroughAlert('Rectify the erros,then submit.. cheers!','bg-light-red');
          return
        }
+       //error checking code when onblur is not at fired
+        if(self.Error.length === 0){
+          for(var i in self.SendData){
+            if(self.SendData[i] === '' || self.SendData[i] === null) {
+              self.ThroughAlert('None of the fields should be Empty!','bg-light-red');
+              return
+            }
+          }
+        }
       $.post(this.UpdateUrl,this.SendData).done(function(data){
           if(data.toString().includes('true')){
             self.ActionDone();
             self.$emit("CancelViewType");
             self.ThroughAlert('Woow ! Done..!','bg-gold');
           }else{
-            self.ThroughAlert('Sorry we meesed up! try again Pls','bg-light-red');
+            self.ThroughAlert(data.split('|')[1],'bg-light-red');
           }
         }).fail(function(x,s,err){
           self.ThroughAlert('Something terribly gone wrong! try again Pls','bg-light-red');
@@ -451,7 +462,7 @@ export default {
               self.$emit("CancelViewType");
               self.ThroughAlert('Woow ! Done..!','bg-light-red');
             }else{
-                self.ThroughAlert('Sorry we meesed up! try again Pls','bg-light-red');
+                self.ThroughAlert(data.split('|')[1],'bg-light-red');
             }
           }).fail(function(x,s,err){
             self.ThroughAlert('Something terribly gone wrong! try again Pls','bg-light-red');

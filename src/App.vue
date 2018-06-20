@@ -100,6 +100,7 @@ export default {
           self.DesignList = data;
         
       });
+      // self.ActiveSubView = 'Create';
     },
     getData: function(url,callback){
       $.get(url).done(x =>{

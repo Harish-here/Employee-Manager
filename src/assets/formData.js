@@ -1,7 +1,7 @@
 const Employee = {
-    travelAgencyUserId: null,
-    companyId: null,
-    companyName: null,
+    travelAgencyUserId: 'null',
+    companyId: 'null',
+    companyName: 'null',
     virtualName: "",
     email: "",
     mobile: "",
@@ -13,40 +13,40 @@ const Employee = {
     startDate: ""
 };
 const EmployeeLabel = {
-    travelAgencyUserId: "",
-    companyId: "",
-    companyName: "",
+    travelAgencyUserId: null,
+    companyId: null,
+    companyName: null,
     virtualName: { label: "Employee Name", type: 'text' },
     email: { label: "Company Email", type: 'email' },
-    mobile: { label:"Mobile Number", type: 'number' },
-    department: { label: "Department",type: 'select' },
-    designation: { label: "Designation", type: 'select'},
-    hierarchyId: {label: "Set Hierachy", type: 'select'},
+    mobile: { label: "Mobile Number", type: 'number' },
+    department: { label: "Department", type: 'select' },
+    designation: { label: "Designation", type: 'select' },
+    hierarchyId: { label: "Set Hierachy", type: 'select' },
     // benefitBundle: { label: '', type:'select' },
-    personalEmail: { label: "Personal Email",type:'email'},
-    startDate: {label: "Join Date", type:'text' },
+    personalEmail: { label: "Personal Email", type: 'email' },
+    startDate: { label: "Join Date", type: 'date' },
 };
 const Department = {
-    departmentId: null,
+    departmentId: 'null',
     departmentName: "",
     departmentCode: "",
-    travelAgencyMasterId: null,
+    travelAgencyMasterId: 'null',
 }
 
 const DepartmentLabel = {
-    departmentId: "",
-    departmentName: { label:"Department Name", type: 'text'},
-    departmentCode: { label: "Department Code", type:'text'},
-    travelAgencyMasterId: "",
+    departmentId: null,
+    departmentName: { label: "Department Name", type: 'text' },
+    departmentCode: { label: "Department Code", type: 'text' },
+    travelAgencyMasterId: null,
 }
 
 const Designation = {
     department: '',
-    designationId:null,
+    designationId: 'null',
     designationName: '',
-    designationCode:'' ,
+    designationCode: '',
     hierarchyId: '',
-    travelAgencyMasterId: null,
+    travelAgencyMasterId: 'null',
     benefitBundle: '',
     approval: '',
     rightsHotel: '',
@@ -54,57 +54,57 @@ const Designation = {
     reservHandle: '',
     bookRoomPersion: '',
     overBudget: '',
-    bookingTool:[],
+    bookingTool: [],
     role: '',
-    travldesk: null,
+    travldesk: 'null',
 };
 
 const DesignationLabel = {
-    travelAgencyMasterId: '',
-    designationId:'',
-    department: {label:'Department', type: 'select'},
-    designationName: { label:'Designation',type:'text'},
-    designationCode: { label:'Designation Code', type:'text'},
-    hierarchyId: {label :'Set hierarchy',type:'select'},
-    benefitBundle: { label:'Benefit Bundle',type:'select' },
-    approval: { label:'No of Approval',type:'select' },
-    role: {label:'Role',type:'select'},
-    rightsHotel: { label:'Rights to choose hotel',type:'select'},
-    dayCount: { label :'No of day to approval',type:'select'},
-    reservHandle: { label:'Should the travel desk handle the all reservation?',type:'select'},
-    bookRoomPersion: {label:'Who will book the Room?',type:'select'},
-    overBudget: {label:'Over Budget Policy can be approved by',type:'select'},
-    bookingTool:{label:'Booking Tool',type:'checkbox'},
-    travldesk: '',
+    travelAgencyMasterId: null,
+    designationId: null,
+    department: { label: 'Department', type: 'select' },
+    designationName: { label: 'Designation', type: 'text' },
+    designationCode: { label: 'Designation Code', type: 'text' },
+    hierarchyId: { label: 'Set hierarchy', type: 'select' },
+    benefitBundle: { label: 'Benefit Bundle', type: 'select' },
+    approval: { label: 'No of Approval', type: 'select' },
+    role: { label: 'Role', type: 'select' },
+    rightsHotel: { label: 'Rights to choose hotel', type: 'select' },
+    dayCount: { label: 'No of day to approval', type: 'select' },
+    reservHandle: { label: 'Should the travel desk handle the all reservation?', type: 'select' },
+    bookRoomPersion: { label: 'Who will book the Room?', type: 'select' },
+    overBudget: { label: 'Over Budget Policy can be approved by', type: 'select' },
+    bookingTool: { label: 'Booking Tool', type: 'checkbox' },
+    travldesk: null,
 }
 
 const Role = [
-    {label: 'Travel Desk',value:'1'},
-    {label: 'Finance Approval Team',value:'2'},
-    {label: 'Others',value:'3'},
+    { label: 'Travel Desk', value: '1' },
+    { label: 'Finance Approval Team', value: '2' },
+    { label: 'Others', value: '3' },
 ];
 
 const Reserve = [
-    {label:'Yes',value:'1|yes'},
-    {label:'No',value:'2|no'},
-    {label:'Approval',value:'3|approval'},
+    { label: 'Yes', value: '1|yes' },
+    { label: 'No', value: '2|no' },
+    { label: 'Approval', value: '3|approval' },
 ];
 
 const Rights = [
-    {label:"Yes",value: "1"},
-    {label:"No",value: "0"}
+    { label: "Yes", value: "1" },
+    { label: "No", value: "0" }
 ];
 
 const Permission = [
-    {label:"Employee After Approval",value:"1|employee"},
-    {label:"Approvar",value:"2|approvar"},
-    {label:"Travel Desk",value:"3|travel desk"},
+    { label: "Employee After Approval", value: "1|employee" },
+    { label: "Approvar", value: "2|approvar" },
+    { label: "Travel Desk", value: "3|travel desk" },
 ];
 
 const OverBudget = [
-    {label:"Employee",value:"1|employee"},
-    {label:"Approvar",value:"2|approvar"},
-    {label:"Travel Desk",value:"3|travel desk"},
+    { label: "Employee", value: "1|employee" },
+    { label: "Approvar", value: "2|approvar" },
+    { label: "Travel Desk", value: "3|travel desk" },
 ];
 
 export default {
@@ -112,17 +112,17 @@ export default {
         data: Employee,
         label: EmployeeLabel
     },
-    department: { 
+    department: {
         data: Department,
         label: DepartmentLabel
-     },
-     designation : {
-         data : Designation,
-         label: DesignationLabel
-     },
-     role : Role,
-     rights : Rights,
-     permission : Permission,
-     overbudget: OverBudget,
-     reserve : Reserve,
+    },
+    designation: {
+        data: Designation,
+        label: DesignationLabel
+    },
+    role: Role,
+    rights: Rights,
+    permission: Permission,
+    overbudget: OverBudget,
+    reserve: Reserve,
 }
