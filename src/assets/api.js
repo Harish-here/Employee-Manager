@@ -40,6 +40,7 @@ export default {
         design: BaseUrl + 'designation',
         bundle: BaseUrl + 'employeeBundleId',
     },
-    deleteAll : '',
+    deleteAll : BaseUrl + 'employeeBulkDelete',
+    updateBulk : BaseUrl + 'employeeBulkUpdate',
     fileUpload: BaseUrl + 'employeeImport' 
 }

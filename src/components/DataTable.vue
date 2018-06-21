@@ -1,5 +1,8 @@
 <template>
   <div id="DataTable" class='relative'>
+      <transition name='fade'>
+        <div class='absolute self-center pa2 bg-light-red br2 white' :class="AlertCls" v-show='ShowAlert'>{{AlertMsg}}</div>
+      </transition>
       <table class='w-100 relative'>
         <thead class='bb b--light-silver'>
             <tr class='flex'>
@@ -11,7 +14,8 @@
         <tbody v-if='ViewType === "Employee"'>
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
-                :key='index'>
+                :key='index'
+                :class='{"lightest-blue": ActiveRow.travelAgencyUserId === i.travelAgencyUserId}'>
                 <td class='_flx_15 flex justify-evenly items-center'>
                     <input type='checkbox' :value='i.travelAgencyUsersId' v-model='ToDelete'>&nbsp;&nbsp;&nbsp;
                     <span>
@@ -23,7 +27,10 @@
                 <td class='_flx_1' :class='{"light-red": i.benefitBundle === null}'>{{ (i.benefitBundle !== null) ? i.benefitBundle.label : 'Unassigned' }}</td>
                 <td class='_flx_1 tc' :class='{"light-red": i.hierarchyId === null}'>{{ (i.hierarchyId !== null) ? i.hierarchyId : 'Unassigned' }}</td>
                 <td class='_flx_1'>
-                    <button class="btn btn-xs btn-primary" @click='sendThis(i)'>Edit</button>
+                    <button class="btn btn-xs btn-primary" @click='sendThis(i)'>
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                        Edit
+                    </button>
                 </td>
             </tr>
             <tr class='flex justify-center bb b--light-silver' v-if='List.length === 0'>
@@ -33,7 +40,8 @@
         <tbody v-if='ViewType === "Department"'>
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
-                :key='index'>
+                :key='index'
+                :class='{"lightest-blue": ActiveRow.departmentId === i.departmentId}'>
                 <td class="_flx_15">{{ i.departmentName }}</td>
                 <td class="_flx_15">{{ i.departmentCode }}</td>
                 <td class='_flx_15'><button class='btn --green' @click='sendThis(i)'>Edit</button></td>
@@ -45,7 +53,8 @@
         <tbody v-if='ViewType === "Designation"'>
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
-                :key='index'>
+                :key='index'
+                :class='{"lightest-blue": ActiveRow.designationId === i.designationId}'>
                 <td class="_flx_15">{{ i.designationName }}</td>
                 <td class="_flx_15">{{ i.department.departmentName }}</td>                
                 <td class="_flx_15">{{ i.benefitBundle.label }}</td>
@@ -58,7 +67,19 @@
             </tr>
         </tbody>
         <transition name='fade'>
-            <tfooter class='bg-white' v-if='ToDelete.length > 0'>
+            <tfooter class='bg-white pa1' v-if='ToDelete.length > 0'>
+                <div class='flex fl w-70 justify-between items-baseline'>
+                    <span>Bulk Assign -</span>
+                    <select class='w-30' v-model='Department'>
+                        <option value='0' selected disabled>Department</option>
+                        <option v-for='i in Extra' :value='i.departmentId' :key='i.departmentId'>{{ i.departmentName}}</option>
+                    </select>
+                    <select class='w-30' v-model='Design'>
+                        <option value='0' selected disabled>Designation</option>
+                        <option v-for='i in DesignList' :value='i.value' :key='i.value'>{{ i.label }}</option>
+                    </select>
+                    <button @click='MultipleAssign'>Assign</button>
+                </div>
                 <div class='fr w-10 tc ba b--light-gray pa1' >
                     <button><i class='fa fa-trash'></i></button>
                 </div>
@@ -88,6 +109,12 @@ export default {
       Query: {
           type: String,
           default: ''
+      },
+      Extra:{
+          type: Array,
+          default: function(){
+              return []
+          }
       }
   },
   data(){
@@ -96,14 +123,23 @@ export default {
         DepartmentHeading: ['Department','Code','Action'],
         DesignationHeading: ['Designation','Department','Policy','Hierarchy','Actions'],
         ToDelete:[],
-        ActiveRow: {}
+        ActiveRow: {},
+        Department:'',
+        Design: '',
+        DesignList: [],
+        ShowAlert:false,
+        AlertMsg: 'Alert Message',
+        AlertCls: 'bg-green'
       }
   },
 
   watch : {
       'ToDelete' : function(val){
               this.$emit('dataChecked',val);
-      }
+      },
+      'Department': function(val){
+          this.GetDesignation(val)
+      },
   },
 
   computed : {
@@ -143,6 +179,42 @@ export default {
             }).fail(x=> alert(x));
           }
       },
+      GetDesignation: function(id){ //dropdown for the Design
+       var self = this
+       
+      $.post(api.dropdown.design,{"dataId":id}).done(function(data){
+         try{
+           self.DesignList = JSON.parse(data);
+         }catch(e){
+           alert('something went wrong try again');
+         }
+         
+       }).fail(x => alert(x));
+     },
+     MultipleAssign: function(){
+         const self = this;
+         if(confirm('Sure to Assign them all..?')){
+             $.post(api.updateBulk,{employee:self.ToDelete,department:self.Department,designation:self.Design}).done(function(data){
+                 if(data.toString.includes("true")){
+                     self.ThroughAlert('Wow...Done..!','bg-green');
+                     self.$emit('ActionDone');
+                 }else{
+                      self.ThroughAlert('Sorry we Messed up.. try again pls..','bg-light-red');
+                 }
+             }).fail(x => {
+                 self.ThroughAlert('Something went wrong try Again..','bg-light-red');
+             });
+         }
+     },
+     ThroughAlert: function(msg,cls){
+       var self = this;
+       this.AlertMsg = msg;
+       this.AlertCls = cls;
+       this.ShowAlert = true;
+       setTimeout(function(){ 
+         self.ShowAlert=false;
+          },2500)
+     },
   }
 }
 </script>

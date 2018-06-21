@@ -26,6 +26,7 @@
       <data-table :ListData='SelectedList'
                   :ViewType='ActiveView'
                   :Query='SearchString'
+                  :Extra='DepartList'
                   @rowClicked='setSubView'
                   @ActionDone='GetFreshData'></data-table>
     </section>
