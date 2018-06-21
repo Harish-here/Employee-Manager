@@ -272,10 +272,18 @@ export default {
 
    methods : {
      flush: function(){
-       if(this.ViewType === 'Employee'){ this.EmployeeForm.data = JSON.parse(JSON.stringify(struct.employee.data))}
-       if(this.ViewType === 'Department'){ this.DepartmentForm.data = JSON.parse(JSON.stringify(struct.department.data))}
-       if(this.ViewType === 'Employee'){ this.DesignationForm.data = JSON.parse(JSON.stringify(struct.designation.data))}
-     },
+       if(this.ViewType === 'Employee'){
+          this.EmployeeForm.data = {};
+          this.EmployeeForm.data = JSON.parse(JSON.stringify(struct.employee.data))
+       }
+       if(this.ViewType === 'Department'){
+          this.DepartmentForm.data = {};
+          this.DepartmentForm.data = JSON.parse(JSON.stringify(struct.department.data))
+          }
+      if(this.ViewType === 'Designation'){ 
+        this.DesignationForm.data = {};
+        this.DesignationForm.data = JSON.parse(JSON.stringify(struct.designation.data))}
+      },
 
      CheckForDep: function(obj,index){
        if(this.ViewType === 'Employee' && index === 'department'){
@@ -402,7 +410,7 @@ export default {
        //error checking code when onblur is not at fired
         if(self.Error.length === 0){
           for(var i in self.SendData){
-            if(self.SendData[i] === '' || self.SendData[i] === null) {
+            if( self.SendData[i] === '' || self.SendData[i] === null) {
               self.ThroughAlert('None of the fields should be Empty!','bg-light-red');
               return
             }
@@ -433,7 +441,7 @@ export default {
        //error checking code when onblur is not at fired
         if(self.Error.length === 0){
           for(var i in self.SendData){
-            if(self.SendData[i] === '' || self.SendData[i] === null) {
+            if(i !== 'benefitBundle' && (self.SendData[i] === '' || self.SendData[i] === null)) {
               self.ThroughAlert('None of the fields should be Empty!','bg-light-red');
               return
             }
