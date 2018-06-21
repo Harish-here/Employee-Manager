@@ -15,7 +15,7 @@
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
-                :class='{"lightest-blue": ActiveRow.travelAgencyUserId === i.travelAgencyUserId}'>
+                >
                 <td class='_flx_15 flex justify-evenly items-center'>
                     <input type='checkbox' :value='i.travelAgencyUsersId' v-model='ToDelete'>&nbsp;&nbsp;&nbsp;
                     <span>
@@ -41,7 +41,7 @@
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
-                :class='{"lightest-blue": ActiveRow.departmentId === i.departmentId}'>
+                >
                 <td class="_flx_15">{{ i.departmentName }}</td>
                 <td class="_flx_15">{{ i.departmentCode }}</td>
                 <td class='_flx_15'><button class='btn --green' @click='sendThis(i)'>Edit</button></td>
@@ -54,7 +54,7 @@
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
-                :class='{"lightest-blue": ActiveRow.designationId === i.designationId}'>
+                >
                 <td class="_flx_15">{{ i.designationName }}</td>
                 <td class="_flx_15">{{ i.department.departmentName }}</td>                
                 <td class="_flx_15">{{ i.benefitBundle.label }}</td>
@@ -68,20 +68,19 @@
         </tbody>
         <transition name='fade'>
             <tfooter class='bg-white pa1' v-if='ToDelete.length > 0'>
-                <div class='flex fl w-70 justify-between items-baseline'>
-                    <span>Bulk Assign -</span>
-                    <select class='w-30' v-model='Department'>
+                <div class='flex fl w-50 justify-between items-baseline'>
+                    <select class='w-35' v-model='Department'>
                         <option value='0' selected disabled>Department</option>
                         <option v-for='i in Extra' :value='i.departmentId' :key='i.departmentId'>{{ i.departmentName}}</option>
                     </select>
-                    <select class='w-30' v-model='Design'>
+                    <select class='w-35' v-model='Design'>
                         <option value='0' selected disabled>Designation</option>
                         <option v-for='i in DesignList' :value='i.value' :key='i.value'>{{ i.label }}</option>
                     </select>
-                    <button @click='MultipleAssign'>Assign</button>
+                    <button @click='MultipleAssign' class='btn btn-xs btn-primary'>Assign</button>
                 </div>
                 <div class='fr w-10 tc ba b--light-gray pa1' >
-                    <button><i class='fa fa-trash'></i></button>
+                    <button class='btn btn-xs btn-danger'><i class='fa fa-trash'></i></button>
                 </div>
             </tfooter>
         </transition>
@@ -124,8 +123,8 @@ export default {
         DesignationHeading: ['Designation','Department','Policy','Hierarchy','Actions'],
         ToDelete:[],
         ActiveRow: {},
-        Department:'',
-        Design: '',
+        Department:'0',
+        Design: '0',
         DesignList: [],
         ShowAlert:false,
         AlertMsg: 'Alert Message',
@@ -150,7 +149,7 @@ export default {
           return this.ListData.filter(x => {
               if(self.ViewType === 'Employee') return regex.test(x.virtualName.toString().toLowerCase())
               if(self.ViewType === 'Department') return regex.test(x.departmentName.toString().toLowerCase())
-              if(self.ViewType === 'Designation') return regex.test(x.label)
+              if(self.ViewType === 'Designation') return regex.test(x.designationName.toString().toLowerCase())
           })
           }else{
               return this.ListData
