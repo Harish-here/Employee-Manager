@@ -301,34 +301,6 @@ export default {
             send.append(i,self.File[i]);
           }
 
-          // axios.post(api.fileUpload,send,{
-          //   headers: {
-          //       'Content-Type': 'multipart/form-data'
-          //   }
-          // }).then(data => {
-          //   if(data.toString().includes('true')){
-          //           self.ActionDone();
-          //           self.flush();
-          //           self.File = null;
-          //           self.ThroughAlert('Woow ! Done..!','bg-green');
-          //         }else{
-          //           self.ThroughAlert('Sorry we meesed up! try again Pls','bg-light-red');
-          //         }
-          //       self.File = null;
-          //   }).catch(err => console.log(err));
-          
-          // $.post(api.fileUpload,{file:send}).done(function(data){
-          //     if(data.toString().includes('true')){
-          //     self.ActionDone();
-          //     self.flush();
-          //     self.File = null;
-          //     self.ThroughAlert('Woow ! Done..!','bg-green');
-          //   }else{
-          //     self.ThroughAlert('Sorry we meesed up! try again Pls','bg-light-red');
-          //   }
-          // }).fail(x =>{
-          //   self.ThroughAlert('Something terribly gone wrong! try again Pls','bg-light-red');
-          // });
           var input = document.querySelector('#fileUpload');
             console.log(new FormData(input));
           $.ajax({
@@ -353,21 +325,7 @@ export default {
                   self.ThroughAlert('Sorry we meesed up! try again Pls','bg-light-red');
               }
         });
-            
-          // fetch(api.fileUpload,{
-          //   type: 'POSt',
-          //   body: input.files[0]
-          // }).then(data => {
-          //   if(data.toString().includes('true')){
-          //           self.ActionDone();
-          //           self.flush();
-          //           self.File = null;
-          //           self.ThroughAlert('Woow ! Done..!','bg-green');
-          //         }else{
-          //           self.ThroughAlert('Sorry we meesed up! try again Pls','bg-light-red');
-          //         }
-          //       self.File = null;
-          //   }).catch(err => console.log(err));
+          
         }
       },
 

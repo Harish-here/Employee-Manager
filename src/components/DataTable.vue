@@ -1,7 +1,7 @@
 <template>
   <div id="DataTable" class='relative'>
       <transition name='fade'>
-        <div class='absolute self-center pa2 bg-light-red br2 white' :class="AlertCls" v-show='ShowAlert'>{{AlertMsg}}</div>
+        <div class='absolute self-center pa2 bg-light-red br2 white' style='margin-left:50%;z-index:1000;' :class="AlertCls" v-show='ShowAlert'><span>{{AlertMsg}}</span></div>
       </transition>
       <table class='w-100 relative'>
         <thead class='bb b--light-silver'>
@@ -44,7 +44,12 @@
                 >
                 <td class="_flx_15">{{ i.departmentName }}</td>
                 <td class="_flx_15">{{ i.departmentCode }}</td>
-                <td class='_flx_15'><button class='btn --green' @click='sendThis(i)'>Edit</button></td>
+                <td class='_flx_15'>
+                   <button class="btn btn-xs btn-primary" @click='sendThis(i)'>
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                        Edit
+                    </button>
+                </td>
              </tr>
              <tr class='flex justify-center bb b--light-silver' v-if='List.length === 0'>
                 <td colspan='6' class='gray tc w-100'>No Departments Available</td>
@@ -60,7 +65,12 @@
                 <td class="_flx_15">{{ i.benefitBundle.label }}</td>
                 <td class="_flx_1">{{ i.hierarchyId }}</td>
                 <!-- <td class="_flx_1">{{ i.department.label }}</td> -->
-                <td class='_flx_1'><button class='btn --green' @click='sendThis(i)'>Edit</button></td>
+                <td class='_flx_1'>
+                    <button class="btn btn-xs btn-primary" @click='sendThis(i)'>
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                        Edit
+                    </button>
+                </td>
              </tr>
              <tr class='flex justify-center bb b--light-silver' v-if='List.length === 0'>
                 <td colspan='6' class='gray tc w-100'>No Designation Available</td>
@@ -68,19 +78,19 @@
         </tbody>
         <transition name='fade'>
             <tfooter class='bg-white pa1' v-if='ToDelete.length > 0'>
-                <div class='flex fl w-50 justify-between items-baseline'>
+                <div class='flex fl w-60 justify-between items-baseline'>
                     <select class='w-35' v-model='Department'>
                         <option value='0' selected disabled>Department</option>
                         <option v-for='i in Extra' :value='i.departmentId' :key='i.departmentId'>{{ i.departmentName}}</option>
                     </select>
                     <select class='w-35' v-model='Design'>
                         <option value='0' selected disabled>Designation</option>
-                        <option v-for='i in DesignList' :value='i.value' :key='i.value'>{{ i.label }}</option>
+                        <option v-for='i in DesignList' :value='i' :key='i.value'>{{ i.label }}</option>
                     </select>
-                    <button @click='MultipleAssign' class='btn btn-xs btn-primary'>Assign</button>
+                    <button @click='MultipleAssign' class='btn btn-xs btn-primary' :disabled='Department === "0" || Design === "0"'>Assign</button>
                 </div>
                 <div class='fr w-10 tc ba b--light-gray pa1' >
-                    <button class='btn btn-xs btn-danger'><i class='fa fa-trash'></i></button>
+                    <button class='btn btn-xs btn-danger' @click='DeleteAll'  ><i class='fa fa-trash'></i></button>
                 </div>
             </tfooter>
         </transition>
@@ -126,7 +136,7 @@ export default {
         Department:'0',
         Design: '0',
         DesignList: [],
-        ShowAlert:false,
+        ShowAlert: false,
         AlertMsg: 'Alert Message',
         AlertCls: 'bg-green'
       }
@@ -172,10 +182,15 @@ export default {
       DeleteAll: function(){
           var self = this;
           if(confirm('Are you Sure to delete the Selected employees?')){
-            $.post(api.deleteAll,{dataId : this.ToDelete}).done(function(data){
-                alert('successfully Deleted');
-                self.$emit('ActionDone')
-            }).fail(x=> alert(x));
+            $.post(api.deleteAll,{dataId : self.ToDelete}).done(function(data){
+                if(data.toString().includes('true')){
+                    self.ToDelete = [];
+                    self.ThroughAlert('Wow...Done..!','bg-light-red');
+                    self.$emit('ActionDone')
+                }
+            }).fail(x=> {
+                self.ThroughAlert('Sorry we messed up..','bg-red');
+            });
           }
       },
       GetDesignation: function(id){ //dropdown for the Design
@@ -194,7 +209,10 @@ export default {
          const self = this;
          if(confirm('Sure to Assign them all..?')){
              $.post(api.updateBulk,{employee:self.ToDelete,department:self.Department,designation:self.Design}).done(function(data){
-                 if(data.toString.includes("true")){
+                 if(data.toString().includes("true")){
+                     self.ToDelete = [];
+                     self.Department = '0';
+                     self.Design = '0';
                      self.ThroughAlert('Wow...Done..!','bg-green');
                      self.$emit('ActionDone');
                  }else{
