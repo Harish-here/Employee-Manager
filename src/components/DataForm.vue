@@ -17,16 +17,17 @@
           <span class='flex' >
             <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }}</label>
             <div class='w-60 flex flex-column'>
-              <input class='pa1' :placeholder="EmployeeForm.label[index].label" v-if='index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
+              <input class='pa1' :placeholder="EmployeeForm.label[index].label" v-if='index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
                     v-model='EmpData[index]' 
                     :type='EmployeeForm.label[index].type'
                     @blur='Validate(index,EmployeeForm.label[index])'
                     :class='{"ba b--red" : Error.includes(EmployeeForm.label[index].label)}'
                       />
+              
               <select  class='pa1'
                       v-model='EmpData[index]'
                       @change='CheckForDep(EmpData[index],index)'
-                      v-else>
+                      v-if='index === "department" || index === "designation" || index === "benefitBundle" || index === "hierarchyId"'>
                 <option value='' selected disabled>{{ EmployeeForm.label[index].label }}</option>
                 <option v-if='index === "department"' v-for='j in DeptData' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
                 <!-- <option v-else value='{}'>1</option> -->
@@ -34,6 +35,19 @@
                 <option v-if='index === "benefitBundle"' v-for='j in BundleList' :value="j" :key='j.value'>{{ j.label }}</option>
                 <option v-if='index === "hierarchyId"' v-for='j in SetHierachy' :value="j" :key='j'>{{ j }}</option>
               </select>
+              <div v-if='index === "status"' class='flex justify-evenly items-baseline'>
+                <span class='flex justify-evenly w-50'><input type='radio' name='active'  value='1' v-model='EmpData[index]' >&nbsp;Active</span>
+                <span class='flex justify-evenly w-50'><input type='radio' name='active' value='0' v-model='EmpData[index]' >&nbsp;Deactive</span>
+              </div>
+              <div v-if="index === 'approverList'"><!-- approver select -->
+                  <v-select v-model='EmpData[index]' :options='approvarList' multiple></v-select>
+                  <span v-if='EmpData[index].length > 0'>
+                    <ul class='ba b--light-gray pa1 mt1'>
+                      <li class='gray'>Your approval tree</li>
+                      <li v-for='(i,index) in EmpData[index]' :key="i.value"> {{ index + 1 }} - {{ i.label }}</li>
+                    </ul>
+                  </span>
+              </div>
               <!-- Error msg-->
                <transition name='fade'>
                 <span class='red pv1' style="font-size:10px;" 
@@ -46,7 +60,7 @@
 
           </span>
          </li>
-         <li class='gray tc pa1'>OR</li>
+         <li class='gray tc'><hr></li>
          <li class='pa2 flex flex-column items-center'>
            <label class='pa1 w-40'>Import Employees</label>
            <div class='pa1 w-60'>
@@ -123,7 +137,7 @@
     </div>
     <div class="footer bt b--light-silver flex justify-center items-center">
       <button class='btn-spl' v-if="SubViewType === 'Create'" @click='CreateData'>Add</button>&nbsp;&nbsp;&nbsp;
-      <button class='btn-spl' v-if="File !== null" @click='FileUpload'>Upload</button>
+      <button class='btn-spl' v-if="File !== null && ViewType === 'Employee'" @click='FileUpload'>Upload</button>
       <button class='btn-spl' v-if="SubViewType === 'Update'" @click='UpdateData'>Update</button>&nbsp;&nbsp;&nbsp;
       <button class='btn-spl' v-if="SubViewType === 'Update'" @click='$emit("CancelViewType")' >Cancel</button>&nbsp;&nbsp;&nbsp;
       <button class='btn-spl btn-dlt' v-if="SubViewType === 'Update'" @click='DeleteData' >Delete</button>
@@ -137,9 +151,12 @@
 import axios from 'axios'
 import struct from '../assets/formData'
 import api from '../assets/api'
+import vSelect from 'vue-select'
+
 
 export default {
   name: 'DataForm',
+  components: { vSelect },
   props: {
     ViewType : {
         type: String,
@@ -189,6 +206,7 @@ export default {
        Reserve: struct.reserve,
        DesignList: [],
        BundleList: [],
+       approvarList:[],
        ShowAlert:false,
        AlertMsg: 'Alert Message',
        AlertCls : 'bg-green',
@@ -267,7 +285,12 @@ export default {
      },
 
   created : function(){
+    const self = this;
       this.GetBundle(1);
+      axios('https://api.myjson.com/bins/1fsej0').then(function(data){
+        console.log(data)
+        self.approvarList = data.data;
+      }).catch(x => { self.ThroughAlert('Something went wrong pls try again','bg-orange') })
   },
 
    methods : {
@@ -293,7 +316,7 @@ export default {
       SetUpload: function(el){
           this.File = el.target.files[0];
       },
-      FileUpload: function(){
+      FileUpload: function(){  
         var self = this;
         if(confirm('Are you sure to upload')){
           var send = new FormData();
@@ -302,7 +325,7 @@ export default {
           }
 
           var input = document.querySelector('#fileUpload');
-            console.log(new FormData(input));
+            
           $.ajax({
               url: api.fileUpload,
               type: 'POST',
@@ -311,13 +334,22 @@ export default {
               processData: false, // Don't process the files
               contentType: false, // Set content type to false as jQuery will tell the server its a query string request
               success: function(data, textStatus, jqXHR){
-                if(data.toString().includes('true')){
+                  self.File = null;
+                if(data.toString().includes('success')){
                     self.ActionDone();
                     self.flush();
-                    self.File = null;
+                    
                     self.ThroughAlert('Woow ! Done..!','bg-green');
                   }else{
-                    self.ThroughAlert('Sorry we meesed up! try again Pls','bg-light-red');
+                    try{
+                      var s = JSON.parse(data);
+                      self.ThroughAlert('Error in imported CSV','bg-light-red');
+                      self.createCSV(s,"Rectify the Errors, upload this CSV",true);
+                    }catch(e){
+                      
+                     self.ThroughAlert('Sorry we meesed up! try again Pls','bg-light-red');
+                    }
+                    
                   }
                },
               error: function(jqXHR, textStatus, errorThrown)
@@ -328,7 +360,78 @@ export default {
           
         }
       },
+      createCSV: function(JSONData, ReportTitle, ShowLabel){
+        //snippet from third party to create CSV
+        var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+      
+        var CSV = '';    
+        //Set Report title in first row or line
+        
+        CSV += ReportTitle + '\r\n';
 
+        //This condition will generate the Label/Header
+        if (ShowLabel) {
+            var row = "";
+            
+            //This loop will extract the label from 1st index of on array
+            for (var index in arrData[0]) {
+                
+                //Now convert each value to string and comma-seprated
+                row += index + ',';
+            }
+
+            row = row.slice(0, -1);
+            
+            //append Label row with line break
+            CSV += row + '\r\n';
+        }
+        
+        //1st loop is to extract each row
+        for (var i = 0; i < arrData.length; i++) {
+            var row = "";
+            
+            //2nd loop will extract each column and convert it in string comma-seprated
+            for (var index in arrData[i]) {
+                row += '"' + arrData[i][index] + '",';
+            }
+
+            row.slice(0, row.length - 1);
+            
+            //add a line break after each row
+            CSV += row + '\r\n';
+        }
+
+        if (CSV == '') {        
+            alert("Invalid data");
+            return;
+        }   
+        
+        //Generate a file name
+        var fileName = "CSV_import_ErrorReport_";
+        //this will remove the blank-spaces from the title and replace it with an underscore
+        fileName += ReportTitle.replace(/ /g,"-");   
+        
+        //Initialize file format you want csv or xls
+        var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+        
+        // Now the little tricky part.
+        // you can use either>> window.open(uri);
+        // but this will not work in some browsers
+        // or you will not get the correct file extension    
+        
+        //this trick will generate a temp <a /> tag
+        var link = document.createElement("a");    
+        link.href = uri;
+        
+        //set the visibility hidden so it will not effect on your web-layout
+        link.style = "visibility:hidden";
+        link.download = fileName + ".csv";
+        
+        //this part will append the anchor tag and remove it after automatic click
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      },
      ThroughAlert: function(msg,cls){
        var self = this;
        this.AlertMsg = msg;
@@ -492,5 +595,12 @@ export default {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+.v-select input[type=search], .v-select input[type=search]:focus{
+  height:28px !important;
+}
+.dropdown-toggle{
+  border-color:#a9a9a9 !important;
+  border-radius: 0px !important;
 }
 </style>

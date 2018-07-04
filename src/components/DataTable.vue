@@ -31,6 +31,7 @@
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                         Edit
                     </button>
+                    <!-- <input type="checkbox" :checked='(i.active === "1")' data-toggle="toggle" data-on="active" data-off='disabled' data-size='mini'> -->
                 </td>
             </tr>
             <tr class='flex justify-center bb b--light-silver' v-if='List.length === 0'>
@@ -41,6 +42,7 @@
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
+                :class='{"opa" : i.active === "0"}'
                 >
                 <td class="_flx_15">{{ i.departmentName }}</td>
                 <td class="_flx_15">{{ i.departmentCode }}</td>

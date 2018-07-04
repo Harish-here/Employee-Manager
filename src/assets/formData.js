@@ -8,9 +8,11 @@ const Employee = {
     department: "",
     designation: "",
     hierarchyId: "",
+    approverList: [],
     // benefitBundle: '',
     personalEmail: "",
-    startDate: ""
+    startDate: "",
+    status: "1"
 };
 const EmployeeLabel = {
     travelAgencyUserId: null,
@@ -25,6 +27,8 @@ const EmployeeLabel = {
     // benefitBundle: { label: '', type:'select' },
     personalEmail: { label: "Personal Email", type: 'email' },
     startDate: { label: "Join Date", type: 'date' },
+    status: { label: "Account", type:'radio'},
+    approverList: { label: "Approval Hierachy", type:'select'},
 };
 const Department = {
     departmentId: 'null',
@@ -45,15 +49,15 @@ const Designation = {
     designationId: 'null',
     designationName: '',
     designationCode: '',
-    hierarchyId: '',
+    hierarchyId: 'null',
     travelAgencyMasterId: 'null',
     benefitBundle: '',
-    approval: '',
-    rightsHotel: '',
-    dayCount: '',
+    approval: 'null',
+    rightsHotel: 'null',
+    dayCount: 'null',
     reservHandle: '',
-    bookRoomPersion: '',
-    overBudget: '',
+    bookRoomPersion: 'null',
+    overBudget: 'null',
     bookingTool: [],
     role: '',
     travldesk: 'null',
@@ -65,16 +69,16 @@ const DesignationLabel = {
     department: { label: 'Department', type: 'select' },
     designationName: { label: 'Designation', type: 'text' },
     designationCode: { label: 'Designation Code', type: 'text' },
-    hierarchyId: { label: 'Set hierarchy', type: 'select' },
+    // hierarchyId: { label: 'Set hierarchy', type: 'select' },
     benefitBundle: { label: 'Benefit Bundle', type: 'select' },
-    approval: { label: 'No of Approval', type: 'select' },
+    // approval: { label: 'No of Approval', type: 'select' },
     role: { label: 'Role', type: 'select' },
-    rightsHotel: { label: 'Rights to choose hotel', type: 'select' },
-    dayCount: { label: 'No of day to approval', type: 'select' },
-    reservHandle: { label: 'Should the travel desk handle the all reservation?', type: 'select' },
-    bookRoomPersion: { label: 'Who will book the Room?', type: 'select' },
-    overBudget: { label: 'Over Budget Policy can be approved by', type: 'select' },
-    bookingTool: { label: 'Booking Tool', type: 'checkbox' },
+    // rightsHotel: { label: 'Rights to choose hotel', type: 'select' },
+    // dayCount: { label: 'No of day to approval', type: 'select' },
+    reservHandle: { label: 'Is Approver?', type: 'select' },
+    // bookRoomPersion: { label: 'Who will book the Room?', type: 'select' },
+    // overBudget: { label: 'Over Budget Policy can be approved by', type: 'select' },
+    // bookingTool: { label: 'Booking Tool', type: 'checkbox' },
     travldesk: null,
 }
 
@@ -87,7 +91,7 @@ const Role = [
 const Reserve = [
     { label: 'Yes', value: '1|yes' },
     { label: 'No', value: '2|no' },
-    { label: 'Approval', value: '3|approval' },
+    // { label: 'Approval', value: '3|approval' },
 ];
 
 const Rights = [

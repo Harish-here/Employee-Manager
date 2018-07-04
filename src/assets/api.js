@@ -42,5 +42,6 @@ export default {
     },
     deleteAll : BaseUrl + 'employeeBulkDelete',
     updateBulk : BaseUrl + 'employeeBulkUpdate',
-    fileUpload: BaseUrl + 'employeeImport' 
+    fileUpload: BaseUrl + 'employeeImport',
+    getApprovar: 'https://api.myjson.com/bins/1fsej0' 
 }

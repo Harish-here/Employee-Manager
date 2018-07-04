@@ -59,3 +59,14 @@ tr:hover,th{background-color: #f9f9f9;}
 .dlt:hover{visibility: visible;}
 .red{ background-color: #fff !important; }
 .app select, .app input[type='text'],.app input[type='email'],.app input[type='number']{ height:28px; }
+.opa{ opacity: 0.5;}
+.custom__tag {
+    background-color: #00a0c2;
+    color: #fff;
+    border-radius: 25% 25% 25% 25%;
+    padding: 2px;
+}
+.custom__remove{
+    font-size: 10px;
+    cursor: pointer;
+}
