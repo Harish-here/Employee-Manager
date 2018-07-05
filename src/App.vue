@@ -36,6 +36,7 @@
                  :ActiveData='ActiveViewData'
                  :SubViewType='ActiveSubView'
                  :DeptData='DepartList'
+                 :ApproverData='Approver'
                  @ActionDone='GetFreshData'
                  @CancelViewType='ActiveSubView = "Create"'
                  ></data-form>
@@ -59,6 +60,7 @@ export default {
       SourceList: [],
       DepartList: [],
       DesignList: [],
+      Approver:[],
       ToDelete: [],
       ActiveView : 'Employee',
       ActiveSubView : 'Create',
@@ -129,6 +131,9 @@ export default {
   
     self.getData(api.design.read,function(data){
       self.DesignList = data;
+    });
+    self.getData(api.getApprovar,function(data){
+      self.Approver = data;
     });
   },
 }

@@ -40,7 +40,7 @@
                 <span class='flex justify-evenly w-50'><input type='radio' name='active' value='0' v-model='EmpData[index]' >&nbsp;Deactive</span>
               </div>
               <div v-if="index === 'approverList'"><!-- approver select -->
-                  <v-select v-model='EmpData[index]' :options='approvarList' multiple></v-select>
+                  <v-select v-model='EmpData[index]' :options='ApproverData' multiple></v-select>
                   <span v-if='EmpData[index].length > 0'>
                     <ul class='ba b--light-gray pa1 mt1'>
                       <li class='gray'>Your approval tree</li>
@@ -60,7 +60,7 @@
 
           </span>
          </li>
-         <li class='gray tc'><hr></li>
+         <li class='gray tc'><hr></li><!-- CSV upload -->
          <li class='pa2 flex flex-column items-center'>
            <label class='pa1 w-40'>Import Employees</label>
            <div class='pa1 w-60'>
@@ -184,6 +184,12 @@ export default {
         return []
       }
     },
+    ApproverData: {
+      type: Array,
+      default: function(){
+        return []
+      },
+    }
    },
 
    data: function(){
@@ -284,13 +290,10 @@ export default {
        }
      },
 
-  created : function(){
+  created(){
     const self = this;
       this.GetBundle(1);
-      axios('https://api.myjson.com/bins/1fsej0').then(function(data){
-        console.log(data)
-        self.approvarList = data.data;
-      }).catch(x => { self.ThroughAlert('Something went wrong pls try again','bg-orange') })
+      //
   },
 
    methods : {
