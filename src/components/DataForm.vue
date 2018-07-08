@@ -484,14 +484,16 @@ export default {
       $.post(this.CreateUrl,this.SendData).done(function(data){
           if(data.toString().includes('true')){
             self.ActionDone();
-            self.flush();
+            
             self.ThroughAlert('Woow ! Done..!','bg-green');
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
           }
+          self.flush();
          //flag need to be shown from the backend
         }).fail(function(x,s,err){
           self.ThroughAlert('Something terribly gone wrong! try again Pls','bg-light-red');
+          self.flush();
         });
      },
 
@@ -514,13 +516,16 @@ export default {
       $.post(this.UpdateUrl,this.SendData).done(function(data){
           if(data.toString().includes('true')){
             self.ActionDone();
+             
             self.$emit("CancelViewType");
             self.ThroughAlert('Woow ! Done..!','bg-gold');
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
           }
+          self.flush();
         }).fail(function(x,s,err){
           self.ThroughAlert('Something terribly gone wrong! try again Pls','bg-light-red');
+          self.flush();
         });
      },
 
@@ -531,13 +536,16 @@ export default {
          $.post(this.DeleteUrl,this.SendData).done(function(data){
             if(data.toString().includes('true')){
               self.ActionDone();
+              
               self.$emit("CancelViewType");
               self.ThroughAlert('Woow ! Done..!','bg-light-red');
             }else{
                 self.ThroughAlert(data.split('|')[1],'bg-light-red');
             }
+             self.flush();
           }).fail(function(x,s,err){
             self.ThroughAlert('Something terribly gone wrong! try again Pls','bg-light-red');
+            self.flush();
           });
        }
         
