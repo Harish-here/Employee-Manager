@@ -196,12 +196,12 @@ export default {
     //  var self = this
      return {
        EmployeeForm : { 
-         data: struct.employee.data,
+         data: JSON.parse(JSON.stringify(struct.employee.data)),
          label: struct.employee.label
        },
-       DesignationForm : struct.designation,
+       DesignationForm : JSON.parse(JSON.stringify(struct.designation)),
        DepartmentForm : {
-         data : struct.department.data,
+         data : JSON.parse(JSON.stringify(struct.designation.data)),
          label: struct.department.label, 
        },
        SetHierachy : ['1','2','3','4','5','6','7','8','9','10'],
@@ -300,15 +300,18 @@ export default {
      flush: function(){
        if(this.ViewType === 'Employee'){
           this.EmployeeForm.data = {};
-          this.EmployeeForm.data = JSON.parse(JSON.stringify(struct.employee.data))
+          this.EmployeeForm.data = JSON.parse(JSON.stringify(struct.employee.data));
+          
        }
        if(this.ViewType === 'Department'){
           this.DepartmentForm.data = {};
-          this.DepartmentForm.data = JSON.parse(JSON.stringify(struct.department.data))
+          this.DepartmentForm.data = JSON.parse(JSON.stringify(struct.department.data));
+          
           }
       if(this.ViewType === 'Designation'){ 
         this.DesignationForm.data = {};
-        this.DesignationForm.data = JSON.parse(JSON.stringify(struct.designation.data))}
+        this.DesignationForm.data = JSON.parse(JSON.stringify(struct.designation.data))
+        }
       },
 
      CheckForDep: function(obj,index){
@@ -482,23 +485,28 @@ export default {
         }
        
       $.post(this.CreateUrl,this.SendData).done(function(data){
+          
           if(data.toString().includes('true')){
+            //added to flush the prevoius data
+            // self.DepartmentForm.data = {};
+            // self.EmployeeForm.data = {};
+            // self.DesignationForm.data = {};
+            self.flush();
             self.ActionDone();
-            
             self.ThroughAlert('Woow ! Done..!','bg-green');
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
           }
-          self.flush();
+          
          //flag need to be shown from the backend
         }).fail(function(x,s,err){
           self.ThroughAlert('Something terribly gone wrong! try again Pls','bg-light-red');
-          self.flush();
+          
         });
      },
 
      UpdateData: function(){
-       var self = this;
+       const self = this;
         //error checking
        if(self.Error.length > 0){
          self.ThroughAlert('Rectify the erros,then submit.. cheers!','bg-light-red');
@@ -514,18 +522,19 @@ export default {
           }
         }
       $.post(this.UpdateUrl,this.SendData).done(function(data){
+          
           if(data.toString().includes('true')){
+            self.flush();
             self.ActionDone();
-             
             self.$emit("CancelViewType");
             self.ThroughAlert('Woow ! Done..!','bg-gold');
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
           }
-          self.flush();
+          
         }).fail(function(x,s,err){
           self.ThroughAlert('Something terribly gone wrong! try again Pls','bg-light-red');
-          self.flush();
+         
         });
      },
 
@@ -534,18 +543,19 @@ export default {
        if(confirm('Are you sure to Delete..?')){
 
          $.post(this.DeleteUrl,this.SendData).done(function(data){
+            
             if(data.toString().includes('true')){
+              self.flush();
               self.ActionDone();
-              
               self.$emit("CancelViewType");
               self.ThroughAlert('Woow ! Done..!','bg-light-red');
             }else{
                 self.ThroughAlert(data.split('|')[1],'bg-light-red');
             }
-             self.flush();
+            //  self.flush();
           }).fail(function(x,s,err){
             self.ThroughAlert('Something terribly gone wrong! try again Pls','bg-light-red');
-            self.flush();
+            // self.flush();
           });
        }
         
