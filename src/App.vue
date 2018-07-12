@@ -4,8 +4,8 @@
     <section class='sec1 bb b--light-silver flex items-stretch' >
       <div class=' w-30 flex justify-center items-center' >
         <span class='flex  .items-stretch ba b--light-silver w-80'>
-          <input type="text" v-model="SearchString" style="border:0;outline:none;" placeholder="Search records" class='pa1'>
-          <i class="fa fa-search pa2" aria-hidden="true"></i>
+          <input type="text" v-model="SearchString" style="border:0;outline:none;" placeholder="Search records" class='pa2 w-80'>
+          <i class="fa fa-search pa2 w-20 tc" aria-hidden="true"></i>
         </span>
       </div>
       <div class='bl b--light-silver flex justify-center items-center' style='flex:1 0 0;'>
@@ -15,8 +15,6 @@
           <li><button class='btn-spl' :class='{"btn-rev" : ActiveView === "Designation"}' @click='ActiveView = "Designation",ActiveSubView = "Create"'>Designation</button></li>
           
         </ul>
-        
-        <!-- <button :class='BtnClass'>Import</button> -->
       </div>
       
     </section>

@@ -4,7 +4,7 @@
      <div class='absolute self-center pa2 bg-light-red br2 white' :class="AlertCls" v-show='ShowAlert'>{{AlertMsg}}</div>
     </transition>
     <div class="head bb b--light-silver flex justify-center items-center pa2">
-      <div class='f4' @click='ShowAlert = !ShowAlert'>
+      <div class='f4'>
         {{ SubViewType }} {{ ViewType }}
       </div>
     </div>
@@ -201,7 +201,7 @@ export default {
        },
        DesignationForm : JSON.parse(JSON.stringify(struct.designation)),
        DepartmentForm : {
-         data : JSON.parse(JSON.stringify(struct.designation.data)),
+         data : JSON.parse(JSON.stringify(struct.department.data)),
          label: struct.department.label, 
        },
        SetHierachy : ['1','2','3','4','5','6','7','8','9','10'],
@@ -462,7 +462,8 @@ export default {
                         } ;
                         break;
          case 'email': if(!emailreg.test(self.SendData[index])) {self.Error.push(obj.label); return}  ; break;
-         case 'text': if(self.SendData[index] === '' || self.SendData[index] === ' ') {self.Error.push(obj.label); return};break;  ;break;
+         case 'text': if(self.SendData[index] === '' || self.SendData[index] === ' ') {self.Error.push(obj.label); return};break;  
+         case 'date' : if(self.SendData[index] === '' || new Date(self.SendData[index]) === 'Invalid Date'){self.Error.push(obj.label); return};break;
        }
        self.Error.splice(self.Error.indexOf(obj.label),1);
      },

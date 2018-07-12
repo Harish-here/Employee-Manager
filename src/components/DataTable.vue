@@ -65,8 +65,6 @@
                 <td class="_flx_15">{{ i.designationName }}</td>
                 <td class="_flx_15">{{ i.department.departmentName }}</td>                
                 <td class="_flx_15">{{ i.benefitBundle.label }}</td>
-                <td class="_flx_1">{{ i.hierarchyId }}</td>
-                <!-- <td class="_flx_1">{{ i.department.label }}</td> -->
                 <td class='_flx_1'>
                     <button class="btn btn-xs btn-primary" @click='sendThis(i)'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
@@ -132,7 +130,7 @@ export default {
       return {
         EmployeeHeading: ['Employee','Department','Designation','Policy','Hierarchy','Actions'],
         DepartmentHeading: ['Department','Code','Action'],
-        DesignationHeading: ['Designation','Department','Policy','Hierarchy','Actions'],
+        DesignationHeading: ['Designation','Department','Policy','Actions'],
         ToDelete:[],
         ActiveRow: {},
         Department:'0',
@@ -156,17 +154,23 @@ export default {
   computed : {
       List(){
           if(this.Query !== ''){
-          var regex = new RegExp(this.Query.toString().toLowerCase(),'g');
+          var regex =  new RegExp(this.Query.toLowerCase(),'');
           var self = this;
           return this.ListData.filter(x => {
-              if(self.ViewType === 'Employee') return regex.test(x.virtualName.toString().toLowerCase())
-              if(self.ViewType === 'Department') return regex.test(x.departmentName.toString().toLowerCase())
-              if(self.ViewType === 'Designation') return regex.test(x.designationName.toString().toLowerCase())
+             return regex.test(x[self.SearchProperty].toLowerCase())
           })
           }else{
               return this.ListData
           }
       },
+        //to find right property search for each separate meta obj
+      SearchProperty(){
+          const self = this;
+        if(self.ViewType === 'Employee') return 'virtualName'
+        if(self.ViewType === 'Department') return 'departmentName'
+        if(self.ViewType === 'Designation') return 'designationName'
+      },
+
       TableHead(){
           if(this.ViewType === 'Employee') return this.EmployeeHeading
           if(this.ViewType === 'Department') return this.DepartmentHeading
