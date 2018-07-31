@@ -83,9 +83,10 @@ const DesignationLabel = {
 }
 
 const Role = [
+    { label: 'Employee', value: '3' },
     { label: 'Travel Desk', value: '1' },
     { label: 'Finance Approval Team', value: '2' },
-    { label: 'Others', value: '3' },
+    
 ];
 
 const Reserve = [
