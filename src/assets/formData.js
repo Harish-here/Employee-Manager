@@ -53,10 +53,10 @@ const Designation = {
     travelAgencyMasterId: 'null',
     benefitBundle: '',
     approval: 'null',
-    rightsHotel: 'null',
+    rightsHotel: { label: 'Yes', value: '1' },
     dayCount: 'null',
     reservHandle: '',
-    bookRoomPersion: 'null',
+    bookRoomPersion:  { label: "Approver", value: "2|approvar" },
     overBudget: 'null',
     bookingTool: [],
     role: '',
@@ -73,10 +73,10 @@ const DesignationLabel = {
     benefitBundle: { label: 'Benefit Bundle', type: 'select' },
     // approval: { label: 'No of Approval', type: 'select' },
     role: { label: 'Role', type: 'select' },
-    // rightsHotel: { label: 'Rights to choose hotel', type: 'select' },
+    rightsHotel: { label: 'Rights to choose hotel', type: 'select' },
     // dayCount: { label: 'No of day to approval', type: 'select' },
     reservHandle: { label: 'Is Approver?', type: 'select' },
-    // bookRoomPersion: { label: 'Who will book the Room?', type: 'select' },
+    bookRoomPersion: { label: 'Who will book the Room?', type: 'select' },
     // overBudget: { label: 'Over Budget Policy can be approved by', type: 'select' },
     // bookingTool: { label: 'Booking Tool', type: 'checkbox' },
     travldesk: null,
@@ -102,13 +102,13 @@ const Rights = [
 
 const Permission = [
     { label: "Employee After Approval", value: "1|employee" },
-    { label: "Approvar", value: "2|approvar" },
+    { label: "Approver", value: "2|approvar" },
     { label: "Travel Desk", value: "3|travel desk" },
 ];
 
 const OverBudget = [
     { label: "Employee", value: "1|employee" },
-    { label: "Approvar", value: "2|approvar" },
+    { label: "Approver", value: "2|approvar" },
     { label: "Travel Desk", value: "3|travel desk" },
 ];
 

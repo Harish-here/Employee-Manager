@@ -10,10 +10,9 @@
       </div>
       <div class='bl b--light-silver flex justify-center items-center' style='flex:1 0 0;'>
         <ul class=" flex justify-between w-50">
-          <li><button class='btn-spl' :class='{"btn-rev" : (ActiveView === "Employee")}' @click='ActiveView = "Employee",ActiveSubView = "Create"'>Employee</button></li>
           <li><button  class='btn-spl' :class='{"btn-rev" : ActiveView === "Department"}' @click='ActiveView = "Department",ActiveSubView = "Create"'>Department</button></li>
           <li><button class='btn-spl' :class='{"btn-rev" : ActiveView === "Designation"}' @click='ActiveView = "Designation",ActiveSubView = "Create"'>Designation</button></li>
-          
+          <li><button class='btn-spl' :class='{"btn-rev" : (ActiveView === "Employee")}' @click='ActiveView = "Employee",ActiveSubView = "Create"'>Employee</button></li>
         </ul>
       </div>
       
@@ -101,6 +100,9 @@ export default {
           self.DesignList = data;
         
       });
+      self.getData(api.getApprovar,function(data){
+        self.Approver = data;
+      });
       // self.ActiveSubView = 'Create';
     },
     getData: function(url,callback){
@@ -108,11 +110,12 @@ export default {
         try{
           var data = (typeof x === "object") ? x : JSON.parse(x); //development purpose problem
         }catch(e){
-          alert(e);
+          alert("Something went wrong please try again");
         }
          callback(data)
       }).fail(function(x,s,err){
-        console.log(err)
+        console.log(err);
+        alert("Something went wrong please try again");
       })
     },
   },

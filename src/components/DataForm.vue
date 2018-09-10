@@ -1,7 +1,9 @@
 <template>
   <div id="DataForm">
     <transition name='fade'>
-     <div class='absolute self-center pa2 bg-light-red br2 white' :class="AlertCls" v-show='ShowAlert'>{{AlertMsg}}</div>
+     <div class='absolute self-center pa2 bg-light-red br2 white' :class="AlertCls" v-show='ShowAlert'>{{AlertMsg}}
+        &nbsp;&nbsp;<span @click='ShowAlert = false' class='fr'><i class="fa fa-times" aria-hidden="true"></i></span>
+    </div>
     </transition>
     <div class="head bb b--light-silver flex justify-center items-center pa2">
       <div class='f4'>
@@ -17,7 +19,8 @@
           <span class='flex' >
             <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }}</label>
             <div class='w-60 flex flex-column'>
-              <input class='pa1' :placeholder="EmployeeForm.label[index].label" v-if='index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
+              <input class='pa1'
+                    v-if='index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
                     v-model='EmpData[index]' 
                     :type='EmployeeForm.label[index].type'
                     @blur='Validate(index,EmployeeForm.label[index])'
@@ -28,7 +31,7 @@
                       v-model='EmpData[index]'
                       @change='CheckForDep(EmpData[index],index)'
                       v-if='index === "department" || index === "designation" || index === "benefitBundle" || index === "hierarchyId"'>
-                <option value='' selected disabled>{{ EmployeeForm.label[index].label }}</option>
+                <!-- <option value='' selected disabled>{{ EmployeeForm.label[index].label }}</option> -->
                 <option v-if='index === "department"' v-for='j in DeptData' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
                 <!-- <option v-else value='{}'>1</option> -->
                 <option v-if='index === "designation"' v-for='j in DesignList' :value="j" :key='j.value'>{{ j.label }}</option>
@@ -56,18 +59,10 @@
                       Provide a valid {{EmployeeForm.label[index].label}}
                   </span>
                 </transition>
+              
             </div>
 
           </span>
-         </li>
-         <li class='gray tc'><hr></li><!-- CSV upload -->
-         <li class='pa2 flex flex-column items-center'>
-           <label class='pa1 w-40'>Import Employees</label>
-           <div class='pa1 w-60'>
-             <form id='fileUpload' enctype='multipart/form-data'>
-               <input  name='file' type="file" accept=".csv" @change="SetUpload">
-             </form>
-           </div>
          </li>
        </ul>
 
@@ -78,7 +73,6 @@
             <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }}</label>
             <div class='w-60 flex flex-column'>
               <input class='pa1' 
-                     :placeholder="DepartmentForm.label[index].label"  
                      v-model='DepData[index]' 
                      :type='DepartmentForm.label[index].type'
                      @blur='Validate(index,DepartmentForm.label[index])'
@@ -93,8 +87,6 @@
                   </span>
                 </transition>
             </div>
-
-
           </span>
           </li>
        </ul>
@@ -103,43 +95,66 @@
         <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa2'> 
           <span class='flex' >
             <label class='fl w-40 pa1'>{{ DesignationForm.label[index].label }}</label>
-            <input v-if='index === "designationCode" || index === "designationName"' 
-                   class='fl w-60 pa1'
-                   :placeholder="DesignationForm.label[index].label"  
-                   v-model='DesData[index]' 
-                   type='text' />
-            <select class='fl w-60 pa1' 
-                    v-if='index !== "bookingTool" && index !== "designationCode" && index !== "designationName"'
-                    v-model='DesData[index]'>
-              <option value='' selected disabled>{{ DesignationForm.label[index].label }}</option>
-              <option v-if='index === "department"' v-for='j in DeptData' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
-              <option v-if='index === "role"' v-for='k in Role' :value='k' :key='k.value'>{{ k.label }}</option>
-              <option v-if='index === "rightsHotel"' v-for='j in Rights' :value='j' :key='j.value'>{{ j.label }}</option>
-              <option v-if='index === "bookRoomPersion"' v-for='j in Permission' :value='j' :key='j.value'>{{ j.label }}</option>
-              <option v-if='index === "overBudget"' v-for='j in OverBudget' :value='j' :key='j.value'>{{ j.label }}</option>
-              <option v-if='index === "reservHandle"' v-for='j in Reserve' :value='j' :key='j.value'>{{ j.label }}</option>
-              <option v-if='index === "hierarchyId"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
-              <option v-if='index === "dayCount"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
-              <option v-if='index === "approval"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
-              <option v-if='index === "benefitBundle"' v-for='j in BundleList' :value='j' :key='j.value'>{{ j.label }}</option>
-              <!-- <option  v-else value=''>Sample</option> -->
-            </select>
-            <div class='fl w-60 pa1 flex flex-wrap items-baseline' v-if='index === "bookingTool"'>
-              <span class='pa1 flex items-baseline'><input class='pa1 self-baseline' value='1' type='checkbox' v-model='DesData[index]'><span  class='pa1 self'>Book Now</span></span>
-              <span class='pa1 flex items-baseline'><input  class='pa1' value='2' type='checkbox' v-model='DesData[index]'><span  class='pa1'>Enquiry</span></span>
-              <span class='pa1 flex items-baseline'><input  class='pa1' value='3' type='checkbox' v-model='DesData[index]'><span  class='pa1'>Trip Scheduler</span></span>
+            <div class='w-60 flex flex-column'>
+              <input v-if='index === "designationCode" || index === "designationName"' 
+                    class='fl pa1'
+                    @blur='Validate(index,DesignationForm.label[index])'
+                    :class='{"ba b--red" : Error.includes(DesignationForm.label[index].label)}'
+                    v-model='DesData[index]' 
+                    type='text' />
+              
+              <select class='fl pa1' 
+                      v-if='index !== "bookingTool" && index !== "designationCode" && index !== "designationName"'
+                      v-model='DesData[index]' :disabled="index === 'rightsHotel' || index === 'bookRoomPersion' ">
+                <!-- <option value='' selected disabled>{{ DesignationForm.label[index].label }}</option> -->
+                <option v-if='index === "department"' v-for='j in DeptData' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
+                <option v-if='index === "role"' v-for='k in Role' :value='k' :key='k.value'>{{ k.label }}</option>
+                <option v-if='index === "rightsHotel"' v-for='j in Rights' :value='j' :key='j.value'>{{ j.label }}</option>
+                <option v-if='index === "bookRoomPersion"' v-for='j in Permission' :value='j' :key='j.value'>{{ j.label }}</option>
+                <option v-if='index === "overBudget"' v-for='j in OverBudget' :value='j' :key='j.value'>{{ j.label }}</option>
+                <option v-if='index === "reservHandle"' v-for='j in Reserve' :value='j' :key='j.value'>{{ j.label }}</option>
+                <option v-if='index === "hierarchyId"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
+                <option v-if='index === "dayCount"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
+                <option v-if='index === "approval"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
+                <option v-if='index === "benefitBundle"' v-for='j in BundleList' :value='j' :key='j.value'>{{ j.label }}</option>
+                <!-- <option  v-else value=''>Sample</option> -->
+              </select>
+              <div class='pa1 flex flex-wrap items-baseline' v-if='index === "bookingTool"'>
+                <span class='pa1 flex items-baseline'><input class='pa1 self-baseline' value='1' type='checkbox' v-model='DesData[index]'><span  class='pa1 self'>Book Now</span></span>
+                <span class='pa1 flex items-baseline'><input  class='pa1' value='2' type='checkbox' v-model='DesData[index]'><span  class='pa1'>Enquiry</span></span>
+                <span class='pa1 flex items-baseline'><input  class='pa1' value='3' type='checkbox' v-model='DesData[index]'><span  class='pa1'>Trip Scheduler</span></span>
+              </div>
+              <!-- Error msg-->
+               <transition name='fade'>
+                <span class='red pv1' style="font-size:10px;" 
+                      v-if='Error.includes(DesignationForm.label[index].label)'
+                      >
+                      Provide a valid {{DesignationForm.label[index].label}}
+                  </span>
+                </transition>
             </div>
+            
+
 
           </span>
         </li>
        </ul>
        </form>
     </div>
+    <div class='upload-contanier tc pa1 relative' v-if='ViewType === "Employee"'>
+      <a target="_blank" href='http://www.hobse.com/demo/public_html/csv_template/employee_csv_format.csv'><span class='absolute top-1 right-1'>Format <i class="fa fa-download" aria-hidden="true"></i></span></a>
+        <form id='fileUpload' enctype='multipart/form-data' class='flex flex-column'>
+          <label class='pa1' for='file'>Import Employees</label>
+          <input  name='file' id='fileUploadField' type="file" accept=".csv" @change="SetUpload">
+        </form>
+    </div>
     <div class="footer bt b--light-silver flex justify-center items-center">
-      <button class='btn-spl' v-if="SubViewType === 'Create'" @click='CreateData'>Add</button>&nbsp;&nbsp;&nbsp;
-      <button class='btn-spl' v-if="File !== null && ViewType === 'Employee'" @click='FileUpload'>Upload</button>
-      <button class='btn-spl' v-if="SubViewType === 'Update'" @click='UpdateData'>Update</button>&nbsp;&nbsp;&nbsp;
-      <button class='btn-spl' v-if="SubViewType === 'Update'" @click='$emit("CancelViewType")' >Cancel</button>&nbsp;&nbsp;&nbsp;
+      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType !== 'Employee'" @click='CreateData'>Add</button>
+      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType === 'Employee' && File === null" @click='CreateData'>Add</button>
+      <button class='btn-spl --not-ghost' v-if="File !== null && ViewType === 'Employee'" @click='FileUpload'>Upload</button>
+      <button class='btn-spl' v-if="File !== null && ViewType === 'Employee'" @click='ResetUpload' title='Remove the selected files'>Cancel Upload</button>
+      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Update'" @click='UpdateData'>Update</button>
+      <button class='btn-spl' v-if="SubViewType === 'Update'" @click='$emit("CancelViewType")' >Cancel</button>
       <button class='btn-spl btn-dlt' v-if="SubViewType === 'Update'" @click='DeleteData' >Delete</button>
       
     </div>
@@ -322,6 +337,11 @@ export default {
       SetUpload: function(el){
           this.File = el.target.files[0];
       },
+      ResetUpload: function(){
+        var obj = $('#fileUploadField');
+        obj.val(null);
+        this.File = null;
+      },
       FileUpload: function(){  
         var self = this;
         if(confirm('Are you sure to upload')){
@@ -341,7 +361,8 @@ export default {
               contentType: false, // Set content type to false as jQuery will tell the server its a query string request
               success: function(data, textStatus, jqXHR){
                   self.File = null;
-                if(data.toString().includes('success')){
+                  self.ResetUpload();
+                if(data.toLowerCase().includes('success')){
                     self.ActionDone();
                     self.flush();
                     
@@ -445,7 +466,7 @@ export default {
        this.ShowAlert = true;
        setTimeout(function(){ 
          self.ShowAlert=false;
-          },2500)
+          },4500)
      },
      
      Validate: function(index,obj){
@@ -462,7 +483,15 @@ export default {
                         } ;
                         break;
          case 'email': if(!emailreg.test(self.SendData[index])) {self.Error.push(obj.label); return}  ; break;
-         case 'text': if(self.SendData[index] === '' || self.SendData[index] === ' ') {self.Error.push(obj.label); return};break;  
+         case 'text': if(self.SendData[index] === '' || self.SendData[index] === ' ' ) {
+                          //to make departcode and designation optional need to skip their prop check
+                          if( index !== 'departmentCode' && index !== 'designationCode'){
+                            self.Error.push(obj.label);
+                            return
+                          }
+                         
+                           };
+                           break;  
          case 'date' : if(self.SendData[index] === '' || new Date(self.SendData[index]) === 'Invalid Date'){self.Error.push(obj.label); return};break;
        }
        self.Error.splice(self.Error.indexOf(obj.label),1);
@@ -472,15 +501,19 @@ export default {
        var self = this;
        //error checking
        if(self.Error.length > 0){
-         self.ThroughAlert('Rectify the erros,then submit.. cheers!','bg-light-red');
+         self.ThroughAlert('Please fill in all required fields','bg-light-red');
          return
        }
        //error checking code when onblur is not at fired
         if(self.Error.length === 0){
           for(var i in self.SendData){
             if( self.SendData[i] === '' || self.SendData[i] === null) {
-              self.ThroughAlert('None of the fields should be Empty!','bg-light-red');
-              return
+              //to skip designation department code
+              if(i !== 'departmentCode' && i !== 'designationCode'){
+                self.ThroughAlert('None of the fields should be Empty!','bg-light-red');
+                return
+              }
+              
             }
           }
         }
@@ -494,14 +527,14 @@ export default {
             // self.DesignationForm.data = {};
             self.flush();
             self.ActionDone();
-            self.ThroughAlert('Woow ! Done..!','bg-green');
+            self.ThroughAlert(self.ViewType + ' Successfully added.','bg-green');
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
           }
           
          //flag need to be shown from the backend
         }).fail(function(x,s,err){
-          self.ThroughAlert('Something terribly gone wrong! try again Pls','bg-light-red');
+          self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
           
         });
      },
@@ -510,7 +543,7 @@ export default {
        const self = this;
         //error checking
        if(self.Error.length > 0){
-         self.ThroughAlert('Rectify the erros,then submit.. cheers!','bg-light-red');
+         self.ThroughAlert('Please fill in all required fields','bg-light-red');
          return
        }
        //error checking code when onblur is not at fired
@@ -528,13 +561,13 @@ export default {
             self.flush();
             self.ActionDone();
             self.$emit("CancelViewType");
-            self.ThroughAlert('Woow ! Done..!','bg-gold');
+            self.ThroughAlert(self.ViewType + ' Successfully updated.','bg-gold');
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
           }
           
         }).fail(function(x,s,err){
-          self.ThroughAlert('Something terribly gone wrong! try again Pls','bg-light-red');
+          self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
          
         });
      },
@@ -549,20 +582,20 @@ export default {
               self.flush();
               self.ActionDone();
               self.$emit("CancelViewType");
-              self.ThroughAlert('Woow ! Done..!','bg-light-red');
+              self.ThroughAlert(self.ViewType + ' Successfully deleted.','bg-light-red');
             }else{
                 self.ThroughAlert(data.split('|')[1],'bg-light-red');
             }
             //  self.flush();
           }).fail(function(x,s,err){
-            self.ThroughAlert('Something terribly gone wrong! try again Pls','bg-light-red');
+            self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
             // self.flush();
           });
        }
         
      },
 
-     ActionDone: function(){ //to brodcast a action is done inside this component
+     ActionDone: function(){ //to brodcast a action is done inside this component to referesh data
        this.$emit('ActionDone');
      },
 
@@ -576,7 +609,7 @@ export default {
            alert('something went wrong try again');
          }
          
-       }).fail(x => alert(x));
+       }).fail(x => alert('something went wrong please try again'));
      },
 
      GetBundle: function(id){ //dropdown for the Bundle
@@ -588,7 +621,7 @@ export default {
            alert('something went wrong try again');
          }
          
-       }).fail(x => alert(x));
+       }).fail(x => alert('something went wrong please try again'));
      },
 
 
@@ -609,7 +642,15 @@ export default {
     flex: 1 0 0;
     overflow-y: auto;
   }
-.footer{ height: 55px; }
+.footer{ height: 50px; }
+.upload-contanier{ 
+  height: 50px;
+  background-color: #f1f1f1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+    }
 #DataForm  ul li { margin-bottom: 5px;}
 
 .fade-enter-active, .fade-leave-active {
@@ -624,5 +665,15 @@ export default {
 .dropdown-toggle{
   border-color:#a9a9a9 !important;
   border-radius: 0px !important;
+}
+/* this is to enlarge the scrolling space for better selection of the field */
+.middle form{
+  margin-bottom:50px;
+}
+.footer > button:not(:first-child){
+  margin-left:5px;
+}
+.v-select .open-indicator{
+  bottom:2px !important;
 }
 </style>

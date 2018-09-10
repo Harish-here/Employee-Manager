@@ -17,7 +17,7 @@
                 :key='index'
                 >
                 <td class='_flx_15 flex justify-evenly items-center'>
-                    <input type='checkbox' :value='i.travelAgencyUsersId' v-model='ToDelete'>&nbsp;&nbsp;&nbsp;
+                    <input  type='checkbox' v-if='!i.hasOwnProperty("master")' :value='i.travelAgencyUsersId' v-model='ToDelete'>&nbsp;&nbsp;&nbsp;
                     <span>
                         {{ i.virtualName }}
                     </span>
@@ -27,7 +27,9 @@
                 <td class='_flx_1' :class='{"light-red": i.benefitBundle === null}'>{{ (i.benefitBundle !== null) ? i.benefitBundle.label : 'Unassigned' }}</td>
                 <td class='_flx_1 tc' :class='{"light-red": i.hierarchyId === null}'>{{ (i.hierarchyId !== null) ? i.hierarchyId : 'Unassigned' }}</td>
                 <td class='_flx_1'>
-                    <button class="btn btn-xs btn-primary" @click='sendThis(i)'>
+                    <button class="btn btn-xs btn-primary"
+                            v-if="!i.hasOwnProperty('master')"
+                            @click='sendThis(i)'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                         Edit
                     </button>
@@ -47,7 +49,9 @@
                 <td class="_flx_15">{{ i.departmentName }}</td>
                 <td class="_flx_15">{{ i.departmentCode }}</td>
                 <td class='_flx_15'>
-                   <button class="btn btn-xs btn-primary" @click='sendThis(i)'>
+                   <button class="btn btn-xs btn-primary"
+                           v-if="!i.hasOwnProperty('master')"
+                           @click='sendThis(i)'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                         Edit
                     </button>
@@ -66,7 +70,9 @@
                 <td class="_flx_15">{{ i.department.departmentName }}</td>                
                 <td class="_flx_15">{{ i.benefitBundle.label }}</td>
                 <td class='_flx_1'>
-                    <button class="btn btn-xs btn-primary" @click='sendThis(i)'>
+                    <button class="btn btn-xs btn-primary"
+                            v-if="!i.hasOwnProperty('master')"
+                            @click='sendThis(i)'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                         Edit
                     </button>
@@ -206,10 +212,10 @@ export default {
          try{
            self.DesignList = JSON.parse(data);
          }catch(e){
-           alert('something went wrong try again');
+           alert('something went wrong please try again');
          }
          
-       }).fail(x => alert(x));
+       }).fail(x => alert('something went wrong please try again'));
      },
      MultipleAssign: function(){
          const self = this;
