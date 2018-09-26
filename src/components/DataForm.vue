@@ -14,10 +14,18 @@
     <div class="middle">
       <form>
         <!-- Employee Form View -->
-       <ul v-if='ViewType === "Employee"'>
+       <ul class="w100 flex pointer" v-if='ViewType === "Employee"'>
+         <li class="w-50 pa2 tc bb b--light-gray ul-trans"
+             @click='EmpSub = "create"'
+             :class='{"act-tab" : EmpSub === "create"}'>Create</li>
+         <li class="w-50 pa2 tc bb b--light-gray ul-trans"
+             @click='EmpSub = "import"'
+             :class='{"act-tab" : EmpSub === "import"}'>Import</li>
+       </ul>
+       <ul v-if='ViewType === "Employee" && EmpSub ==="create"'>
         <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa2'> 
           <span class='flex' >
-            <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }}</label>
+            <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
             <div class='w-60 flex flex-column'>
               <input class='pa1'
                     v-if='index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
@@ -25,6 +33,8 @@
                     :type='EmployeeForm.label[index].type'
                     @blur='Validate(index,EmployeeForm.label[index])'
                     :class='{"ba b--red" : Error.includes(EmployeeForm.label[index].label)}'
+                    min='1970-01-01'
+                    max='2038-01-01'
                       />
               
               <select  class='pa1'
@@ -32,15 +42,15 @@
                       @change='CheckForDep(EmpData[index],index)'
                       v-if='index === "department" || index === "designation" || index === "benefitBundle" || index === "hierarchyId"'>
                 <!-- <option value='' selected disabled>{{ EmployeeForm.label[index].label }}</option> -->
-                <option v-if='index === "department"' v-for='j in DeptData' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
+                <option v-for='j in DeptData'  v-if='index === "department" && j.departmentName !== "Master Admin"' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
                 <!-- <option v-else value='{}'>1</option> -->
                 <option v-if='index === "designation"' v-for='j in DesignList' :value="j" :key='j.value'>{{ j.label }}</option>
-                <option v-if='index === "benefitBundle"' v-for='j in BundleList' :value="j" :key='j.value'>{{ j.label }}</option>
+                <option v-for='j in BundleList' v-if='index === "benefitBundle" && j.label !== "Sx Bundle"' :value="j" :key='j.value'>{{ j.label }}</option>
                 <option v-if='index === "hierarchyId"' v-for='j in SetHierachy' :value="j" :key='j'>{{ j }}</option>
               </select>
               <div v-if='index === "status"' class='flex justify-evenly items-baseline'>
-                <span class='flex justify-evenly w-50'><input type='radio' name='active'  value='1' v-model='EmpData[index]' >&nbsp;Active</span>
-                <span class='flex justify-evenly w-50'><input type='radio' name='active' value='0' v-model='EmpData[index]' >&nbsp;Deactive</span>
+                <span class='flex justify-evenly w-50'><input type='radio' name='active'  value='1' v-model='EmpData[index]' >&nbsp;Enable </span>
+                <span class='flex justify-evenly w-50'><input type='radio' name='active' value='0' v-model='EmpData[index]' >&nbsp;Disable</span>
               </div>
               <div v-if="index === 'approverList'"><!-- approver select -->
                   <v-select v-model='EmpData[index]' :options='ApproverData' multiple></v-select>
@@ -63,14 +73,27 @@
             </div>
 
           </span>
-         </li>
+        </li>
        </ul>
+       <div class='upload-contanier tc pa1 relative' v-if='ViewType === "Employee" && EmpSub ==="import"'>
+          <div>
+            <a target="_blank" href='http://www.hobse.com/demo/public_html/csv_template/employee_csv_format.csv'><span class='absolute top-1 right-1'>Format <i class="fa fa-download" aria-hidden="true"></i></span></a>
+            <form id='fileUpload' enctype='multipart/form-data' class='flex flex-column'>
+              <label class='pa3' for='file'>Import Employees</label>
+              <input  name='file' id='fileUploadField' type="file" accept=".csv" @change="SetUpload">
+            </form>
+            <div class='flex justify-center items-center pa2' v-if="File !== null && ViewType === 'Employee'">
+              <button class='btn-spl --not-ghost'  @click='FileUpload' :disabled='DisableAction'>Upload <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
+              <button class='btn-spl ml2' @click='ResetUpload' title='Remove the selected files' :disabled='DisableAction'>Cancel Upload</button>
+            </div>
+          </div>
+       </div>
 
         <!-- Department Form View -->
        <ul v-if='ViewType === "Department"'>
         <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa2'> 
           <span class='flex' >
-            <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }}</label>
+            <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }} <sup class='b6' v-if='i.label !== "Department Code"'>*</sup></label>
             <div class='w-60 flex flex-column'>
               <input class='pa1' 
                      v-model='DepData[index]' 
@@ -94,7 +117,7 @@
        <ul v-if='ViewType === "Designation"'>
         <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa2'> 
           <span class='flex' >
-            <label class='fl w-40 pa1'>{{ DesignationForm.label[index].label }}</label>
+            <label class='fl w-40 pa1'>{{ DesignationForm.label[index].label }} <sup class='b6' v-if='i.label !== "Designation Code" '>*</sup></label>
             <div class='w-60 flex flex-column'>
               <input v-if='index === "designationCode" || index === "designationName"' 
                     class='fl pa1'
@@ -107,7 +130,7 @@
                       v-if='index !== "bookingTool" && index !== "designationCode" && index !== "designationName"'
                       v-model='DesData[index]' :disabled="index === 'rightsHotel' || index === 'bookRoomPersion' ">
                 <!-- <option value='' selected disabled>{{ DesignationForm.label[index].label }}</option> -->
-                <option v-if='index === "department"' v-for='j in DeptData' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
+                <option v-for='j in DeptData' v-if='index === "department" && j.departmentName !== "Master Admin"' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
                 <option v-if='index === "role"' v-for='k in Role' :value='k' :key='k.value'>{{ k.label }}</option>
                 <option v-if='index === "rightsHotel"' v-for='j in Rights' :value='j' :key='j.value'>{{ j.label }}</option>
                 <option v-if='index === "bookRoomPersion"' v-for='j in Permission' :value='j' :key='j.value'>{{ j.label }}</option>
@@ -116,7 +139,7 @@
                 <option v-if='index === "hierarchyId"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
                 <option v-if='index === "dayCount"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
                 <option v-if='index === "approval"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
-                <option v-if='index === "benefitBundle"' v-for='j in BundleList' :value='j' :key='j.value'>{{ j.label }}</option>
+                <option  v-for='j in BundleList' v-if='index === "benefitBundle" && j.label !== "Sx Bundle"' :value='j' :key='j.value'>{{ j.label }}</option>
                 <!-- <option  v-else value=''>Sample</option> -->
               </select>
               <div class='pa1 flex flex-wrap items-baseline' v-if='index === "bookingTool"'>
@@ -141,24 +164,17 @@
        </ul>
        </form>
     </div>
-    <div class='upload-contanier tc pa1 relative' v-if='ViewType === "Employee"'>
-      <a target="_blank" href='http://www.hobse.com/demo/public_html/csv_template/employee_csv_format.csv'><span class='absolute top-1 right-1'>Format <i class="fa fa-download" aria-hidden="true"></i></span></a>
-        <form id='fileUpload' enctype='multipart/form-data' class='flex flex-column'>
-          <label class='pa1' for='file'>Import Employees</label>
-          <input  name='file' id='fileUploadField' type="file" accept=".csv" @change="SetUpload">
-        </form>
-    </div>
+
     <div class="footer bt b--light-silver flex justify-center items-center">
-      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType !== 'Employee'" @click='CreateData'>Add</button>
-      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType === 'Employee' && File === null" @click='CreateData'>Add</button>
-      <button class='btn-spl --not-ghost' v-if="File !== null && ViewType === 'Employee'" @click='FileUpload'>Upload</button>
-      <button class='btn-spl' v-if="File !== null && ViewType === 'Employee'" @click='ResetUpload' title='Remove the selected files'>Cancel Upload</button>
-      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Update'" @click='UpdateData'>Update</button>
-      <button class='btn-spl' v-if="SubViewType === 'Update'" @click='$emit("CancelViewType")' >Cancel</button>
-      <button class='btn-spl btn-dlt' v-if="SubViewType === 'Update'" @click='DeleteData' >Delete</button>
+      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType !== 'Employee'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button>
+      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType === 'Employee' && File === null && EmpSub ==='create'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
+
+      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Update'" @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
+      <button class='btn-spl' v-if="SubViewType === 'Update'" @click='$emit("CancelViewType")' :disabled='DisableAction'>Cancel</button>
+      <button class='btn-spl btn-dlt' v-if="SubViewType === 'Update'" @click='DeleteData' :disabled='DisableAction'>Delete <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
       
     </div>
-    
+    <!-- <pre>{{EmployeeForm.label}}</pre> -->
   </div>
 </template>
 
@@ -232,7 +248,9 @@ export default {
        AlertMsg: 'Alert Message',
        AlertCls : 'bg-green',
        Error: [],
-       File: null
+       File: null,
+       DisableAction: false,
+       EmpSub: 'create'
 
      }
    },
@@ -344,7 +362,7 @@ export default {
       },
       FileUpload: function(){  
         var self = this;
-        if(confirm('Are you sure to upload')){
+        if(confirm('Are you sure to upload?')){
           var send = new FormData();
           for(var i in self.File){
             send.append(i,self.File[i]);
@@ -366,7 +384,7 @@ export default {
                     self.ActionDone();
                     self.flush();
                     
-                    self.ThroughAlert('Woow ! Done..!','bg-green');
+                    self.ThroughAlert('File uploaded successfully','bg-green');
                   }else{
                     try{
                       var s = JSON.parse(data);
@@ -374,14 +392,14 @@ export default {
                       self.createCSV(s,"Rectify the Errors, upload this CSV",true);
                     }catch(e){
                       
-                     self.ThroughAlert('Sorry we meesed up! try again Pls','bg-light-red');
+                     self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
                     }
                     
                   }
                },
               error: function(jqXHR, textStatus, errorThrown)
               {
-                  self.ThroughAlert('Sorry we meesed up! try again Pls','bg-light-red');
+                  self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
               }
         });
           
@@ -467,12 +485,18 @@ export default {
        setTimeout(function(){ 
          self.ShowAlert=false;
           },4500)
+       self.DisableAction = false;
      },
      
      Validate: function(index,obj){
+       //null exception
+       if(obj === null) return;
+
+
        //validating the field on their rules set
        var emailreg = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,'g')
        var self = this;
+      //  if(obj === undefined){ console.log(index)}
        switch(obj.type){
          case 'number': if(!(self.SendData[index].toString().length === 10) ||
                             self.SendData[index] === '' ||
@@ -492,35 +516,55 @@ export default {
                          
                            };
                            break;  
-         case 'date' : if(self.SendData[index] === '' || new Date(self.SendData[index]) === 'Invalid Date'){self.Error.push(obj.label); return};break;
+         case 'date' : if(self.SendData[index] === '' || new Date(self.SendData[index]) === 'Invalid Date' || new Date(self.SendData[index]).getFullYear() > 2038 || new Date(self.SendData[index]).getFullYear() < 1970 ){self.Error.push(obj.label); return};break;
        }
        self.Error.splice(self.Error.indexOf(obj.label),1);
      },
       //data sending functions
      CreateData: function(){ //general create operation
        var self = this;
-       //error checking
+
+       //emp join date
+      //  if(this.ViewType === 'Employee'){
+      //    let y = new Date(self.SendData['startDate']).getFullYear();
+      //    if( y < 1950 || y >2050){
+      //      self.Error.push(self.EmployeeForm.label['startDate']);
+      //      return
+      //    }
+      //  }
+
+       //check the usual error stuff
+       for(let w in self.SendData){
+         if(this.ViewType === 'Employee'){ self.Validate(w,self.EmployeeForm.label[w]);}
+         if(this.ViewType === 'Department'){ self.Validate(w,self.DepartmentForm.label[w]); }
+         if(this.ViewType === 'Designation'){ self.Validate(w,self.DesignationForm.label[w]); }
+       }
+
+        //error checking
        if(self.Error.length > 0){
          self.ThroughAlert('Please fill in all required fields','bg-light-red');
          return
        }
+
+
+
        //error checking code when onblur is not at fired
         if(self.Error.length === 0){
           for(var i in self.SendData){
             if( self.SendData[i] === '' || self.SendData[i] === null) {
               //to skip designation department code
               if(i !== 'departmentCode' && i !== 'designationCode'){
-                self.ThroughAlert('None of the fields should be Empty!','bg-light-red');
+                self.ThroughAlert('None of the Mandatory fields should be Empty!','bg-light-red');
                 return
               }
               
             }
           }
         }
-       
+      self.DisableAction = true;
       $.post(this.CreateUrl,this.SendData).done(function(data){
           
-          if(data.toString().includes('true')){
+          if(data.includes('true')){
             //added to flush the prevoius data
             // self.DepartmentForm.data = {};
             // self.EmployeeForm.data = {};
@@ -528,8 +572,10 @@ export default {
             self.flush();
             self.ActionDone();
             self.ThroughAlert(self.ViewType + ' Successfully added.','bg-green');
+            
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
+            
           }
           
          //flag need to be shown from the backend
@@ -550,11 +596,12 @@ export default {
         if(self.Error.length === 0){
           for(var i in self.SendData){
             if(i !== 'benefitBundle' && (self.SendData[i] === '' || self.SendData[i] === null)) {
-              self.ThroughAlert('None of the fields should be Empty!','bg-light-red');
+              self.ThroughAlert('None of the Mandatory fields should be Empty!','bg-light-red');
               return
             }
           }
         }
+      self.DisableAction = true;
       $.post(this.UpdateUrl,this.SendData).done(function(data){
           
           if(data.toString().includes('true')){
@@ -575,7 +622,7 @@ export default {
      DeleteData: function(){
        var self = this;
        if(confirm('Are you sure to Delete..?')){
-
+         self.DisableAction = true;
          $.post(this.DeleteUrl,this.SendData).done(function(data){
             
             if(data.toString().includes('true')){
@@ -606,10 +653,10 @@ export default {
          try{
            self.DesignList = JSON.parse(data);
          }catch(e){
-           alert('something went wrong try again');
+           alert('An Unexpected Error occurred. Please try again');
          }
          
-       }).fail(x => alert('something went wrong please try again'));
+       }).fail(x => alert('Service Not Available due to Network issuse. Please Refresh or Login again.!'));
      },
 
      GetBundle: function(id){ //dropdown for the Bundle
@@ -618,10 +665,10 @@ export default {
          try{
            self.BundleList = JSON.parse(data);
          }catch(e){
-           alert('something went wrong try again');
+           alert('An Unexpected Error occurred. Please try again');
          }
          
-       }).fail(x => alert('something went wrong please try again'));
+       }).fail(x => alert('Service Not Available due to Network issuse. Please Refresh or Login again.!'));
      },
 
 
@@ -644,8 +691,8 @@ export default {
   }
 .footer{ height: 50px; }
 .upload-contanier{ 
-  height: 50px;
-  background-color: #f1f1f1;
+  height: auto;
+  /* background-color: #f1f1f1; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -675,5 +722,13 @@ export default {
 }
 .v-select .open-indicator{
   bottom:2px !important;
+}
+.act-tab{
+  border-bottom: 3px solid #00a0c2 !important;
+  background-color: #00a0c20f;
+}
+li.ul-trans {
+  transition: all 250ms ease-in-out;
+  border-bottom: 3px solid transparent;
 }
 </style>

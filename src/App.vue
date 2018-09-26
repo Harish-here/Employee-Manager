@@ -114,7 +114,7 @@ export default {
         }
          callback(data)
       }).fail(function(x,s,err){
-        console.log(err);
+        
         alert("Something went wrong please try again");
       })
     },

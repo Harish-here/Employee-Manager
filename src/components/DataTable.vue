@@ -8,27 +8,56 @@
             <tr class='flex'>
               <th v-for='(i,index) in TableHead'
                   :key='i' 
-                  :class='{"_flx_15" : index <3,"_flx_1" : index >3 }'>{{i}}</th> 
+                  :class='{"_flx_15" : index <3,"_flx_1" : index >3,"flex justify-evenly items-center" : ViewType === "Employee" }'>
+                 <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.map(x => x.travelAgencyUsersId)" v-if='List.length > 0 && ViewType === "Employee" && i === "Employee"'>
+                       {{i}}
+              </th> 
+            </tr>
+           <!-- <transition name='fade'> -->
+
+           <!-- </transition> -->
+        </thead>
+        <thead calss='assign' v-if="ToDelete.length > 0">
+            <tr class='bg-white pa1 flex'>
+                <div class='flex w-75 justify-between items-baseline'>
+                    <select class='w-35' v-model='Department'>
+                        <option value='0' selected disabled>Department</option>
+                        <option v-for='i in Extra' :value='i.departmentId' :key='i.departmentId'>{{ i.departmentName}}</option>
+                    </select>
+                    <select class='w-35' v-model='Design'>
+                        <option value='0' selected disabled>Designation</option>
+                        <option v-for='i in DesignList' :value='i' :key='i.value'>{{ i.label }}</option>
+                    </select>
+                    <select class='w-35' v-model='Policy'>
+                        <option value='0' selected disabled>Policy</option>
+                        <option v-for='i in BundleList' :value='i' :key='i.value'>{{ i.label }}</option>
+                    </select>
+                    <button @click='MultipleAssign' class='btn btn-xs btn-primary' :disabled='Department === "0" && Design === "0" && Policy === "0"'>Assign</button>
+                </div>
+                <!-- <div class='fr w-10 tc ba b--light-gray pa1' >
+                    <button class='btn btn-xs btn-danger' @click='DeleteAll'  ><i class='fa fa-trash'></i></button>
+                </div> -->
             </tr>
         </thead>
         <tbody v-if='ViewType === "Employee"'>
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
+                :class='{"act-row" : i === ActiveRow }'
                 >
                 <td class='_flx_15 flex justify-evenly items-center'>
-                    <input  type='checkbox' v-if='!i.hasOwnProperty("master")' :value='i.travelAgencyUsersId' v-model='ToDelete'>&nbsp;&nbsp;&nbsp;
+                    <input  type='checkbox' v-if='i.department.departmentName !== "Master Admin"' :value='i.travelAgencyUsersId' v-model='ToDelete'>&nbsp;&nbsp;&nbsp;
                     <span>
-                        {{ i.virtualName }}
+                        {{i.travelAgencyNameTemp}} {{ i.virtualName }}
                     </span>
                 </td>
                 <td class='_flx_15' :class='{"light-red": i.department === null}'>{{ (i.department !== null ) ? i.department.departmentName : 'Unassigned' }}</td>
                 <td class='_flx_15' :class='{"light-red": i.designation === null}'>{{ (i.designation !== null ) ? i.designation.label : 'Unassigned' }}</td>
                 <td class='_flx_1' :class='{"light-red": i.benefitBundle === null}'>{{ (i.benefitBundle !== null) ? i.benefitBundle.label : 'Unassigned' }}</td>
-                <td class='_flx_1 tc' :class='{"light-red": i.hierarchyId === null}'>{{ (i.hierarchyId !== null) ? i.hierarchyId : 'Unassigned' }}</td>
+                <!-- <td class='_flx_1 tc' :class='{"light-red": i.hierarchyId === null}'>{{ (i.hierarchyId !== null) ? i.hierarchyId : 'Unassigned' }}</td> -->
                 <td class='_flx_1'>
                     <button class="btn btn-xs btn-primary"
-                            v-if="!i.hasOwnProperty('master')"
+                            v-if='i.department !== null && i.department.departmentName !== "Master Admin"'
                             @click='sendThis(i)'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                         Edit
@@ -50,7 +79,7 @@
                 <td class="_flx_15">{{ i.departmentCode }}</td>
                 <td class='_flx_15'>
                    <button class="btn btn-xs btn-primary"
-                           v-if="!i.hasOwnProperty('master')"
+                           v-if='i.departmentName !== "Master Admin"'
                            @click='sendThis(i)'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                         Edit
@@ -71,7 +100,7 @@
                 <td class="_flx_15">{{ i.benefitBundle.label }}</td>
                 <td class='_flx_1'>
                     <button class="btn btn-xs btn-primary"
-                            v-if="!i.hasOwnProperty('master')"
+                            v-if="i.designationName !== 'Master Admin'"
                             @click='sendThis(i)'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                         Edit
@@ -82,24 +111,7 @@
                 <td colspan='6' class='gray tc w-100'>No Designation Available</td>
             </tr>
         </tbody>
-        <transition name='fade'>
-            <tfooter class='bg-white pa1' v-if='ToDelete.length > 0'>
-                <div class='flex fl w-60 justify-between items-baseline'>
-                    <select class='w-35' v-model='Department'>
-                        <option value='0' selected disabled>Department</option>
-                        <option v-for='i in Extra' :value='i.departmentId' :key='i.departmentId'>{{ i.departmentName}}</option>
-                    </select>
-                    <select class='w-35' v-model='Design'>
-                        <option value='0' selected disabled>Designation</option>
-                        <option v-for='i in DesignList' :value='i' :key='i.value'>{{ i.label }}</option>
-                    </select>
-                    <button @click='MultipleAssign' class='btn btn-xs btn-primary' :disabled='Department === "0" || Design === "0"'>Assign</button>
-                </div>
-                <div class='fr w-10 tc ba b--light-gray pa1' >
-                    <button class='btn btn-xs btn-danger' @click='DeleteAll'  ><i class='fa fa-trash'></i></button>
-                </div>
-            </tfooter>
-        </transition>
+
       </table>
       
   </div>
@@ -132,38 +144,62 @@ export default {
           }
       }
   },
+  created: function(){
+      this.GetBundle(1);
+  },
   data(){
       return {
-        EmployeeHeading: ['Employee','Department','Designation','Policy','Hierarchy','Actions'],
+        EmployeeHeading: ['Employee','Department','Designation','Policy','Actions'],
         DepartmentHeading: ['Department','Code','Action'],
         DesignationHeading: ['Designation','Department','Policy','Actions'],
         ToDelete:[],
         ActiveRow: {},
         Department:'0',
         Design: '0',
+        Policy: '0',
         DesignList: [],
         ShowAlert: false,
         AlertMsg: 'Alert Message',
-        AlertCls: 'bg-green'
+        AlertCls: 'bg-green',
+        SelectAll: [],
+        BundleList: []
       }
   },
 
   watch : {
-      'ToDelete' : function(val){
-              this.$emit('dataChecked',val);
+      'ViewType' : function(val){
+                this.ActiveRow = {};
       },
       'Department': function(val){
           this.GetDesignation(val)
       },
+      'SelectAll': function(val,old){
+          if(val.length > 0 && val[0].length > 0){
+              this.ToDelete = [...this.ToDelete,...val[0]];
+          }else{
+            
+              for(let c=0;c < old[0].length;c++){
+                  this.ToDelete.splice(this.ToDelete.indexOf(old[0][c]),1);
+              }
+              this.Department = '0';
+              this.Design = '0';
+              this.Policy = '0'
+          }
+      }
   },
 
   computed : {
       List(){
-          if(this.Query !== ''){
-          var regex =  new RegExp(this.Query.toLowerCase(),'');
+          if(this.Query !== '' && this.Query.length > 0){
+          
           var self = this;
           return this.ListData.filter(x => {
-             return regex.test(x[self.SearchProperty].toLowerCase())
+              if(self.ViewType === 'Employee'){
+                  return ( x['travelAgencyNameTemp'] +' ' + x[self.SearchProperty]).toLowerCase().includes(self.Query.toLowerCase())
+              }else{
+                  return x[self.SearchProperty].toLowerCase().includes(self.Query.toLowerCase())
+              }
+             
           })
           }else{
               return this.ListData
@@ -190,21 +226,33 @@ export default {
           this.ActiveRow = data; 
           this.$emit('rowClicked',data);
       },
-
       DeleteAll: function(){
           var self = this;
           if(confirm('Are you Sure to delete the Selected employees?')){
             $.post(api.deleteAll,{dataId : self.ToDelete}).done(function(data){
                 if(data.toString().includes('true')){
                     self.ToDelete = [];
-                    self.ThroughAlert('Wow...Done..!','bg-light-red');
+                    self.ThroughAlert('Succesfully Deleted','bg-light-red');
                     self.$emit('ActionDone')
+                }else{
+                    self.ThroughAlert('An Unexpected Error occured.Please try again!','bg-light-red');
                 }
             }).fail(x=> {
-                self.ThroughAlert('Sorry we messed up..','bg-red');
+                self.ThroughAlert('Service Not Available due to Network issuse. Please Refresh or Login again.!','bg-red');
             });
           }
       },
+     GetBundle: function(id){ //dropdown for the Bundle
+       var self = this
+      $.post(api.dropdown.bundle,{"dataId":id}).done(function(data){
+         try{
+           self.BundleList = JSON.parse(data);
+         }catch(e){
+           alert('An Unexpected Error occurred in getting policies. Please Refresh or Login again.! ');
+         }
+         
+       }).fail(x => alert('Service Not Available due to Network issuse. Please Refresh or Login again.!'));
+     },
       GetDesignation: function(id){ //dropdown for the Design
        var self = this
        
@@ -212,26 +260,27 @@ export default {
          try{
            self.DesignList = JSON.parse(data);
          }catch(e){
-           alert('something went wrong please try again');
+           alert('An Unexpected Error occurred. Please try again!');
          }
          
-       }).fail(x => alert('something went wrong please try again'));
+       }).fail(x => alert('Service Not Available due to Network issuse. Please Refresh or Login again.!'));
      },
      MultipleAssign: function(){
          const self = this;
          if(confirm('Sure to Assign them all..?')){
-             $.post(api.updateBulk,{employee:self.ToDelete,department:self.Department,designation:self.Design}).done(function(data){
-                 if(data.toString().includes("true")){
+             $.post(api.updateBulk,{employee:self.ToDelete,department:self.Department,designation:self.Design,policy:self.Policy}).done(function(data){
+                 if(data.includes("true")){
                      self.ToDelete = [];
                      self.Department = '0';
                      self.Design = '0';
-                     self.ThroughAlert('Wow...Done..!','bg-green');
+                     self.Policy = '0';
+                     self.ThroughAlert('Successfully Assigned','bg-green');
                      self.$emit('ActionDone');
                  }else{
-                      self.ThroughAlert('Sorry we Messed up.. try again pls..','bg-light-red');
+                      self.ThroughAlert('An Unexpected Error occurred. Please try again!','bg-light-red');
                  }
              }).fail(x => {
-                 self.ThroughAlert('Something went wrong try Again..','bg-light-red');
+                 self.ThroughAlert('Service Not Available due to Network issuse. Please Refresh or Login again.!','bg-light-red');
              });
          }
      },
@@ -258,17 +307,23 @@ table{
     display: flex;
     flex-direction: column;
 }
-thead{ height : 40px; flex: 0 0 0 ; }
+thead{ height : 40px; flex: 0 0 0 ; background-color: lightgray;}
 
 tbody{
 /* flex: 1 0 0 ;  */
 overflow-y:auto;
-height: calc(100% - 95px);
+height: calc(100% - 130px);
 }
 td,th{
     padding: 10px;
     text-align: left;
 }
-tr th, tr td { flex:1 0 0; align-self: baseline;}
-
+tr > th, tr > td { flex:1 0 0; align-self: baseline;}
+.assign{
+    position: absolute;
+    top:40px;
+}
+.act-row{
+    background-color: #00a0c20f;
+}
 </style>
