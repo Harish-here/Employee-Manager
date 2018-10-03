@@ -24,6 +24,7 @@
                   :ViewType='ActiveView'
                   :Query='SearchString'
                   :Extra='DepartList'
+                  :subView='ActiveSubView'
                   @rowClicked='setSubView'
                   @ActionDone='GetFreshData'></data-table>
     </section>

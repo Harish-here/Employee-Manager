@@ -53,7 +53,7 @@
                 <span class='flex justify-evenly w-50'><input type='radio' name='active' value='0' v-model='EmpData[index]' >&nbsp;Disable</span>
               </div>
               <div v-if="index === 'approverList'"><!-- approver select -->
-                  <v-select v-model='EmpData[index]' :options='ApproverData' multiple></v-select>
+                  <v-select v-model='EmpData[index]' :options='ApproverData.filter(x => x.value != EmpData["travelAgencyUsersId"])' multiple></v-select>
                   <span v-if='EmpData[index].length > 0'>
                     <ul class='ba b--light-gray pa1 mt1'>
                       <li class='gray'>Your approval tree</li>

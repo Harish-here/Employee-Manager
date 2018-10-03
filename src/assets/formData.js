@@ -11,6 +11,7 @@ const Employee = {
     hierarchyId: "1",//defalut value sending since we are gonna hide this shit
     approverList: [],
     // benefitBundle: '',
+    employeeCode: '',
     personalEmail: "",
     startDate: "",
     status: "1"
@@ -21,6 +22,7 @@ const EmployeeLabel = {
     companyName: null,
     travelAgencyNameTemp: { label: "First Name", type: 'text' },
     virtualName: { label: "Last Name", type: 'text' },
+    employeeCode: {label: "Employee Code",type:'text'},
     email: { label: "Company Email", type: 'email' },
     mobile: { label: "Mobile Number", type: 'text' },
     department: { label: "Department", type: 'select' },
@@ -81,7 +83,7 @@ const DesignationLabel = {
     rightsHotel: { label: 'Who has Rights to choose hotel?', type: 'select' },
     // dayCount: { label: 'No of day to approval', type: 'select' },
     dayCount: null,
-    reservHandle: { label: 'Is Approver?', type: 'select' },
+    reservHandle: { label: 'Booking Approver?', type: 'select' },
     bookRoomPersion: { label: 'Who will book the Room?', type: 'select' },
     // overBudget: { label: 'Over Budget Policy can be approved by', type: 'select' },
     overBudget: null,

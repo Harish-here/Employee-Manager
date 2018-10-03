@@ -19,20 +19,26 @@
         </thead>
         <thead calss='assign' v-if="ToDelete.length > 0">
             <tr class='bg-white pa1 flex'>
-                <div class='flex w-75 justify-between items-baseline'>
-                    <select class='w-35' v-model='Department'>
+                <div class='flex w-100 justify-between items-baseline'>
+                    <select class='w-20' v-model='Department'>
                         <option value='0' selected disabled>Department</option>
                         <option v-for='i in Extra' :value='i.departmentId' :key='i.departmentId'>{{ i.departmentName}}</option>
                     </select>
-                    <select class='w-35' v-model='Design'>
+                    <select class='w-20' v-model='Design'>
                         <option value='0' selected disabled>Designation</option>
                         <option v-for='i in DesignList' :value='i' :key='i.value'>{{ i.label }}</option>
                     </select>
-                    <select class='w-35' v-model='Policy'>
+                    <select class='w-20' v-model='Policy'>
                         <option value='0' selected disabled>Policy</option>
                         <option v-for='i in BundleList' :value='i' :key='i.value'>{{ i.label }}</option>
                     </select>
-                    <button @click='MultipleAssign' class='btn btn-xs btn-primary' :disabled='Department === "0" && Design === "0" && Policy === "0"'>Assign</button>
+                    <select class='w-20' v-model='Account'>
+                        <option value=0 selected disabled>Account</option>
+                        <option  value='1'>Enable</option>
+                        <option  value='0'>Disable</option>
+                    </select>
+                    <button @click='MultipleAssign' class='btn btn-xs btn-primary' :disabled='Department === "0" && Design === "0" && Policy === "0" && Account === 0'>Assign <span v-if='ToDelete.length > 0' class='badge'>{{ToDelete.length}}</span></button>
+                    
                 </div>
                 <!-- <div class='fr w-10 tc ba b--light-gray pa1' >
                     <button class='btn btn-xs btn-danger' @click='DeleteAll'  ><i class='fa fa-trash'></i></button>
@@ -43,7 +49,7 @@
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
-                :class='{"act-row" : i === ActiveRow }'
+                :class='{"act-row" : i === ActiveRow, "opa" : (i.department !== null && i.department.departmentName === "Master Admin") }'
                 >
                 <td class='_flx_15 flex justify-evenly items-center'>
                     <input  type='checkbox' v-if='i.department.departmentName !== "Master Admin"' :value='i.travelAgencyUsersId' v-model='ToDelete'>&nbsp;&nbsp;&nbsp;
@@ -73,7 +79,7 @@
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
-                :class='{"opa" : i.active === "0"}'
+                :class='{"opa" : i.active === "0" || i.departmentName === "Master Admin"}'
                 >
                 <td class="_flx_15">{{ i.departmentName }}</td>
                 <td class="_flx_15">{{ i.departmentCode }}</td>
@@ -94,6 +100,7 @@
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
+                :class='{"opa" : i.designationName === "Master Admin"}'
                 >
                 <td class="_flx_15">{{ i.designationName }}</td>
                 <td class="_flx_15">{{ i.department.departmentName }}</td>                
@@ -129,6 +136,10 @@ export default {
               return []
           }
       },
+      subView: {
+          type: String,
+          default: 'Create'
+      },
       ViewType : {
           type: String,
           default: 'Employee'
@@ -149,9 +160,9 @@ export default {
   },
   data(){
       return {
-        EmployeeHeading: ['Employee','Department','Designation','Policy','Actions'],
+        EmployeeHeading: ['Employee','Department','Designation','Grade Policy','Actions'],
         DepartmentHeading: ['Department','Code','Action'],
-        DesignationHeading: ['Designation','Department','Policy','Actions'],
+        DesignationHeading: ['Designation','Department','Grade Policy','Actions'],
         ToDelete:[],
         ActiveRow: {},
         Department:'0',
@@ -162,7 +173,8 @@ export default {
         AlertMsg: 'Alert Message',
         AlertCls: 'bg-green',
         SelectAll: [],
-        BundleList: []
+        BundleList: [],
+        Account: 0
       }
   },
 
@@ -183,8 +195,15 @@ export default {
               }
               this.Department = '0';
               this.Design = '0';
-              this.Policy = '0'
+              this.Policy = '0';
+              this.Account = 0;
           }
+      },
+      'subView': function(val){
+          if(val == 'Create'){
+              this.ActiveRow = {};
+          }
+          
       }
   },
 
@@ -195,12 +214,16 @@ export default {
           var self = this;
           return this.ListData.filter(x => {
               if(self.ViewType === 'Employee'){
-                  return ( x['travelAgencyNameTemp'] +' ' + x[self.SearchProperty]).toLowerCase().includes(self.Query.toLowerCase())
+                  return ( x['travelAgencyNameTemp'] +' ' + x[self.SearchProperty]+' '+x['department'].departmentName+' '+x['benefitBundle'].label+' '+x['designation'].label).toLowerCase().includes(self.Query.toLowerCase())
               }else{
+                  if(self.ViewType === 'Department')
                   return x[self.SearchProperty].toLowerCase().includes(self.Query.toLowerCase())
+                  else{
+                      return (x[self.SearchProperty]+' '+x['department'].departmentName+' '+x['benefitBundle'].label).toLowerCase().includes(self.Query.toLowerCase())
+                  }
               }
              
-          })
+          });
           }else{
               return this.ListData
           }
@@ -267,13 +290,14 @@ export default {
      },
      MultipleAssign: function(){
          const self = this;
-         if(confirm('Sure to Assign them all..?')){
-             $.post(api.updateBulk,{employee:self.ToDelete,department:self.Department,designation:self.Design,policy:self.Policy}).done(function(data){
+         if(confirm('Warning! Applying changes is permanent and cannot be undone. Are you sure you want to proceed?')){
+             $.post(api.updateBulk,{employee:self.ToDelete,department:self.Department,designation:self.Design,policy:self.Policy,account:self.Account}).done(function(data){
                  if(data.includes("true")){
                      self.ToDelete = [];
                      self.Department = '0';
                      self.Design = '0';
                      self.Policy = '0';
+                     self.Account = 0;
                      self.ThroughAlert('Successfully Assigned','bg-green');
                      self.$emit('ActionDone');
                  }else{
