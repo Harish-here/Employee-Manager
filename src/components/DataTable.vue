@@ -22,22 +22,22 @@
                 <div class='flex w-100 justify-between items-baseline'>
                     <select class='w-20' v-model='Department'>
                         <option value='0' selected disabled>Department</option>
-                        <option v-for='i in Extra' :value='i.departmentId' :key='i.departmentId'>{{ i.departmentName}}</option>
+                        <option v-for='i in Extra' v-if='i.departmentName !== "Master Admin"' :value='i.departmentId' :key='i.departmentId'>{{ i.departmentName}}</option>
                     </select>
                     <select class='w-20' v-model='Design'>
                         <option value='0' selected disabled>Designation</option>
-                        <option v-for='i in DesignList' :value='i' :key='i.value'>{{ i.label }}</option>
+                        <option v-for='i in DesignList' v-if='i.label !== "Master Admin"' :value='i' :key='i.value'>{{ i.label }}</option>
                     </select>
                     <select class='w-20' v-model='Policy'>
                         <option value='0' selected disabled>Policy</option>
-                        <option v-for='i in BundleList' :value='i' :key='i.value'>{{ i.label }}</option>
+                        <option v-for='i in BundleList' v-if='i.label !== "Sx Bundle"' :value='i' :key='i.value'>{{ i.label }}</option>
                     </select>
                     <select class='w-20' v-model='Account'>
-                        <option value=0 selected disabled>Account</option>
+                        <option value='null' selected disabled>Account</option>
                         <option  value='1'>Enable</option>
                         <option  value='0'>Disable</option>
                     </select>
-                    <button @click='MultipleAssign' class='btn btn-xs btn-primary' :disabled='Department === "0" && Design === "0" && Policy === "0" && Account === 0'>Assign <span v-if='ToDelete.length > 0' class='badge'>{{ToDelete.length}}</span></button>
+                    <button @click='MultipleAssign' class='btn btn-xs btn-primary' :disabled='(Department === "0" || Design === "0") && Policy === "0" && (Account === null || Account === "null")'>Assign <span v-if='ToDelete.length > 0' class='badge'>{{ToDelete.length}}</span></button>
                     
                 </div>
                 <!-- <div class='fr w-10 tc ba b--light-gray pa1' >
@@ -174,7 +174,7 @@ export default {
         AlertCls: 'bg-green',
         SelectAll: [],
         BundleList: [],
-        Account: 0
+        Account: null
       }
   },
 
@@ -271,10 +271,10 @@ export default {
          try{
            self.BundleList = JSON.parse(data);
          }catch(e){
-           alert('An Unexpected Error occurred in getting policies. Please Refresh or Login again.! ');
+           self.ThroughAlert('An Unexpected Error occured.Please try again!','bg-light-red');
          }
          
-       }).fail(x => alert('Service Not Available due to Network issuse. Please Refresh or Login again.!'));
+       }).fail(x => self.ThroughAlert('Service Not Available due to Network issuse. Please Refresh or Login again.!','bg-red'));
      },
       GetDesignation: function(id){ //dropdown for the Design
        var self = this
@@ -283,10 +283,10 @@ export default {
          try{
            self.DesignList = JSON.parse(data);
          }catch(e){
-           alert('An Unexpected Error occurred. Please try again!');
+           self.ThroughAlert('An Unexpected Error occurred. Please try again!','bg-light-red');
          }
          
-       }).fail(x => alert('Service Not Available due to Network issuse. Please Refresh or Login again.!'));
+       }).fail(x => self.ThroughAlert('Service Not Available due to Network issuse. Please Refresh or Login again.!','bg-light-red'));
      },
      MultipleAssign: function(){
          const self = this;
@@ -294,10 +294,11 @@ export default {
              $.post(api.updateBulk,{employee:self.ToDelete,department:self.Department,designation:self.Design,policy:self.Policy,account:self.Account}).done(function(data){
                  if(data.includes("true")){
                      self.ToDelete = [];
+                     self.SelectAll = [];
                      self.Department = '0';
                      self.Design = '0';
                      self.Policy = '0';
-                     self.Account = 0;
+                     self.Account = null;
                      self.ThroughAlert('Successfully Assigned','bg-green');
                      self.$emit('ActionDone');
                  }else{
