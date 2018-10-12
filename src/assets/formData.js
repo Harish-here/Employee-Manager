@@ -12,6 +12,7 @@ const Employee = {
     approverList: [],
     // benefitBundle: '',
     employeeCode: '',
+    resign: 'null',
     personalEmail: "",
     startDate: "",
     status: "1"
@@ -27,6 +28,7 @@ const EmployeeLabel = {
     mobile: { label: "Mobile Number", type: 'text' },
     department: { label: "Department", type: 'select' },
     designation: { label: "Designation", type: 'select' },
+    resign: null,
     hierarchyId: null,
     // hierarchyId: { label: "Set Hierachy", type: 'select' },
     // benefitBundle: { label: '', type:'select' },
@@ -34,6 +36,7 @@ const EmployeeLabel = {
     startDate: { label: "Join Date", type: 'date' },
     status: { label: "Account", type:'radio'},
     approverList: { label: "Approval Hierachy", type:'select'},
+    
 };
 const Department = {
     departmentId: 'null',

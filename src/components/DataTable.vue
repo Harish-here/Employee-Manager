@@ -9,7 +9,7 @@
               <th v-for='(i,index) in TableHead'
                   :key='i' 
                   :class='{"_flx_15" : index <3,"_flx_1" : index >3,"flex justify-evenly items-center" : ViewType === "Employee" }'>
-                 <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.map(x => x.travelAgencyUsersId)" v-if='List.length > 0 && ViewType === "Employee" && i === "Employee"'>
+                 <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.map(x => x.travelAgencyUsersId)" v-if='List.length > 0 && ViewType === "Employee" && i === "Employee"'>&nbsp;&nbsp;&nbsp;
                        {{i}}
               </th> 
             </tr>
@@ -30,26 +30,22 @@
                     </select>
                     <select class='w-20' v-model='Policy'>
                         <option value='0' selected disabled>Policy</option>
-                        <option v-for='i in BundleList' v-if='i.label !== "Sx Bundle"' :value='i' :key='i.value'>{{ i.label }}</option>
+                        <option v-for='i in BundleList' v-if='i.label !== "Master Admin"' :value='i' :key='i.value'>{{ i.label }}</option>
                     </select>
                     <select class='w-20' v-model='Account'>
                         <option value='null' selected disabled>Account</option>
                         <option  value='1'>Enable</option>
                         <option  value='0'>Disable</option>
                     </select>
-                    <button @click='MultipleAssign' class='btn btn-xs btn-primary' :disabled='(Department === "0" || Design === "0") && Policy === "0" && (Account === null || Account === "null")'>Assign <span v-if='ToDelete.length > 0' class='badge'>{{ToDelete.length}}</span></button>
-                    
+                    <button @click='MultipleAssign' class='btn btn-xs btn-primary' :disabled='(Department === "0" || Design === "0") && Policy === "0" && (Account === null || Account === "null")'>Assign <span v-if='ToDelete.length > 0' class='badge'>{{ToDelete.length}}</span></button>     
                 </div>
-                <!-- <div class='fr w-10 tc ba b--light-gray pa1' >
-                    <button class='btn btn-xs btn-danger' @click='DeleteAll'  ><i class='fa fa-trash'></i></button>
-                </div> -->
             </tr>
         </thead>
         <tbody v-if='ViewType === "Employee"'>
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
-                :class='{"act-row" : i === ActiveRow, "opa" : (i.department !== null && i.department.departmentName === "Master Admin") }'
+                :class='{"bg-light-reds":(i.resign == "1"),"act-row" : i === ActiveRow, "opa" : (i.department !== null && i.department.departmentName === "Master Admin") || i.resign == "1" }'
                 >
                 <td class='_flx_15 flex justify-evenly items-center'>
                     <input  type='checkbox' v-if='i.department.departmentName !== "Master Admin"' :value='i.travelAgencyUsersId' v-model='ToDelete'>&nbsp;&nbsp;&nbsp;
@@ -247,7 +243,7 @@ export default {
   methods: {
       sendThis: function(data){
           this.ActiveRow = data; 
-          this.$emit('rowClicked',data);
+          this.$emit('rowClicked',JSON.parse(JSON.stringify(data)));
       },
       DeleteAll: function(){
           var self = this;

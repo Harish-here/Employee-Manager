@@ -111,12 +111,12 @@ export default {
         try{
           var data = (typeof x === "object") ? x : JSON.parse(x); //development purpose problem
         }catch(e){
-          alert("Something went wrong please try again");
+          alert("An Unexpected Error occurred. Please try again!");
         }
          callback(data)
       }).fail(function(x,s,err){
         
-        alert("Something went wrong please try again");
+        alert("Service Not Available due to Network issuse. Please Refresh or Login again.!");
       })
     },
   },

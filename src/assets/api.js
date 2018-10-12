@@ -43,5 +43,6 @@ export default {
     deleteAll : BaseUrl + 'employeeBulkDelete',
     updateBulk : BaseUrl + 'employeeBulkUpdate',
     fileUpload: BaseUrl + 'employeeImport',
-    getApprovar: BaseUrl + 'approverList' 
+    getApprovar: BaseUrl + 'approverList',
+    resignEmployee: BaseUrl + 'resign' 
 }

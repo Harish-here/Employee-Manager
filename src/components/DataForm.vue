@@ -28,13 +28,13 @@
             <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
             <div class='w-60 flex flex-column'>
               <input class='pa1'
-                    v-if='index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
-                    v-model='EmpData[index]' 
-                    :type='EmployeeForm.label[index].type'
-                    @blur='Validate(index,EmployeeForm.label[index])'
-                    :class='{"ba b--red" : Error.includes(EmployeeForm.label[index].label)}'
-                    min='1970-01-01'
-                    max='2038-01-01'
+                      v-if='index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
+                      v-model='EmpData[index]' 
+                      :type='EmployeeForm.label[index].type'
+                      @blur='Validate(index,EmployeeForm.label[index])'
+                      :class='{"ba b--red" : Error.includes(EmployeeForm.label[index].label)}'
+                      min='1970-01-01'
+                      max='2038-01-01'
                       />
               
               <select  class='pa1'
@@ -45,7 +45,7 @@
                 <option v-for='j in DeptData'  v-if='index === "department" && j.departmentName !== "Master Admin"' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
                 <!-- <option v-else value='{}'>1</option> -->
                 <option v-if='index === "designation"' v-for='j in DesignList' :value="j" :key='j.value'>{{ j.label }}</option>
-                <option v-for='j in BundleList' v-if='index === "benefitBundle" && j.label !== "Sx Bundle"' :value="j" :key='j.value'>{{ j.label }}</option>
+                <option v-for='j in BundleList' v-if='index === "benefitBundle" && j.label !== "Master Admin"' :value="j" :key='j.value'>{{ j.label }}</option>
                 <option v-if='index === "hierarchyId"' v-for='j in SetHierachy' :value="j" :key='j'>{{ j }}</option>
               </select>
               <div v-if='index === "status"' class='flex justify-evenly items-baseline'>
@@ -71,7 +71,31 @@
                 </transition>
               
             </div>
-
+          </span>
+        </li>
+        <li class="pa2" v-if="SubViewType !== 'Create'">
+          <span class="flex">
+            <label for="" class="w-40 pa1">Resignation</label>
+            <div class="w-60 flex">
+              <span class='w-50 pa1 flex justify-around'><input v-model='EmpData.resign' type="radio" value='0'><span> No</span></span>
+              <span class='w-50 flex justify-around pa1'><input v-model='EmpData.resign' type="radio" value='1'><span>Yes</span></span>
+            </div>
+          </span>
+        </li>
+        <li class='pa2' v-if='EmpData.resign == "1"'>
+          <span class='flex'>
+            <label class="w-40 pa1">Resignation Date</label>
+            <div class="w-60 flex flex-column">
+              <input v-model='EmpData.resignDate' type="date" name='resignDate' />
+            </div>
+          </span>
+        </li>
+        <li class='pa2' v-if='EmpData.resign == "1"'>
+          <span class='flex'>
+            <label class="w-40 pa1">Resignation Time</label>
+            <div class="w-60 flex flex-column">
+              <input v-model='EmpData.resignTime' type='time' name='resignTime' />
+            </div>
           </span>
         </li>
        </ul>
@@ -93,7 +117,7 @@
        <ul v-if='ViewType === "Department"'>
         <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa2'> 
           <span class='flex' >
-            <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }} <sup class='b6' v-if='i.label !== "Department Code"'>*</sup></label>
+            <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }} <sup class='b6'>*</sup></label>
             <div class='w-60 flex flex-column'>
               <input class='pa1' 
                      v-model='DepData[index]' 
@@ -117,7 +141,7 @@
        <ul v-if='ViewType === "Designation"'>
         <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa2'> 
           <span class='flex' >
-            <label class='fl w-40 pa1'>{{ DesignationForm.label[index].label }} <sup class='b6' v-if='i.label !== "Designation Code" '>*</sup></label>
+            <label class='fl w-40 pa1'>{{ DesignationForm.label[index].label }} <sup class='b6'>*</sup></label>
             <div class='w-60 flex flex-column'>
               <input v-if='index === "designationCode" || index === "designationName"' 
                     class='fl pa1'
@@ -139,7 +163,7 @@
                 <option v-if='index === "hierarchyId"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
                 <option v-if='index === "dayCount"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
                 <option v-if='index === "approval"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
-                <option  v-for='j in BundleList' v-if='index === "benefitBundle" && j.label !== "Sx Bundle"' :value='j' :key='j.value'>{{ j.label }}</option>
+                <option  v-for='j in BundleList' v-if='index === "benefitBundle" && j.label !== "Master Admin"' :value='j' :key='j.value'>{{ j.label }}</option>
                 <!-- <option  v-else value=''>Sample</option> -->
               </select>
               <div class='pa1 flex flex-wrap items-baseline' v-if='index === "bookingTool"'>
@@ -168,10 +192,10 @@
     <div class="footer bt b--light-silver flex justify-center items-center">
       <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType !== 'Employee'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button>
       <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType === 'Employee' && File === null && EmpSub ==='create'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
-
-      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Update'" @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
-      <button class='btn-spl' v-if="SubViewType === 'Update'" @click='$emit("CancelViewType")' :disabled='DisableAction'>Cancel</button>
-      <button class='btn-spl btn-dlt' v-if="SubViewType === 'Update'" @click='DeleteData' :disabled='DisableAction'>Delete <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
+      <button class="btn-spl --not-ghost" @click='ResignEmployee' v-if='ShowResign && SubViewType !== "Create"'>Resign this Employee</button>
+      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Update' && !ShowResign" @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
+      <button class='btn-spl' v-if="SubViewType === 'Update' && !ShowResign" @click='$emit("CancelViewType")' :disabled='DisableAction'>Cancel</button>
+      <button class='btn-spl btn-dlt' v-if="SubViewType === 'Update' && !ShowResign" @click='DeleteData' :disabled='DisableAction'>Delete <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
       
     </div>
     <!-- <pre>{{EmployeeForm.label}}</pre> -->
@@ -183,6 +207,7 @@ import axios from 'axios'
 import struct from '../assets/formData'
 import api from '../assets/api'
 import vSelect from 'vue-select'
+// import { fail } from 'assert';
 
 
 export default {
@@ -250,7 +275,10 @@ export default {
        Error: [],
        File: null,
        DisableAction: false,
-       EmpSub: 'create'
+       EmpSub: 'create',
+       Resign: false,
+       ResignDate: '',
+       ResignTime: ''
 
      }
    },
@@ -290,6 +318,14 @@ export default {
          return this.ActiveData
        }
      },
+     //check to show the resign
+     ShowResign(){
+       if(this.ViewType === 'Employee' && this.SubViewType === 'Update'){
+         return this.SendData.hasOwnProperty('resign') && this.SendData.resign == '1';
+       }else{
+         return false;
+       }
+     },
 
      CreateUrl(){
       if(this.ViewType === 'Employee') return api.emp.create
@@ -318,8 +354,14 @@ export default {
        'ViewType': function(){
          this.Error.length = 0;
        },
-       'SubViewType': function(){
+       'SubViewType': function(val){
          this.Error.length = 0;
+
+        //  if(this.ViewType === 'Employee' && val === 'Update'){
+        //    this.Resign = '';
+        //    this.ResignDate = '';
+        //    this.ResignTime = '';
+        //  }
        }
      },
 
@@ -351,6 +393,25 @@ export default {
        if(this.ViewType === 'Employee' && index === 'department'){
          this.GetDesignation(obj.departmentId);
        }
+     },
+     ResignEmployee: function(){
+       const self = this;
+       if(self.EmpData.resignDate === null || self.EmpData.resignTime === null || self.EmpData.resignDate === '' || self.EmpData.resignTime === ''){
+         self.ThroughAlert('Resign Date and Resign Time is Mandatory','bg-light-red');
+         return
+       }
+       $.post(api.resignEmployee,{employee:self.SendData,resignDate: self.SendData.resignDate,resignTime: self.SendData.resignTime}).done(function(data){
+         if(data.toLowerCase().includes('true')){
+          //  self.ResignDate = '';
+          //  self.ResignTime = '';
+          //  self.Resign = false;
+           self.flush();
+           self.ActionDone();
+           self.ThroughAlert('Employee Resigned Successfully','bg-green');
+         }else{
+           self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
+         }
+       }).fail(() => { self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red'); })
      },
       SetUpload: function(el){
           this.File = el.target.files[0];
@@ -509,10 +570,10 @@ export default {
          case 'email': if(!emailreg.test(self.SendData[index])) {self.Error.push(obj.label); return}  ; break;
          case 'text': if(self.SendData[index] === '' || self.SendData[index] === ' ' ) {
                           //to make departcode and designation optional need to skip their prop check
-                          if( index !== 'departmentCode' && index !== 'designationCode'){
+                          // if( index !== 'departmentCode' && index !== 'designationCode'){
                             self.Error.push(obj.label);
                             return
-                          }
+                          // }
                          
                            };
                            break;  
@@ -532,13 +593,17 @@ export default {
       //      return
       //    }
       //  }
+      //   let label;
+      //   if(this.ViewType === 'Employee'){ label = self.EmployeeForm.label;}
+      //   if(this.ViewType === 'Department'){ label = self.DepartmentForm.label;}
+      //   if(this.ViewType === 'Designation'){label = self.DesignationForm.label}
+      //  //check the usual error stuff
+      //  for(let w in self.SendData){
+      //    if(this.ViewType === 'Employee'){ self.Validate(w,self.EmployeeForm.label[w]);}
+      //    if(this.ViewType === 'Department'){ self.Validate(w,self.DepartmentForm.label[w]); }
+      //    if(this.ViewType === 'Designation'){ self.Validate(w,self.DesignationForm.label[w]); }
+      //  }
 
-       //check the usual error stuff
-       for(let w in self.SendData){
-         if(this.ViewType === 'Employee'){ self.Validate(w,self.EmployeeForm.label[w]);}
-         if(this.ViewType === 'Department'){ self.Validate(w,self.DepartmentForm.label[w]); }
-         if(this.ViewType === 'Designation'){ self.Validate(w,self.DesignationForm.label[w]); }
-       }
 
         //error checking
        if(self.Error.length > 0){
@@ -551,12 +616,12 @@ export default {
        //error checking code when onblur is not at fired
         if(self.Error.length === 0){
           for(var i in self.SendData){
-            if( self.SendData[i] === '' || self.SendData[i] === null) {
+            if( self.SendData[i] === '' || self.SendData[i] === null || self.SendData[i] === ' ') {
               //to skip designation department code
-              if(i !== 'departmentCode' && i !== 'designationCode'){
+              
                 self.ThroughAlert('None of the Mandatory fields should be Empty!','bg-light-red');
                 return
-              }
+              
               
             }
           }
