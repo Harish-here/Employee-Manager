@@ -12,7 +12,7 @@ const Employee = {
     approverList: [],
     // benefitBundle: '',
     employeeCode: '',
-    resign: 'null',
+    resign: '0',
     personalEmail: "",
     startDate: "",
     status: "1"
@@ -98,7 +98,7 @@ const DesignationLabel = {
 const Role = [
     { label: 'Employee', value: '3' },
     { label: 'Travel Desk', value: '1' },
-    { label: 'Finance Approval Team', value: '2' },
+    { label: 'Financier', value: '2' },
     
 ];
 

@@ -45,7 +45,7 @@
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
-                :class='{"bg-light-reds":(i.resign == "1"),"act-row" : i === ActiveRow, "opa" : (i.department !== null && i.department.departmentName === "Master Admin") || i.resign == "1" }'
+                :class='{"no-app":i.approverList.length === 0,"bg-light-reds":(i.resign == "1"),"act-row" : i === ActiveRow, "opa" : (i.department !== null && i.department.departmentName === "Master Admin") || i.resign == "1" || i.status == "1" }'
                 >
                 <td class='_flx_15 flex justify-evenly items-center'>
                     <input  type='checkbox' v-if='i.department.departmentName !== "Master Admin"' :value='i.travelAgencyUsersId' v-model='ToDelete'>&nbsp;&nbsp;&nbsp;

@@ -618,7 +618,7 @@ export default {
           for(var i in self.SendData){
             if( self.SendData[i] === '' || self.SendData[i] === null || self.SendData[i] === ' ') {
               //to skip designation department code
-              
+                
                 self.ThroughAlert('None of the Mandatory fields should be Empty!','bg-light-red');
                 return
               
@@ -652,6 +652,7 @@ export default {
 
      UpdateData: function(){
        const self = this;
+
         //error checking
        if(self.Error.length > 0){
          self.ThroughAlert('Please fill in all required fields','bg-light-red');
@@ -660,12 +661,13 @@ export default {
        //error checking code when onblur is not at fired
         if(self.Error.length === 0){
           for(var i in self.SendData){
-            if(i !== 'benefitBundle' && (self.SendData[i] === '' || self.SendData[i] === null)) {
+            if(i !== 'resignDate' && i !== 'resignTime' && i !== 'benefitBundle' && (self.SendData[i] === ' ' || self.SendData[i] === '' || self.SendData[i] === null)) {
               self.ThroughAlert('None of the Mandatory fields should be Empty!','bg-light-red');
               return
             }
           }
         }
+      
       self.DisableAction = true;
       $.post(this.UpdateUrl,this.SendData).done(function(data){
           

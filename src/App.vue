@@ -88,7 +88,10 @@ export default {
     GetFreshData: function(){
       var self = this;
       self.getData(api.emp.read,function(data){
-          self.SourceList = data;
+          let noApp = data.filter(x => x.approverList.length === 0);
+          let App = data.filter(x => x.approverList.length !== 0);
+          self.SourceList = noApp.concat(App);
+          console.log(noApp.concat(App));
         
       });
       self.getData(api.depart.read,function(data){
@@ -125,7 +128,11 @@ export default {
     const self  = this;
    
     self.getData(api.emp.read,function(data){
-      self.SourceList = data;
+          let resign = data.filter(x => x.resign === '1');
+          let noApp = data.filter(x => x.approverList.length === 0 && x.resign !== '1');
+          let App = data.filter(x => x.approverList.length !== 0 && x.resign !== '1');
+          self.SourceList = noApp.concat(App,resign);
+          
     });
     self.getData(api.depart.read,function(data){
       self.DepartList = data;
