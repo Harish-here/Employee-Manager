@@ -7,7 +7,8 @@
         <thead class='bb b--light-silver'>
             <tr class='flex'>
               <th v-for='(i,index) in TableHead'
-                  :key='i' 
+                  :key='i'
+                  class='tl' 
                   :class='{"_flx_15" : index <3,"_flx_1" : index >3,"flex justify-evenly items-center" : ViewType === "Employee" }'>
                  <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.map(x => x.travelAgencyUsersId)" v-if='List.length > 0 && ViewType === "Employee" && i === "Employee"'>&nbsp;&nbsp;&nbsp;
                        {{i}}
@@ -45,7 +46,7 @@
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
-                :class='{"no-app":i.approverList.length === 0,"bg-light-reds":(i.resign == "1"),"act-row" : i === ActiveRow, "opa" : (i.department !== null && i.department.departmentName === "Master Admin") || i.resign == "1" || i.status == "1" }'
+                :class='{"no-app":i.approverList.length === 0,"bg-light-reds":(i.resign == "1"),"act-row" : i === ActiveRow, "opa" : (i.department !== null && i.department.departmentName === "Master Admin") || i.resign == "1" || i.status == "0" }'
                 >
                 <td class='_flx_15 flex justify-evenly items-center'>
                     <input  type='checkbox' v-if='i.department.departmentName !== "Master Admin"' :value='i.travelAgencyUsersId' v-model='ToDelete'>&nbsp;&nbsp;&nbsp;

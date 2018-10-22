@@ -10,7 +10,7 @@ const Employee = {
     designation: "",
     hierarchyId: "1",//defalut value sending since we are gonna hide this shit
     approverList: [],
-    // benefitBundle: '',
+    travelDesk: '',
     employeeCode: '',
     resign: '0',
     personalEmail: "",
@@ -35,6 +35,7 @@ const EmployeeLabel = {
     personalEmail: { label: "Personal Email", type: 'email' },
     startDate: { label: "Join Date", type: 'date' },
     status: { label: "Account", type:'radio'},
+    travelDesk: {label: "Travel Desk",type:"select"},
     approverList: { label: "Approval Hierachy", type:'select'},
     
 };

@@ -44,5 +44,6 @@ export default {
     updateBulk : BaseUrl + 'employeeBulkUpdate',
     fileUpload: BaseUrl + 'employeeImport',
     getApprovar: BaseUrl + 'approverList',
-    resignEmployee: BaseUrl + 'resign' 
+    resignEmployee: BaseUrl + 'resign',
+    travelDeskList: BaseUrl + 'travelDesk' 
 }

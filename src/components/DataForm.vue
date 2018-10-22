@@ -28,7 +28,7 @@
             <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
             <div class='w-60 flex flex-column'>
               <input class='pa1'
-                      v-if='index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
+                      v-if='index !=="travelDesk" && index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
                       v-model='EmpData[index]' 
                       :type='EmployeeForm.label[index].type'
                       @blur='Validate(index,EmployeeForm.label[index])'
@@ -40,13 +40,14 @@
               <select  class='pa1'
                       v-model='EmpData[index]'
                       @change='CheckForDep(EmpData[index],index)'
-                      v-if='index === "department" || index === "designation" || index === "benefitBundle" || index === "hierarchyId"'>
+                      v-if='index ==="travelDesk" || index === "department" || index === "designation" || index === "benefitBundle" || index === "hierarchyId"'>
                 <!-- <option value='' selected disabled>{{ EmployeeForm.label[index].label }}</option> -->
                 <option v-for='j in DeptData'  v-if='index === "department" && j.departmentName !== "Master Admin"' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
                 <!-- <option v-else value='{}'>1</option> -->
                 <option v-if='index === "designation"' v-for='j in DesignList' :value="j" :key='j.value'>{{ j.label }}</option>
                 <option v-for='j in BundleList' v-if='index === "benefitBundle" && j.label !== "Master Admin"' :value="j" :key='j.value'>{{ j.label }}</option>
                 <option v-if='index === "hierarchyId"' v-for='j in SetHierachy' :value="j" :key='j'>{{ j }}</option>
+                <option v-if='index === "travelDesk"' v-for='j in TravelDeskList' :value="j" :key='j.value'>{{ j.label }}</option>
               </select>
               <div v-if='index === "status"' class='flex justify-evenly items-baseline'>
                 <span class='flex justify-evenly w-50'><input type='radio' name='active'  value='1' v-model='EmpData[index]' >&nbsp;Enable </span>
@@ -102,14 +103,15 @@
        <div class='upload-contanier tc pa1 relative' v-if='ViewType === "Employee" && EmpSub ==="import"'>
           <div>
             <a target="_blank" href='http://www.hobse.com/demo/public_html/csv_template/employee_csv_format.csv'><span class='absolute top-1 right-1'>Format <i class="fa fa-download" aria-hidden="true"></i></span></a>
-            <form id='fileUpload' enctype='multipart/form-data' class='flex flex-column'>
+            <form id='fileUpload' enctype='multipart/form-data' class='flex flex-column' @submit.prevent='FileUpload'>
               <label class='pa3' for='file'>Import Employees</label>
               <input  name='file' id='fileUploadField' type="file" accept=".csv" @change="SetUpload">
+              <div class='flex justify-center items-center pa2' v-if="File !== null && ViewType === 'Employee'">
+                <button class='btn-spl --not-ghost' type='submit' :disabled='DisableAction'>Upload <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
+                <button class='btn-spl ml2' @click='ResetUpload' type='reset' title='Remove the selected files' :disabled='DisableAction'>Cancel Upload</button>
+              </div>
             </form>
-            <div class='flex justify-center items-center pa2' v-if="File !== null && ViewType === 'Employee'">
-              <button class='btn-spl --not-ghost'  @click='FileUpload' :disabled='DisableAction'>Upload <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
-              <button class='btn-spl ml2' @click='ResetUpload' title='Remove the selected files' :disabled='DisableAction'>Cancel Upload</button>
-            </div>
+
           </div>
        </div>
 
@@ -278,7 +280,8 @@ export default {
        EmpSub: 'create',
        Resign: false,
        ResignDate: '',
-       ResignTime: ''
+       ResignTime: '',
+       TravelDeskList: []
 
      }
    },
@@ -368,6 +371,8 @@ export default {
   created(){
     const self = this;
       this.GetBundle(1);
+      this.GetTravelDesk();
+
       //
   },
 
@@ -441,7 +446,8 @@ export default {
               success: function(data, textStatus, jqXHR){
                   self.File = null;
                   self.ResetUpload();
-                if(data.toLowerCase().includes('success')){
+                  let datas = data.toString();
+                if(datas.includes('success')){
                     self.ActionDone();
                     self.flush();
                     
@@ -449,8 +455,22 @@ export default {
                   }else{
                     try{
                       var s = JSON.parse(data);
+                      let csv = s.map(function(x){
+                        return {
+                          Employee_Id: x.employeeId,
+                          First_Name: x.firstName,
+                          Last_Name: x.lastName,
+                          Company_Email: x.email,
+                          Personal_Email: x.personalEmail,
+                          Phone: x.phone,
+                          Department: x.department,
+                          Designation: x.designation,
+                          Join_Date: x.joinDate,
+                          Error: x.Error
+                        }
+                      });
                       self.ThroughAlert('Error in imported CSV','bg-light-red');
-                      self.createCSV(s,"Rectify the Errors, upload this CSV",true);
+                      self.createCSV(csv,"Rectify the Errors, upload this CSV",true);
                     }catch(e){
                       
                      self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
@@ -636,6 +656,7 @@ export default {
             // self.DesignationForm.data = {};
             self.flush();
             self.ActionDone();
+            self.GetTravelDesk();
             self.ThroughAlert(self.ViewType + ' Successfully added.','bg-green');
             
           }else{
@@ -674,6 +695,7 @@ export default {
           if(data.toString().includes('true')){
             self.flush();
             self.ActionDone();
+            self.GetTravelDesk();
             self.$emit("CancelViewType");
             self.ThroughAlert(self.ViewType + ' Successfully updated.','bg-gold');
           }else{
@@ -696,6 +718,7 @@ export default {
               self.flush();
               self.ActionDone();
               self.$emit("CancelViewType");
+              self.GetTravelDesk();
               self.ThroughAlert(self.ViewType + ' Successfully deleted.','bg-light-red');
             }else{
                 self.ThroughAlert(data.split('|')[1],'bg-light-red');
@@ -731,6 +754,17 @@ export default {
       $.post(api.dropdown.bundle,{"dataId":id}).done(function(data){
          try{
            self.BundleList = JSON.parse(data);
+         }catch(e){
+           alert('An Unexpected Error occurred. Please try again');
+         }
+         
+       }).fail(x => alert('Service Not Available due to Network issuse. Please Refresh or Login again.!'));
+     },
+     GetTravelDesk: function(){ //dropdown for the Bundle
+       var self = this
+      $.get(api.travelDeskList).done(function(data){
+         try{
+           self.TravelDeskList = JSON.parse(data);
          }catch(e){
            alert('An Unexpected Error occurred. Please try again');
          }
