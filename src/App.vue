@@ -9,24 +9,30 @@
         </span>
       </div>
       <div class='bl b--light-silver flex justify-center items-center' style='flex:1 0 0;'>
-        <ul class=" flex justify-between w-50">
+        <ul class=" flex justify-between w-75">
           <li><button  class='btn-spl' :class='{"btn-rev" : ActiveView === "Department"}' @click='ActiveView = "Department",ActiveSubView = "Create"'>Department</button></li>
           <li><button class='btn-spl' :class='{"btn-rev" : ActiveView === "Designation"}' @click='ActiveView = "Designation",ActiveSubView = "Create"'>Designation</button></li>
           <li><button class='btn-spl' :class='{"btn-rev" : (ActiveView === "Employee")}' @click='ActiveView = "Employee",ActiveSubView = "Create"'>Employee</button></li>
+          <li><a href='http://www.hobse.com/demo/index.php/customer/customer/policy'><button class='btn-spl' :class='{"btn-rev" : (ActiveView === "Approvals")}' @click='ActiveView = "Approvals",ActiveSubView = "Create"'>Grade Policy</button></a></li>
         </ul>
       </div>
       
     </section>
     <!-- second panel -->
-    <section class='sec2 bb b--light-silver'>
+    <section class='sec2 bb b--light-silver' >
       <!-- <div v-if='SearchString !== ""' class='pa1'>Results for <b>{{ SearchString}}</b> <span @click='SearchString = ""' class='fr gray' style="cursor:pointer;">Clear <b>X</b></span></div> -->
-      <data-table :ListData='SelectedList'
+      <data-table v-if='ActiveView !== "Approvals"'
+                  :ListData='SelectedList'
                   :ViewType='ActiveView'
                   :Query='SearchString'
                   :Extra='DepartList'
                   :subView='ActiveSubView'
                   @rowClicked='setSubView'
                   @ActionDone='GetFreshData'></data-table>
+
+      <Approvals :DesignList='DesignList'
+                 :EmpList='SourceList'
+                 v-if='ActiveView === "Approvals"' />
     </section>
     <!-- Third -->
     <section class='sec3 bl b--light-silver'>
@@ -43,6 +49,7 @@
 </template>
 
 <script>
+import Approvals from '@/components/Approvals'
 import DataTable from './components/DataTable'
 import DataForm from './components/DataForm'
 // import $.get  from '$.get'
@@ -51,7 +58,7 @@ import api from './assets/api'
 export default {
   name: 'App',
   components: {
-    DataTable,DataForm
+    DataTable,DataForm,Approvals
   },
   data(){
     return {
@@ -91,7 +98,7 @@ export default {
           let noApp = data.filter(x => x.approverList.length === 0);
           let App = data.filter(x => x.approverList.length !== 0);
           self.SourceList = noApp.concat(App);
-          console.log(noApp.concat(App));
+          // console.log(noApp.concat(App));
         
       });
       self.getData(api.depart.read,function(data){

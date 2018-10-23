@@ -10,7 +10,7 @@
                   :key='i'
                   class='tl' 
                   :class='{"_flx_15" : index <3,"_flx_1" : index >3,"flex justify-evenly items-center" : ViewType === "Employee" }'>
-                 <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.map(x => x.travelAgencyUsersId)" v-if='List.length > 0 && ViewType === "Employee" && i === "Employee"'>&nbsp;&nbsp;&nbsp;
+                 <span v-if='List.length > 0 && ViewType === "Employee" && i === "Employee"'><input type="checkbox" class='mr2' v-model='SelectAll' :value="List.map(x => x.travelAgencyUsersId)">&nbsp;&nbsp;&nbsp;</span>
                        {{i}}
               </th> 
             </tr>
@@ -117,11 +117,11 @@
         </tbody>
 
       </table>
-      
   </div>
 </template>
 
 <script>
+
 import api from '../assets/api'
 //https://api.myjson.com/bins/xn8bm
 export default {

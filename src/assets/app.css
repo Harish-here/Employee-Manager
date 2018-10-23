@@ -93,3 +93,6 @@ input[type=checkbox], input[type=radio]{
 .no-app{
     border-left: 3px solid #00a0c2;
 }
+.cursor{
+    cursor: pointer;
+}

@@ -37,7 +37,7 @@
                       max='2038-01-01'
                       />
               
-              <select  class='pa1'
+              <select class='pa1'
                       v-model='EmpData[index]'
                       @change='CheckForDep(EmpData[index],index)'
                       v-if='index ==="travelDesk" || index === "department" || index === "designation" || index === "benefitBundle" || index === "hierarchyId"'>
