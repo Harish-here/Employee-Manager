@@ -100,7 +100,7 @@ const DesignationLabel = {
 const Role = [
     { label: 'Employee', value: '3' },
     { label: 'Travel Desk', value: '1' },
-    { label: 'Financier', value: '2' },
+    { label: 'Finance', value: '2' },
     
 ];
 

@@ -14,7 +14,7 @@
     <div class="middle">
       <form>
         <!-- Employee Form View -->
-       <ul class="w100 flex pointer" v-if='ViewType === "Employee"'>
+       <ul class="w100 flex pointer" v-if='ViewType === "Employee" && (SubViewType ==="Create" || SubViewType === "Update" )'>
          <li class="w-50 pa2 tc bb b--light-gray ul-trans"
              @click='EmpSub = "create"'
              :class='{"act-tab" : EmpSub === "create"}'>Create</li>
@@ -22,7 +22,51 @@
              @click='EmpSub = "import"'
              :class='{"act-tab" : EmpSub === "import"}'>Import</li>
        </ul>
-       <ul v-if='ViewType === "Employee" && EmpSub ==="create"'>
+       <!--Employee display view display view-->
+       <ul v-if='ViewType === "Employee" && SubViewType ==="Display"'>
+        <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa2'> 
+          <span class='flex'>
+            <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }}</label>
+            <div class='w-60 flex flex-column pa1'>
+              <span v-if='index !== "department" && index !== "designation" && index !== "approverList" && index !=="travelDesk" && index !== "status"'>{{EmpData[index]}}</span>
+              <span v-if='index === "department"'>{{ EmpData[index].departmentName || '' }}</span>
+              <span v-if='index === "designation"'>{{ EmpData[index].label || '' }}</span>
+              <span v-if='index ==="travelDesk"'>{{ EmpData[index].label || '' }}</span>
+              <span v-if='index === "status"'> {{ (EmpData[index] === '1') ? 'Enable' : 'Disable'}}</span>
+              <div v-if="index === 'approverList'"><!-- approver select -->
+                  <!-- <v-select v-model='EmpData[index]' :options='ApproverData.filter(x => x.value != EmpData["travelAgencyUsersId"])' multiple></v-select> -->
+                  <span v-if='EmpData[index].length > 0'>
+                    <ul class='ba b--light-gray pa1 mt1'>
+                      <li class='gray'>Your approval tree</li>
+                      <li v-for='(i,index) in EmpData[index]' :key="i.value"> {{ index + 1 }} - {{ i.label }}</li>
+                    </ul>
+                  </span>
+                  <span v-else>No approval tree</span>
+              </div>
+            </div>
+          </span>
+        </li>
+        <li v-if='EmpData["resign"] == "1"'>
+          <span class="flex">
+            <label for="" class="w-40 pa1">Resigned</label>
+            <div class="w-60 flex flex-column pa1">Yes</div>
+          </span>
+        </li>
+        <li v-if='EmpData["resign"] == "1"'>
+          <span class="flex">
+            <label for="" class="w-40 pa1">Resigned Date</label>
+            <div class="w-60 flex flex-column pa1">{{ EmpData['resignDate'] }}</div>
+          </span>
+        </li>
+        <li v-if='EmpData["resign"] == "1"'>
+          <span class="flex">
+            <label for="" class="w-40 pa1">Resigned Time</label>
+            <div class="w-60 flex flex-column pa1">{{ EmpData['resignTime'] }}</div>
+          </span>
+        </li>
+       </ul>
+       <!-- Employee create && Employee update -->
+       <ul v-if='ViewType === "Employee" && EmpSub ==="create" && (SubViewType ==="Create" || SubViewType === "Update" )'>
         <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa2'> 
           <span class='flex' >
             <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
@@ -47,7 +91,7 @@
                 <option v-if='index === "designation"' v-for='j in DesignList' :value="j" :key='j.value'>{{ j.label }}</option>
                 <option v-for='j in BundleList' v-if='index === "benefitBundle" && j.label !== "Master Admin"' :value="j" :key='j.value'>{{ j.label }}</option>
                 <option v-if='index === "hierarchyId"' v-for='j in SetHierachy' :value="j" :key='j'>{{ j }}</option>
-                <option v-if='index === "travelDesk"' v-for='j in TravelDeskList' :value="j" :key='j.value'>{{ j.label }}</option>
+                <option  v-for='j in TravelDeskList' v-if='index === "travelDesk" && j.value !== EmpData["travelAgencyUsersId"]' :value="j" :key='j.value'>{{ j.label }}</option>
               </select>
               <div v-if='index === "status"' class='flex justify-evenly items-baseline'>
                 <span class='flex justify-evenly w-50'><input type='radio' name='active'  value='1' v-model='EmpData[index]' >&nbsp;Enable </span>
@@ -58,7 +102,10 @@
                   <span v-if='EmpData[index].length > 0'>
                     <ul class='ba b--light-gray pa1 mt1'>
                       <li class='gray'>Your approval tree</li>
-                      <li v-for='(i,index) in EmpData[index]' :key="i.value"> {{ index + 1 }} - {{ i.label }}</li>
+                      <draggable v-model="EmpData[index]" :options="{group:'people'}" @start="drag=true" @end="drag=false">
+                        <li v-for='(i,index) in EmpData[index]' :key="i.value" class='pa1 drag-cur'><i class="fa fa-bars" aria-hidden="true"></i> {{ i.label }} <span class='fr badge badge-primary'>{{ index + 1 }}</span></li>
+                      </draggable>
+                      
                     </ul>
                   </span>
               </div>
@@ -95,12 +142,12 @@
           <span class='flex'>
             <label class="w-40 pa1">Resignation Time</label>
             <div class="w-60 flex flex-column">
-              <input v-model='EmpData.resignTime' type='time' name='resignTime' />
+              <input v-model='EmpData.resignTime' type='text' name='resignTime' />
             </div>
           </span>
         </li>
        </ul>
-       <div class='upload-contanier tc pa1 relative' v-if='ViewType === "Employee" && EmpSub ==="import"'>
+       <div class='upload-contanier tc pa1 relative' v-if='ViewType === "Employee" && EmpSub ==="import" && (SubViewType ==="Create" || SubViewType === "Update" )'>
           <div>
             <a target="_blank" href='http://www.hobse.com/demo/public_html/csv_template/employee_csv_format.csv'><span class='absolute top-1 right-1'>Format <i class="fa fa-download" aria-hidden="true"></i></span></a>
             <form id='fileUpload' enctype='multipart/form-data' class='flex flex-column' @submit.prevent='FileUpload'>
@@ -114,9 +161,10 @@
 
           </div>
        </div>
+        <!-- End of employee -->
 
         <!-- Department Form View -->
-       <ul v-if='ViewType === "Department"'>
+       <ul v-if='ViewType === "Department" && (SubViewType ==="Create" || SubViewType === "Update" )'>
         <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa2'> 
           <span class='flex' >
             <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }} <sup class='b6'>*</sup></label>
@@ -137,10 +185,24 @@
                 </transition>
             </div>
           </span>
-          </li>
+        </li>
        </ul>
+        <!-- Department Display View -->
+       <ul v-if='ViewType === "Department" && SubViewType === "Display"'>
+        <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa2'> 
+          <span class='flex' >
+            <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }}</label>
+            <div class='w-60 flex flex-column pa1'>
+              {{DepData[index]}}
+            </div>
+          </span>
+        </li>
+       </ul>
+
+
+
        <!-- Designation Form View -->
-       <ul v-if='ViewType === "Designation"'>
+       <ul v-if='ViewType === "Designation" && (SubViewType ==="Create" || SubViewType === "Update" )'>
         <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa2'> 
           <span class='flex' >
             <label class='fl w-40 pa1'>{{ DesignationForm.label[index].label }} <sup class='b6'>*</sup></label>
@@ -188,15 +250,31 @@
           </span>
         </li>
        </ul>
+       <!-- Designation display view -->
+       <ul v-if='ViewType === "Designation" && SubViewType === "Display"'>
+        <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa2'> 
+          <span class='flex' >
+            <label class='fl w-40 pa1'>{{ DesignationForm.label[index].label }} <sup class='b6'>*</sup></label>
+            <div class='w-60 flex flex-column pa1'>
+              <span v-if='index !== "department" && index !== "benefitBundle" && index !== "role"
+                     && index !== "reservHandle" && index !== "bookRoomPersion" && index !== "rightsHotel"'>{{DesData[index]}}</span>
+              <span v-if='index === "department"'>{{ DesData[index].departmentName}}</span>
+              <span v-if='index === "benefitBundle" || index === "role"
+                    || index === "reservHandle" || index === "bookRoomPersion" || index === "rightsHotel" '>{{ DesData[index].label}}</span>
+              
+            </div>
+          </span>
+        </li>
+       </ul>
        </form>
     </div>
-
+    <!-- button section -->
     <div class="footer bt b--light-silver flex justify-center items-center">
       <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType !== 'Employee'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button>
       <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType === 'Employee' && File === null && EmpSub ==='create'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
       <button class="btn-spl --not-ghost" @click='ResignEmployee' v-if='ShowResign && SubViewType !== "Create"'>Resign this Employee</button>
       <button class='btn-spl --not-ghost' v-if="SubViewType === 'Update' && !ShowResign" @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
-      <button class='btn-spl' v-if="SubViewType === 'Update' && !ShowResign" @click='$emit("CancelViewType")' :disabled='DisableAction'>Cancel</button>
+      <button class='btn-spl' v-if="(SubViewType === 'Update'   || SubViewType === 'Display') && !ShowResign" @click='$emit("CancelViewType")' :disabled='DisableAction'><span v-if='SubViewType === "Update"'>Cancel</span><span v-else>Back to create</span></button>
       <button class='btn-spl btn-dlt' v-if="SubViewType === 'Update' && !ShowResign" @click='DeleteData' :disabled='DisableAction'>Delete <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
       
     </div>
@@ -209,20 +287,21 @@ import axios from 'axios'
 import struct from '../assets/formData'
 import api from '../assets/api'
 import vSelect from 'vue-select'
+import draggable from 'vuedraggable'
 // import { fail } from 'assert';
 
 
 export default {
   name: 'DataForm',
-  components: { vSelect },
+  components: { vSelect,draggable },
   props: {
     ViewType : {
         type: String,
         default: 'Employee'
     },
-    SubViewType : {
-        type: String,
-        default: 'Create'
+    SubViewType: {
+      type: String,
+      default: 'Create'
     },
     ActiveData : {
         type: Object,
@@ -253,6 +332,7 @@ export default {
    data: function(){
     //  var self = this
      return {
+      //  SubViewType: 'Create',
        EmployeeForm : { 
          data: JSON.parse(JSON.stringify(struct.employee.data)),
          label: struct.employee.label
@@ -447,7 +527,7 @@ export default {
                   self.File = null;
                   self.ResetUpload();
                   let datas = data.toString();
-                if(datas.includes('success')){
+                if(datas.includes('true')){
                     self.ActionDone();
                     self.flush();
                     
@@ -469,10 +549,11 @@ export default {
                           Error: x.Error
                         }
                       });
+                      self.ActionDone();
                       self.ThroughAlert('Error in imported CSV','bg-light-red');
                       self.createCSV(csv,"Rectify the Errors, upload this CSV",true);
                     }catch(e){
-                      
+                     self.ActionDone();
                      self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
                     }
                     
@@ -560,12 +641,23 @@ export default {
       },
      ThroughAlert: function(msg,cls){
        var self = this;
-       this.AlertMsg = msg;
-       this.AlertCls = cls;
-       this.ShowAlert = true;
-       setTimeout(function(){ 
-         self.ShowAlert=false;
-          },4500)
+      //  this.AlertMsg = msg;
+      //  this.AlertCls = cls;
+      //  this.ShowAlert = true;
+      //  setTimeout(function(){ 
+      //    self.ShowAlert=false;
+      //     },4500)
+      
+      if(cls == 'bg-green'){
+           alertify.success(msg);
+       }else{
+         if(cls == 'bg-light-red'){
+           alertify.error(msg);
+         }else{
+           alertify.warning(msg);
+         }
+           
+       }
        self.DisableAction = false;
      },
      
@@ -831,5 +923,8 @@ export default {
 li.ul-trans {
   transition: all 250ms ease-in-out;
   border-bottom: 3px solid transparent;
+}
+.drag-cur{
+  cursor: move;
 }
 </style>

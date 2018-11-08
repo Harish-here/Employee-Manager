@@ -10,7 +10,8 @@
                   :key='i'
                   class='tl' 
                   :class='{"_flx_15" : index <3,"_flx_1" : index >3,"flex justify-evenly items-center" : ViewType === "Employee" }'>
-                 <span v-if='List.length > 0 && ViewType === "Employee" && i === "Employee"'><input type="checkbox" class='mr2' v-model='SelectAll' :value="List.map(x => x.travelAgencyUsersId)">&nbsp;&nbsp;&nbsp;</span>
+                 <span v-if='List.length > 0 && ViewType === "Employee" && i === "Employee"'>
+                     <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.filter(x =>  x.department.departmentName != 'Master Admin').map(y => y.travelAgencyUsersId)">&nbsp;&nbsp;&nbsp;</span>
                        {{i}}
               </th> 
             </tr>
@@ -59,11 +60,17 @@
                 <td class='_flx_1' :class='{"light-red": i.benefitBundle === null}'>{{ (i.benefitBundle !== null) ? i.benefitBundle.label : 'Unassigned' }}</td>
                 <!-- <td class='_flx_1 tc' :class='{"light-red": i.hierarchyId === null}'>{{ (i.hierarchyId !== null) ? i.hierarchyId : 'Unassigned' }}</td> -->
                 <td class='_flx_1'>
-                    <button class="btn btn-xs btn-primary"
+                    <button class="btn-spl"
                             v-if='i.department !== null && i.department.departmentName !== "Master Admin"'
-                            @click='sendThis(i)'>
+                            @click='sendThis(i,"Update")'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                         Edit
+                    </button>
+                    <button class="btn-spl"
+                            
+                            @click='sendThis(i,"Display")'>
+                        <i class="fa fa-eye" aria-hidden="true"></i>
+                        View
                     </button>
                     <!-- <input type="checkbox" :checked='(i.active === "1")' data-toggle="toggle" data-on="active" data-off='disabled' data-size='mini'> -->
                 </td>
@@ -81,18 +88,25 @@
                 <td class="_flx_15">{{ i.departmentName }}</td>
                 <td class="_flx_15">{{ i.departmentCode }}</td>
                 <td class='_flx_15'>
-                   <button class="btn btn-xs btn-primary"
+                   <button class="btn-spl"
                            v-if='i.departmentName !== "Master Admin"'
-                           @click='sendThis(i)'>
+                           @click='sendThis(i,"Update")'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                         Edit
                     </button>
+                   <button class="btn-spl"
+                           v-if='i.departmentName !== "Master Admin"'
+                           @click='sendThis(i,"Display")'>
+                        <i class="fa fa-eye" aria-hidden="true"></i>
+                        View
+                    </button>                    
                 </td>
              </tr>
              <tr class='flex justify-center bb b--light-silver' v-if='List.length === 0'>
                 <td colspan='6' class='gray tc w-100'>No Departments Available</td>
             </tr>
         </tbody>
+        <!-- Designation -->
         <tbody v-if='ViewType === "Designation"'>
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
@@ -103,11 +117,17 @@
                 <td class="_flx_15">{{ i.department.departmentName }}</td>                
                 <td class="_flx_15">{{ i.benefitBundle.label }}</td>
                 <td class='_flx_1'>
-                    <button class="btn btn-xs btn-primary"
+                    <button class="btn-spl"
                             v-if="i.designationName !== 'Master Admin'"
-                            @click='sendThis(i)'>
+                            @click='sendThis(i,"Update")'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                         Edit
+                    </button>
+                    <button class="btn-spl"
+                            
+                            @click='sendThis(i,"Display")'>
+                        <i class="fa fa-eye" aria-hidden="true"></i>
+                        view
                     </button>
                 </td>
              </tr>
@@ -242,9 +262,10 @@ export default {
   },
 
   methods: {
-      sendThis: function(data){
+      sendThis: function(data,type){
+          type = type || 'Display';
           this.ActiveRow = data; 
-          this.$emit('rowClicked',JSON.parse(JSON.stringify(data)));
+          this.$emit('rowClicked',{data:JSON.parse(JSON.stringify(data)),view: type});
       },
       DeleteAll: function(){
           var self = this;
@@ -307,13 +328,18 @@ export default {
          }
      },
      ThroughAlert: function(msg,cls){
-       var self = this;
-       this.AlertMsg = msg;
-       this.AlertCls = cls;
-       this.ShowAlert = true;
-       setTimeout(function(){ 
-         self.ShowAlert=false;
-          },2500)
+    //    var self = this;
+    //    this.AlertMsg = msg;
+    //    this.AlertCls = cls;
+    //    this.ShowAlert = true;
+    //    setTimeout(function(){ 
+    //      self.ShowAlert=false;
+    //       },2500)
+       if(cls === 'bg-green'){
+           alertify.success(msg);
+       }else{
+           alertify.error(msg);
+       }
      },
   }
 }

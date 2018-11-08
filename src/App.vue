@@ -10,13 +10,12 @@
       </div>
       <div class='bl b--light-silver flex justify-center items-center' style='flex:1 0 0;'>
         <ul class=" flex justify-between w-75">
+          <li><a href='http://www.hobse.com/demo/index.php/customer/customer/policy'><button class='btn-spl' >Grade Policy</button></a></li>
           <li><button  class='btn-spl' :class='{"btn-rev" : ActiveView === "Department"}' @click='ActiveView = "Department",ActiveSubView = "Create"'>Department</button></li>
           <li><button class='btn-spl' :class='{"btn-rev" : ActiveView === "Designation"}' @click='ActiveView = "Designation",ActiveSubView = "Create"'>Designation</button></li>
           <li><button class='btn-spl' :class='{"btn-rev" : (ActiveView === "Employee")}' @click='ActiveView = "Employee",ActiveSubView = "Create"'>Employee</button></li>
-          <li><a href='http://www.hobse.com/demo/index.php/customer/customer/policy'><button class='btn-spl' :class='{"btn-rev" : (ActiveView === "Approvals")}' @click='ActiveView = "Approvals",ActiveSubView = "Create"'>Grade Policy</button></a></li>
         </ul>
       </div>
-      
     </section>
     <!-- second panel -->
     <section class='sec2 bb b--light-silver' >
@@ -86,8 +85,8 @@ export default {
 
   methods: {
     setSubView: function(data){
-      this.ActiveViewData = data;
-      this.ActiveSubView = 'Update';
+      this.ActiveViewData = data.data;
+      this.ActiveSubView = data.view;
     },
     SetDelete : function(data){
       this.ToDelete = data;
@@ -95,9 +94,10 @@ export default {
     GetFreshData: function(){
       var self = this;
       self.getData(api.emp.read,function(data){
-          let noApp = data.filter(x => x.approverList.length === 0);
-          let App = data.filter(x => x.approverList.length !== 0);
-          self.SourceList = noApp.concat(App);
+          let resign = data.filter(x => x.resign === '1');
+          let noApp = data.filter(x => x.approverList.length === 0 && x.resign !== '1');
+          let App = data.filter(x => x.approverList.length !== 0 && x.resign !== '1');
+          self.SourceList = noApp.concat(App,resign);
           // console.log(noApp.concat(App));
         
       });
