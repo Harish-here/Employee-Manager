@@ -80,7 +80,7 @@ input[disabled],select[disabled],button[disabled]{
 
 sup{
     top:1px !important;
-    font-size: 16px !important;
+    font-size: 12px !important;
     color:red;
 }
 /* to over come bootstrap */

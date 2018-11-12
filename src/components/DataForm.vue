@@ -12,7 +12,7 @@
     </div>
     
     <div class="middle">
-      <form>
+      <!-- <form> -->
         <!-- Employee Form View -->
        <ul class="w100 flex pointer" v-if='ViewType === "Employee" && (SubViewType ==="Create" || SubViewType === "Update" )'>
          <li class="w-50 pa2 tc bb b--light-gray ul-trans"
@@ -26,12 +26,12 @@
        <ul v-if='ViewType === "Employee" && SubViewType ==="Display"'>
         <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa2'> 
           <span class='flex'>
-            <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }}</label>
+            <label class='w-40 pa1'>{{ i.label }}</label>
             <div class='w-60 flex flex-column pa1'>
               <span v-if='index !== "department" && index !== "designation" && index !== "approverList" && index !=="travelDesk" && index !== "status"'>{{EmpData[index]}}</span>
               <span v-if='index === "department"'>{{ EmpData[index].departmentName || '' }}</span>
               <span v-if='index === "designation"'>{{ EmpData[index].label || '' }}</span>
-              <span v-if='index ==="travelDesk"'>{{ EmpData[index].label || '' }}</span>
+              <span v-if='index ==="travelDesk"'>{{ (EmpData[index].label !== undefined ) ? EmpData[index].label : "" }}</span>
               <span v-if='index === "status"'> {{ (EmpData[index] === '1') ? 'Enable' : 'Disable'}}</span>
               <div v-if="index === 'approverList'"><!-- approver select -->
                   <!-- <v-select v-model='EmpData[index]' :options='ApproverData.filter(x => x.value != EmpData["travelAgencyUsersId"])' multiple></v-select> -->
@@ -68,7 +68,7 @@
        <!-- Employee create && Employee update -->
        <ul v-if='ViewType === "Employee" && EmpSub ==="create" && (SubViewType ==="Create" || SubViewType === "Update" )'>
         <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa2'> 
-          <span class='flex' >
+          <span class='flex items-baseline' >
             <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
             <div class='w-60 flex flex-column'>
               <input class='pa1'
@@ -122,7 +122,7 @@
           </span>
         </li>
         <li class="pa2" v-if="SubViewType !== 'Create'">
-          <span class="flex">
+          <span class="flex items-baseline">
             <label for="" class="w-40 pa1">Resignation</label>
             <div class="w-60 flex">
               <span class='w-50 pa1 flex justify-around'><input v-model='EmpData.resign' type="radio" value='0'><span> No</span></span>
@@ -131,7 +131,7 @@
           </span>
         </li>
         <li class='pa2' v-if='EmpData.resign == "1"'>
-          <span class='flex'>
+          <span class='flex items-baseline'>
             <label class="w-40 pa1">Resignation Date</label>
             <div class="w-60 flex flex-column">
               <input v-model='EmpData.resignDate' type="date" name='resignDate' />
@@ -139,7 +139,7 @@
           </span>
         </li>
         <li class='pa2' v-if='EmpData.resign == "1"'>
-          <span class='flex'>
+          <span class='flex items-baseline'>
             <label class="w-40 pa1">Resignation Time</label>
             <div class="w-60 flex flex-column">
               <input v-model='EmpData.resignTime' type='text' name='resignTime' />
@@ -166,7 +166,7 @@
         <!-- Department Form View -->
        <ul v-if='ViewType === "Department" && (SubViewType ==="Create" || SubViewType === "Update" )'>
         <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa2'> 
-          <span class='flex' >
+          <span class='flex items-baseline' >
             <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }} <sup class='b6'>*</sup></label>
             <div class='w-60 flex flex-column'>
               <input class='pa1' 
@@ -190,7 +190,7 @@
         <!-- Department Display View -->
        <ul v-if='ViewType === "Department" && SubViewType === "Display"'>
         <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa2'> 
-          <span class='flex' >
+          <span class='flex items-baseline' >
             <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }}</label>
             <div class='w-60 flex flex-column pa1'>
               {{DepData[index]}}
@@ -266,7 +266,7 @@
           </span>
         </li>
        </ul>
-       </form>
+       <!-- </form> -->
     </div>
     <!-- button section -->
     <div class="footer bt b--light-silver flex justify-center items-center">
@@ -537,9 +537,9 @@ export default {
                       var s = JSON.parse(data);
                       let csv = s.map(function(x){
                         return {
-                          Employee_Id: x.employeeId,
                           First_Name: x.firstName,
                           Last_Name: x.lastName,
+                          Employee_Id: x.employeeId,
                           Company_Email: x.email,
                           Personal_Email: x.personalEmail,
                           Phone: x.phone,
