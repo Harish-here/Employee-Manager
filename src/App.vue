@@ -1,20 +1,49 @@
 <template>
   <div class="app">
+    <section class='sec4 br b--light-silver' id='sidebar'>
+      <ul class="flex flex-column-reverse" >
+          <li class='p10-20 centering'>
+            <a style="text-align:center" href='http://www.hobse.com/demo/index.php/customer/customer/policy'>
+            <span class='tc'>
+              <i class="fa fa-cog" aria-hidden="true"></i><br>
+              Grade Policy
+            </span> </a>
+          </li>
+          <li class='p10-20 centering'
+              :class='{"btn-rev" : ActiveView === "Department"}' @click='ActiveView = "Department",ActiveSubView = "Create"'>
+            <span class='tc'>
+              <i class="fa fa-briefcase" aria-hidden="true"></i><br>
+              Department
+            </span>
+          </li>
+          <li class='p10-20 centering'
+              :class='{"btn-rev" : ActiveView === "Designation"}' @click='ActiveView = "Designation",ActiveSubView = "Create"'>
+            <span class='tc'>
+              <i class="fa fa-briefcase" aria-hidden="true"></i><br>
+              Designation
+            </span>
+          </li>
+          <li class='p10-20 centering'
+              :class='{"btn-rev" : (ActiveView === "Employee")}' @click='ActiveView = "Employee",ActiveSubView = "Create"'>
+            <span class='tc'>
+              <i class="fa fa-user" aria-hidden="true"></i><br>
+              Employee
+            </span>
+          </li>
+      </ul>
+    </section>
     <!-- first panel -->
-    <section class='sec1 bb b--light-silver flex items-stretch' >
-      <div class=' w-30 flex justify-center items-center' >
-        <span class='flex  .items-stretch ba b--light-silver w-80'>
+    <section class='sec1 bb b--light-silver' >
+      <div class='fl w-40 pa3'>
+        {{ SelectedList.length }} {{ActiveView + '(s)'}} found.
+      </div>
+      <div class='fr w-40 pa3'>
+      <div class=' w-100 flex justify-center items-center' >
+        <span class='flex ba b--light-silver w-80'>
           <input type="text" v-model="SearchString" style="border:0;outline:none;" placeholder="Search records" class='pa2 w-80'>
           <i class="fa fa-search pa2 w-20 tc" aria-hidden="true"></i>
         </span>
       </div>
-      <div class='bl b--light-silver flex justify-center items-center' style='flex:1 0 0;'>
-        <ul class=" flex justify-between w-75">
-          <li><a href='http://www.hobse.com/demo/index.php/customer/customer/policy'><button class='btn-spl' >Grade Policy</button></a></li>
-          <li><button  class='btn-spl' :class='{"btn-rev" : ActiveView === "Department"}' @click='ActiveView = "Department",ActiveSubView = "Create"'>Department</button></li>
-          <li><button class='btn-spl' :class='{"btn-rev" : ActiveView === "Designation"}' @click='ActiveView = "Designation",ActiveSubView = "Create"'>Designation</button></li>
-          <li><button class='btn-spl' :class='{"btn-rev" : (ActiveView === "Employee")}' @click='ActiveView = "Employee",ActiveSubView = "Create"'>Employee</button></li>
-        </ul>
       </div>
     </section>
     <!-- second panel -->
@@ -172,4 +201,5 @@ export default {
   padding:5px;
   border: 1px solid  rgba(13, 37, 69, .1);
 } */
+ 
 </style>

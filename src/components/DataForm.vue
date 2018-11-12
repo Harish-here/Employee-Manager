@@ -23,11 +23,11 @@
              :class='{"act-tab" : EmpSub === "import"}'>Import</li>
        </ul>
        <!--Employee display view display view-->
-       <ul v-if='ViewType === "Employee" && SubViewType ==="Display"'>
+       <ul v-if='ViewType === "Employee" && SubViewType ==="Display"' class='pa3'>
         <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa2'> 
-          <span class='flex'>
+          <span class='flex flex-column'>
             <label class='w-40 pa1'>{{ i.label }}</label>
-            <div class='w-60 flex flex-column pa1'>
+            <div class='w-100 flex flex-column pa1'>
               <span v-if='index !== "department" && index !== "designation" && index !== "approverList" && index !=="travelDesk" && index !== "status"'>{{EmpData[index]}}</span>
               <span v-if='index === "department"'>{{ EmpData[index].departmentName || '' }}</span>
               <span v-if='index === "designation"'>{{ EmpData[index].label || '' }}</span>
@@ -66,11 +66,11 @@
         </li>
        </ul>
        <!-- Employee create && Employee update -->
-       <ul v-if='ViewType === "Employee" && EmpSub ==="create" && (SubViewType ==="Create" || SubViewType === "Update" )'>
+       <ul v-if='ViewType === "Employee" && EmpSub ==="create" && (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
         <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa2'> 
-          <span class='flex items-baseline' >
+          <span class='flex flex-column items-baseline' >
             <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
-            <div class='w-60 flex flex-column'>
+            <div class='w-100 flex flex-column'>
               <input class='pa1'
                       v-if='index !=="travelDesk" && index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
                       v-model='EmpData[index]' 
@@ -164,11 +164,11 @@
         <!-- End of employee -->
 
         <!-- Department Form View -->
-       <ul v-if='ViewType === "Department" && (SubViewType ==="Create" || SubViewType === "Update" )'>
+       <ul v-if='ViewType === "Department" && (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
         <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa2'> 
-          <span class='flex items-baseline' >
+          <span class='flex flex-column items-baseline' >
             <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }} <sup class='b6'>*</sup></label>
-            <div class='w-60 flex flex-column'>
+            <div class='w-100 flex flex-column'>
               <input class='pa1' 
                      v-model='DepData[index]' 
                      :type='DepartmentForm.label[index].type'
@@ -188,9 +188,9 @@
         </li>
        </ul>
         <!-- Department Display View -->
-       <ul v-if='ViewType === "Department" && SubViewType === "Display"'>
+       <ul v-if='ViewType === "Department" && SubViewType === "Display"' class='pa3'>
         <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa2'> 
-          <span class='flex items-baseline' >
+          <span class='flex flex-column items-baseline' >
             <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }}</label>
             <div class='w-60 flex flex-column pa1'>
               {{DepData[index]}}
@@ -202,11 +202,11 @@
 
 
        <!-- Designation Form View -->
-       <ul v-if='ViewType === "Designation" && (SubViewType ==="Create" || SubViewType === "Update" )'>
+       <ul v-if='ViewType === "Designation" && (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
         <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa2'> 
-          <span class='flex' >
-            <label class='fl w-40 pa1'>{{ DesignationForm.label[index].label }} <sup class='b6'>*</sup></label>
-            <div class='w-60 flex flex-column'>
+          <span class='flex  flex-column' >
+            <label class='fl w-90 pa1'>{{ DesignationForm.label[index].label }} <sup class='b6'>*</sup></label>
+            <div class='w-100 flex'>
               <input v-if='index === "designationCode" || index === "designationName"' 
                     class='fl pa1'
                     @blur='Validate(index,DesignationForm.label[index])'
@@ -251,11 +251,11 @@
         </li>
        </ul>
        <!-- Designation display view -->
-       <ul v-if='ViewType === "Designation" && SubViewType === "Display"'>
+       <ul v-if='ViewType === "Designation" && SubViewType === "Display"' class='pa3'>
         <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa2'> 
-          <span class='flex' >
+          <span class='flex flex-column' >
             <label class='fl w-40 pa1'>{{ DesignationForm.label[index].label }} <sup class='b6'>*</sup></label>
-            <div class='w-60 flex flex-column pa1'>
+            <div class='w-100 flex  pa1'>
               <span v-if='index !== "department" && index !== "benefitBundle" && index !== "role"
                      && index !== "reservHandle" && index !== "bookRoomPersion" && index !== "rightsHotel"'>{{DesData[index]}}</span>
               <span v-if='index === "department"'>{{ DesData[index].departmentName}}</span>

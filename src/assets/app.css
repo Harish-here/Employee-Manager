@@ -1,10 +1,10 @@
 .app {
     display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr;
+    grid-template-columns: .4fr 1.5fr 1fr 1fr;
     grid-template-rows : 55px 45% 45%;
-    grid-template-areas:"a a c"
-                        "b b c"
-                        "b b c";
+    grid-template-areas:"d a a c"
+                        "d b b c"
+                        "d b b c";
     height: 580px;
     box-shadow: 0px 1px 3px 0px rgba(13, 37, 69, .1);
     border: 1px solid  rgba(13, 37, 69, .1);
@@ -14,27 +14,28 @@
   }
 table{font-size: 12px;}
 .page{  padding: 2em 2em; }
-.sec1{  grid-area: a; }
-.sec2{ grid-area: b; }
-.sec3{ grid-area: c; }
+.sec1{  grid-area: a; margin-left:20px; }
+.sec2{ grid-area: b; margin-left:20px; }
+.sec3{ grid-area: c; margin-right:20px; }
+.sec4{grid-area:d}
 .b--light-silver{border-color: #e7e7e7;}
 ul li ,ul{list-style: none; margin:0px ;padding:0px;}
 
 .btn-rev{
-    background: #00a0c2 !important;
+    background: #1a73e8b8 !important;
     color: #fff !important;  
 }
 .btn-spl{
     background-color: #fff;
-    color:#00a0c2;
+    color:#1a73e8b8;
     padding: 4px 8px;
     border-radius: 2px;
     cursor: pointer;
-    border: 1px solid #00a0c2;
+    border: 1px solid #1a73e8b8;
 }
 .--not-ghost{
    color: #fff;
-   background-color:#00a0c2;
+   background-color:#1a73e8b8;
 }
 .btn-dlt{
     background-color: red;
@@ -65,7 +66,7 @@ ul li ,ul{list-style: none; margin:0px ;padding:0px;}
 .app select, .app input[type='text'],.app input[type='email'],.app input[type='number'],.app input[type='date'],.app input[type='time']{ height:28px !important;width:100% !important; }
 .opa{ opacity: 0.5;}
 .custom__tag {
-    background-color: #00a0c2;
+    background-color: #1a73e8b8;
     color: #fff;
     border-radius: 25% 25% 25% 25%;
     padding: 2px;
@@ -91,8 +92,31 @@ input[type=checkbox], input[type=radio]{
     background-color: #ff725c61;
 }
 .no-app{
-    border-left: 3px solid #00a0c2;
+    border-left: 3px solid #1a73e8b8;
 }
 .cursor{
     cursor: pointer;
 }
+
+#sidebar span  i{
+    font-size:22px !important;
+  }
+  #sidebar  li > a{
+    text-decoration: none !important;
+    color:inherit;
+  }
+  .p10-20{
+    padding:10px 20px;
+  }
+  .centering{
+        display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 90px;
+      font-weight:600;
+      cursor: pointer;
+      color:#1a73e8b8;
+  }
+  a > span >  {
+      text-align: center;
+  }

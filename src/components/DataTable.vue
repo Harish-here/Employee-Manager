@@ -64,13 +64,13 @@
                             v-if='i.department !== null && i.department.departmentName !== "Master Admin"'
                             @click='sendThis(i,"Update")'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
-                        Edit
+                        
                     </button>
                     <button class="btn-spl"
                             
                             @click='sendThis(i,"Display")'>
                         <i class="fa fa-eye" aria-hidden="true"></i>
-                        View
+                        
                     </button>
                     <!-- <input type="checkbox" :checked='(i.active === "1")' data-toggle="toggle" data-on="active" data-off='disabled' data-size='mini'> -->
                 </td>
@@ -92,13 +92,13 @@
                            v-if='i.departmentName !== "Master Admin"'
                            @click='sendThis(i,"Update")'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
-                        Edit
+                        
                     </button>
                    <button class="btn-spl"
                            v-if='i.departmentName !== "Master Admin"'
                            @click='sendThis(i,"Display")'>
                         <i class="fa fa-eye" aria-hidden="true"></i>
-                        View
+                        
                     </button>                    
                 </td>
              </tr>
@@ -121,13 +121,13 @@
                             v-if="i.designationName !== 'Master Admin'"
                             @click='sendThis(i,"Update")'>
                         <i class="fa fa-pencil" aria-hidden="true"></i>
-                        Edit
+                        
                     </button>
                     <button class="btn-spl"
                             
                             @click='sendThis(i,"Display")'>
                         <i class="fa fa-eye" aria-hidden="true"></i>
-                        view
+                        
                     </button>
                 </td>
              </tr>
@@ -350,7 +350,7 @@ export default {
  height: 100%;
 }
 table{
-    height: 100%;
+    height:100%;
     display: -webkit-flex;
     display: flex;
     flex-direction: column;
