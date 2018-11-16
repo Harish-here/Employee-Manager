@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <section class='sec4 br b--light-silver' id='sidebar'>
+    <section class='sec4 br b--light-silver  ghost-white' id='sidebar'>
       <ul class="flex flex-column-reverse" >
           <li class='p10-20 centering'>
             <a style="text-align:center" href='http://www.hobse.com/demo/index.php/customer/customer/policy'>
@@ -35,7 +35,7 @@
     <!-- first panel -->
     <section class='sec1 bb b--light-silver' >
       <div class='fl w-40 pa3'>
-        {{ SelectedList.length }} {{ActiveView + '(s)'}} found.
+        {{ Found }} {{ActiveView + '(s)'}} found.
       </div>
       <div class='fr w-40 pa3'>
       <div class=' w-100 flex justify-center items-center' >
@@ -56,6 +56,7 @@
                   :Extra='DepartList'
                   :subView='ActiveSubView'
                   @rowClicked='setSubView'
+                  @ListChanged ="SetLength"
                   @ActionDone='GetFreshData'></data-table>
 
       <Approvals :DesignList='DesignList'
@@ -100,6 +101,7 @@ export default {
       ActiveViewData : {},
       SearchString: '',
       BtnClass: 'f6 dim br2 ph3 pv2 mb2 dib white bg-dark-blue',
+      Found: 0,
       
     }
   },
@@ -113,6 +115,9 @@ export default {
   },
 
   methods: {
+    SetLength: function(data){
+      this.Found = data;
+    },
     setSubView: function(data){
       this.ActiveViewData = data.data;
       this.ActiveSubView = data.view;

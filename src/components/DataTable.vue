@@ -221,6 +221,13 @@ export default {
               this.ActiveRow = {};
           }
           
+      },
+      'List':{
+          immediate: true,
+          handler:  function(arr){
+                this.$emit('ListChanged',arr.length);
+                //emitting the new value array length
+            }
       }
   },
 

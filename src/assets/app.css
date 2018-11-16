@@ -1,6 +1,6 @@
 .app {
     display: grid;
-    grid-template-columns: .4fr 1.5fr 1fr 1fr;
+    grid-template-columns: .3fr 1.5fr 1fr 1fr;
     grid-template-rows : 55px 45% 45%;
     grid-template-areas:"d a a c"
                         "d b b c"
@@ -14,28 +14,28 @@
   }
 table{font-size: 12px;}
 .page{  padding: 2em 2em; }
-.sec1{  grid-area: a; margin-left:20px; }
-.sec2{ grid-area: b; margin-left:20px; }
+.sec1{  grid-area: a; margin-left:20px;margin-right:20px; }
+.sec2{ grid-area: b; margin-left:20px;margin-right:20px; }
 .sec3{ grid-area: c; margin-right:20px; }
 .sec4{grid-area:d}
 .b--light-silver{border-color: #e7e7e7;}
 ul li ,ul{list-style: none; margin:0px ;padding:0px;}
 
 .btn-rev{
-    background: #1a73e8b8 !important;
+    background: #467eae !important;
     color: #fff !important;  
 }
 .btn-spl{
     background-color: #fff;
-    color:#1a73e8b8;
+    color:#467eae;
     padding: 4px 8px;
     border-radius: 2px;
     cursor: pointer;
-    border: 1px solid #1a73e8b8;
+    border: 1px solid #467eae;
 }
 .--not-ghost{
    color: #fff;
-   background-color:#1a73e8b8;
+   background-color:#467eae;
 }
 .btn-dlt{
     background-color: red;
@@ -63,10 +63,14 @@ ul li ,ul{list-style: none; margin:0px ;padding:0px;}
 .dlt{ visibility: hidden; }
 .dlt:hover{visibility: visible;}
 .red{ background-color: #fff !important; }
-.app select, .app input[type='text'],.app input[type='email'],.app input[type='number'],.app input[type='date'],.app input[type='time']{ height:28px !important;width:100% !important; }
+.app select, .app input[type='text'],.app input[type='email'],.app input[type='number'],.app input[type='date'],.app input[type='time']{
+     height:24px !important;width:100% !important;
+     border: 1px solid transparent;
+     border-bottom: 1px solid gray;
+     }
 .opa{ opacity: 0.5;}
 .custom__tag {
-    background-color: #1a73e8b8;
+    background-color: #467eae;
     color: #fff;
     border-radius: 25% 25% 25% 25%;
     padding: 2px;
@@ -92,7 +96,7 @@ input[type=checkbox], input[type=radio]{
     background-color: #ff725c61;
 }
 .no-app{
-    border-left: 3px solid #1a73e8b8;
+    border-left: 3px solid #467eae;
 }
 .cursor{
     cursor: pointer;
@@ -115,8 +119,15 @@ input[type=checkbox], input[type=radio]{
       height: 90px;
       font-weight:600;
       cursor: pointer;
-      color:#1a73e8b8;
+      color:#467eae;
   }
   a > span >  {
       text-align: center;
   }
+label{
+    font-weight:400 !important;
+  }
+  .ghost-white{
+      background-color: ghostwhite;
+  }
+  

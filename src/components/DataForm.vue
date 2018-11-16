@@ -24,10 +24,10 @@
        </ul>
        <!--Employee display view display view-->
        <ul v-if='ViewType === "Employee" && SubViewType ==="Display"' class='pa3'>
-        <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa2'> 
+        <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa1'> 
           <span class='flex flex-column'>
-            <label class='w-40 pa1'>{{ i.label }}</label>
-            <div class='w-100 flex flex-column pa1'>
+            <label class='w-70'>{{ i.label }}</label>
+            <div class='w-100 flex flex-column fw6'>
               <span v-if='index !== "department" && index !== "designation" && index !== "approverList" && index !=="travelDesk" && index !== "status"'>{{EmpData[index]}}</span>
               <span v-if='index === "department"'>{{ EmpData[index].departmentName || '' }}</span>
               <span v-if='index === "designation"'>{{ EmpData[index].label || '' }}</span>
@@ -46,30 +46,30 @@
             </div>
           </span>
         </li>
-        <li v-if='EmpData["resign"] == "1"'>
-          <span class="flex">
-            <label for="" class="w-40 pa1">Resigned</label>
-            <div class="w-60 flex flex-column pa1">Yes</div>
+        <li v-if='EmpData["resign"] == "1"' class='pa1'>
+          <span class="flex  flex-column">
+            <label for="" class="w-40">Resigned</label>
+            <div class="w-60 flex fw6">Yes</div>
           </span>
         </li>
-        <li v-if='EmpData["resign"] == "1"'>
-          <span class="flex">
-            <label for="" class="w-40 pa1">Resigned Date</label>
-            <div class="w-60 flex flex-column pa1">{{ EmpData['resignDate'] }}</div>
+        <li v-if='EmpData["resign"] == "1"' class='pa1'>
+          <span class="flex  flex-column">
+            <label for="" class="w-70">Resigned Date</label>
+            <div class="w-100 flex fw6">{{ EmpData['resignDate'] }}</div>
           </span>
         </li>
-        <li v-if='EmpData["resign"] == "1"'>
+        <li v-if='EmpData["resign"] == "1"' class='pa1'>
           <span class="flex">
-            <label for="" class="w-40 pa1">Resigned Time</label>
-            <div class="w-60 flex flex-column pa1">{{ EmpData['resignTime'] }}</div>
+            <label for="" class="w-70">Resigned Time</label>
+            <div class="w-100 flex fw6">{{ EmpData['resignTime'] }}</div>
           </span>
         </li>
        </ul>
        <!-- Employee create && Employee update -->
        <ul v-if='ViewType === "Employee" && EmpSub ==="create" && (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
-        <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa2'> 
+        <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa1'> 
           <span class='flex flex-column items-baseline' >
-            <label class='w-40 pa1'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
+            <label class='w-40'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
             <div class='w-100 flex flex-column'>
               <input class='pa1'
                       v-if='index !=="travelDesk" && index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
@@ -121,27 +121,27 @@
             </div>
           </span>
         </li>
-        <li class="pa2" v-if="SubViewType !== 'Create'">
-          <span class="flex items-baseline">
-            <label for="" class="w-40 pa1">Resignation</label>
+        <li class="pa1" v-if="SubViewType !== 'Create'">
+          <span class="flex flex-column items-baseline">
+            <label for="" class="w-40">Resignation</label>
             <div class="w-60 flex">
               <span class='w-50 pa1 flex justify-around'><input v-model='EmpData.resign' type="radio" value='0'><span> No</span></span>
               <span class='w-50 flex justify-around pa1'><input v-model='EmpData.resign' type="radio" value='1'><span>Yes</span></span>
             </div>
           </span>
         </li>
-        <li class='pa2' v-if='EmpData.resign == "1"'>
-          <span class='flex items-baseline'>
-            <label class="w-40 pa1">Resignation Date</label>
-            <div class="w-60 flex flex-column">
+        <li class='pa1' v-if='EmpData.resign == "1"'>
+          <span class='flex flex-column items-baseline'>
+            <label class="w-40">Resignation Date</label>
+            <div class="w-60 flex ">
               <input v-model='EmpData.resignDate' type="date" name='resignDate' />
             </div>
           </span>
         </li>
-        <li class='pa2' v-if='EmpData.resign == "1"'>
-          <span class='flex items-baseline'>
+        <li class='pa1' v-if='EmpData.resign == "1"'>
+          <span class='flex flex-column items-baseline'>
             <label class="w-40 pa1">Resignation Time</label>
-            <div class="w-60 flex flex-column">
+            <div class="w-60 flex">
               <input v-model='EmpData.resignTime' type='text' name='resignTime' />
             </div>
           </span>
@@ -165,9 +165,9 @@
 
         <!-- Department Form View -->
        <ul v-if='ViewType === "Department" && (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
-        <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa2'> 
+        <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa1'> 
           <span class='flex flex-column items-baseline' >
-            <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }} <sup class='b6'>*</sup></label>
+            <label class='w-70'>{{ DepartmentForm.label[index].label }} <sup class='b6'>*</sup></label>
             <div class='w-100 flex flex-column'>
               <input class='pa1' 
                      v-model='DepData[index]' 
@@ -189,23 +189,21 @@
        </ul>
         <!-- Department Display View -->
        <ul v-if='ViewType === "Department" && SubViewType === "Display"' class='pa3'>
-        <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa2'> 
+        <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa1'> 
           <span class='flex flex-column items-baseline' >
-            <label class='w-40 pa1'>{{ DepartmentForm.label[index].label }}</label>
-            <div class='w-60 flex flex-column pa1'>
+            <label class='w-70'>{{ DepartmentForm.label[index].label }}</label>
+            <div class='w-100 flex flex-column pa1'>
               {{DepData[index]}}
             </div>
           </span>
         </li>
        </ul>
 
-
-
        <!-- Designation Form View -->
        <ul v-if='ViewType === "Designation" && (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
-        <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa2'> 
-          <span class='flex  flex-column' >
-            <label class='fl w-90 pa1'>{{ DesignationForm.label[index].label }} <sup class='b6'>*</sup></label>
+        <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa1'> 
+          <span class='flex flex-column' >
+            <label class='fl w-90'>{{ DesignationForm.label[index].label }} <sup class='b6'>*</sup></label>
             <div class='w-100 flex'>
               <input v-if='index === "designationCode" || index === "designationName"' 
                     class='fl pa1'
@@ -252,10 +250,10 @@
        </ul>
        <!-- Designation display view -->
        <ul v-if='ViewType === "Designation" && SubViewType === "Display"' class='pa3'>
-        <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa2'> 
+        <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa1'> 
           <span class='flex flex-column' >
-            <label class='fl w-40 pa1'>{{ DesignationForm.label[index].label }} <sup class='b6'>*</sup></label>
-            <div class='w-100 flex  pa1'>
+            <label class='fl w-90'>{{ DesignationForm.label[index].label }} <sup class='b6'>*</sup></label>
+            <div class='w-100 flex'>
               <span v-if='index !== "department" && index !== "benefitBundle" && index !== "role"
                      && index !== "reservHandle" && index !== "bookRoomPersion" && index !== "rightsHotel"'>{{DesData[index]}}</span>
               <span v-if='index === "department"'>{{ DesData[index].departmentName}}</span>
@@ -672,7 +670,7 @@ export default {
       //  if(obj === undefined){ console.log(index)}
        switch(obj.type){
          case 'number': if(!(self.SendData[index].toString().length === 10) ||
-                            self.SendData[index] === '' ||
+                            self.SendData[index].trim() === '' ||
                             self.SendData[index] === ' '){
                             // console.log(self.SendData[index].toString().length)
                           self.Error.push(obj.label)
@@ -680,7 +678,7 @@ export default {
                         } ;
                         break;
          case 'email': if(!emailreg.test(self.SendData[index])) {self.Error.push(obj.label); return}  ; break;
-         case 'text': if(self.SendData[index] === '' || self.SendData[index] === ' ' ) {
+         case 'text': if(self.SendData[index].trim() === '' || self.SendData[index] === ' ' ) {
                           //to make departcode and designation optional need to skip their prop check
                           // if( index !== 'departmentCode' && index !== 'designationCode'){
                             self.Error.push(obj.label);
@@ -689,7 +687,7 @@ export default {
                          
                            };
                            break;  
-         case 'date' : if(self.SendData[index] === '' || new Date(self.SendData[index]) === 'Invalid Date' || new Date(self.SendData[index]).getFullYear() > 2038 || new Date(self.SendData[index]).getFullYear() < 1970 ){self.Error.push(obj.label); return};break;
+         case 'date' : if(self.SendData[index].trim() === '' || new Date(self.SendData[index]) === 'Invalid Date' || new Date(self.SendData[index]).getFullYear() > 2038 || new Date(self.SendData[index]).getFullYear() < 1970 ){self.Error.push(obj.label); return};break;
        }
        self.Error.splice(self.Error.indexOf(obj.label),1);
      },
@@ -728,7 +726,7 @@ export default {
        //error checking code when onblur is not at fired
         if(self.Error.length === 0){
           for(var i in self.SendData){
-            if( self.SendData[i] === '' || self.SendData[i] === null || self.SendData[i] === ' ') {
+            if( self.SendData[i] === null || self.SendData[i] === ' ' || self.SendData[i] === '') {
               //to skip designation department code
                 
                 self.ThroughAlert('None of the Mandatory fields should be Empty!','bg-light-red');
