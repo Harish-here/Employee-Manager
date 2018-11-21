@@ -316,6 +316,10 @@ export default {
      MultipleAssign: function(){
          const self = this;
          if(confirm('Warning! Applying changes is permanent and cannot be undone. Are you sure you want to proceed?')){
+            var delay = alertify.get('notifier','delay');
+            alertify.set('notifier','delay', 200);
+            alertify.warning('Processing the CSV...');
+            alertify.set('notifier','delay', delay);
              $.post(api.updateBulk,{employee:self.ToDelete,department:self.Department,designation:self.Design,policy:self.Policy,account:self.Account}).done(function(data){
                  if(data.includes("true")){
                      self.ToDelete = [];
@@ -329,8 +333,11 @@ export default {
                  }else{
                       self.ThroughAlert('An Unexpected Error occurred. Please try again!','bg-light-red');
                  }
+                 alertify.dismissAll();
              }).fail(x => {
+                 alertify.dismissAll();
                  self.ThroughAlert('Service Not Available due to Network issuse. Please Refresh or Login again.!','bg-light-red');
+
              });
          }
      },

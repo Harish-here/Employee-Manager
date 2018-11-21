@@ -9,7 +9,7 @@ function ReturnModel(c,r,u,d){
     return  JSON.parse(JSON.stringify(actions))  
 }
 
-const BaseUrl = 'http://www.hobse.com/demo/index.php/customer/employee/';
+const BaseUrl = global_base_url + '/employee/';
 //emp read dummy data https://api.myjson.com/bins/142woe
 const Emp  = ReturnModel(
     BaseUrl + 'employeeCreate',

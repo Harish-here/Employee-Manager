@@ -149,7 +149,7 @@
        </ul>
        <div class='upload-contanier tc pa1 relative' v-if='ViewType === "Employee" && EmpSub ==="import" && (SubViewType ==="Create" || SubViewType === "Update" )'>
           <div>
-            <a target="_blank" href='http://www.hobse.com/demo/public_html/csv_template/employee_csv_format.csv'><span class='absolute top-1 right-1'>Format <i class="fa fa-download" aria-hidden="true"></i></span></a>
+            <a target="_blank" :href='Global + "/public_html/csv_template/employee_csv_format.csv"'><span class='absolute top-1 right-1'>Format <i class="fa fa-download" aria-hidden="true"></i></span></a>
             <form id='fileUpload' enctype='multipart/form-data' class='flex flex-column' @submit.prevent='FileUpload'>
               <label class='pa3' for='file'>Import Employees</label>
               <input  name='file' id='fileUploadField' type="file" accept=".csv" @change="SetUpload">
@@ -331,6 +331,7 @@ export default {
     //  var self = this
      return {
       //  SubViewType: 'Create',
+       Global: global_url,
        EmployeeForm : { 
          data: JSON.parse(JSON.stringify(struct.employee.data)),
          label: struct.employee.label
@@ -513,6 +514,10 @@ export default {
           }
 
           var input = document.querySelector('#fileUpload');
+          var delay = alertify.get('notifier','delay');
+          alertify.set('notifier','delay', 200);
+          alertify.warning('Processing the CSV...');
+          alertify.set('notifier','delay', delay);
             
           $.ajax({
               url: api.fileUpload,
@@ -548,6 +553,7 @@ export default {
                         }
                       });
                       self.ActionDone();
+                      alertify.dismissAll();
                       self.ThroughAlert('Error in imported CSV','bg-light-red');
                       self.createCSV(csv,"Rectify the Errors, upload this CSV",true);
                     }catch(e){

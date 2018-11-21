@@ -3,7 +3,7 @@
     <section class='sec4 br b--light-silver  ghost-white' id='sidebar'>
       <ul class="flex flex-column-reverse" >
           <li class='p10-20 centering'>
-            <a style="text-align:center" href='http://www.hobse.com/demo/index.php/customer/customer/policy'>
+            <a style="text-align:center" :href='global + "/customer/policy"'>
             <span class='tc'>
               <i class="fa fa-cog" aria-hidden="true"></i><br>
               Grade Policy
@@ -92,6 +92,7 @@ export default {
   data(){
     return {
       SourceList: [],
+      global: global_base_url,
       DepartList: [],
       DesignList: [],
       Approver:[],
