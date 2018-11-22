@@ -10,21 +10,21 @@
             </span> </a>
           </li>
           <li class='p10-20 centering'
-              :class='{"btn-rev" : ActiveView === "Department"}' @click='ActiveView = "Department",ActiveSubView = "Create"'>
+              :class='{"btn-rev" : ActiveView === "Department"}' @click='ActiveView = "Department"'>
             <span class='tc'>
               <i class="fa fa-briefcase" aria-hidden="true"></i><br>
               Department
             </span>
           </li>
           <li class='p10-20 centering'
-              :class='{"btn-rev" : ActiveView === "Designation"}' @click='ActiveView = "Designation",ActiveSubView = "Create"'>
+              :class='{"btn-rev" : ActiveView === "Designation"}' @click='ActiveView = "Designation"'>
             <span class='tc'>
               <i class="fa fa-briefcase" aria-hidden="true"></i><br>
               Designation
             </span>
           </li>
           <li class='p10-20 centering'
-              :class='{"btn-rev" : (ActiveView === "Employee")}' @click='ActiveView = "Employee",ActiveSubView = "Create"'>
+              :class='{"btn-rev" : (ActiveView === "Employee")}' @click='ActiveView = "Employee"'>
             <span class='tc'>
               <i class="fa fa-user" aria-hidden="true"></i><br>
               Employee
@@ -33,18 +33,20 @@
       </ul>
     </section>
     <!-- first panel -->
-    <section class='sec1 bb b--light-silver' >
-      <div class='fl w-40 pa3'>
+    <section class='sec1' >
+      <div class='fl w-30 pa3'>
         {{ Found }} {{ActiveView + '(s)'}} found.
       </div>
+      <div class="fr w-20 pa3 tr"><button @click='ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add {{ActiveView}}</button></div>
       <div class='fr w-40 pa3'>
-      <div class=' w-100 flex justify-center items-center' >
-        <span class='flex ba b--light-silver w-80'>
-          <input type="text" v-model="SearchString" style="border:0;outline:none;" placeholder="Search records" class='pa2 w-80'>
-          <i class="fa fa-search pa2 w-20 tc" aria-hidden="true"></i>
-        </span>
+        <div class=' fr w-70 flex justify-center items-center' >
+          <span class='flex ba b--light-silver w-80'>
+            <input type="text" v-model="SearchString" style="border:0;outline:none;" placeholder="Search records" class='pa2 w-80'>
+            <i class="fa fa-search pa2 w-20 tc" aria-hidden="true"></i>
+          </span>
+        </div>
       </div>
-      </div>
+      
     </section>
     <!-- second panel -->
     <section class='sec2 bb b--light-silver' >
@@ -98,11 +100,16 @@ export default {
       Approver:[],
       ToDelete: [],
       ActiveView : 'Employee',
-      ActiveSubView : 'Create',
+      ActiveSubView : '',
       ActiveViewData : {},
       SearchString: '',
       BtnClass: 'f6 dim br2 ph3 pv2 mb2 dib white bg-dark-blue',
       Found: 0,
+      url: {
+        Employee: 'employees',
+        Department: 'department',
+        Designation: 'designation'
+      }
       
     }
   },
@@ -164,6 +171,19 @@ export default {
         alert("Service Not Available due to Network issuse. Please Refresh or Login again.!");
       })
     },
+    CreateHistory: function(type){
+      const self = this;
+      let url  = location.href.split('/').filter(x => x != 'employees' && x != 'department' && x != 'designation').join('/');
+      
+      history.pushState({liveRoute: type},'Page'+type,url+'/'+type);
+
+    },
+  },
+  watch: {
+    ActiveView: function(val){
+      this.CreateHistory(this.url[val]);
+      this.ActiveSubView = "";
+    }
   },
 
   created(){
@@ -193,6 +213,15 @@ export default {
     self.getData(api.getApprovar,function(data){
       self.Approver = data;
     });
+      //for url stuffs
+     let arr = location.href.split('/');
+     let type = (arr[arr.length -1 ] == 'employees' || arr[arr.length -1 ] == 'department' || arr[arr.length -1 ] == 'designation') ? arr[arr.length -1 ] : 'employees';//get last element
+      switch(type){
+        case 'employees' : self.ActiveView = 'Employee';break;
+        case 'department' : self.ActiveView = 'Department';break;
+        case 'designation' : self.ActiveView = 'Designation';break;
+      }
+     this.CreateHistory(type);
   },
 }
 </script>

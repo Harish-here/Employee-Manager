@@ -299,7 +299,7 @@ export default {
     },
     SubViewType: {
       type: String,
-      default: 'Create'
+      default: ''
     },
     ActiveData : {
         type: Object,

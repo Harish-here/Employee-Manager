@@ -19,28 +19,43 @@
 
            <!-- </transition> -->
         </thead>
-        <thead calss='assign' v-if="ToDelete.length > 0">
+        <thead calss='assign' v-if="ToDelete.length > 0 && ViewType === 'Employee'">
             <tr class='bg-white pa1 flex'>
-                <div class='flex w-100 justify-between items-baseline'>
-                    <select class='w-20' v-model='Department'>
-                        <option value='0' selected disabled>Department</option>
-                        <option v-for='i in Extra' v-if='i.departmentName !== "Master Admin"' :value='i.departmentId' :key='i.departmentId'>{{ i.departmentName}}</option>
-                    </select>
-                    <select class='w-20' v-model='Design'>
-                        <option value='0' selected disabled>Designation</option>
-                        <option v-for='i in DesignList' v-if='i.label !== "Master Admin"' :value='i' :key='i.value'>{{ i.label }}</option>
-                    </select>
-                    <select class='w-20' v-model='Policy'>
-                        <option value='0' selected disabled>Policy</option>
-                        <option v-for='i in BundleList' v-if='i.label !== "Master Admin"' :value='i' :key='i.value'>{{ i.label }}</option>
-                    </select>
-                    <select class='w-20' v-model='Account'>
-                        <option value='null' selected disabled>Account</option>
-                        <option  value='1'>Enable</option>
-                        <option  value='0'>Disable</option>
-                    </select>
-                    <button @click='MultipleAssign' class='btn btn-xs btn-primary' :disabled='(Department === "0" || Design === "0") && Policy === "0" && (Account === null || Account === "null")'>Assign <span v-if='ToDelete.length > 0' class='badge'>{{ToDelete.length}}</span></button>     
-                </div>
+                <!-- <div class='flex w-100 justify-between items-baseline'> -->
+                    <td class='_flx_15'>
+                      Apply to <span v-if='ToDelete.length > 0' class='badge'>{{ToDelete.length}}</span> Employee(s)
+                    </td>
+                    <td class='_flx_15'>
+                        <select class='w-20' v-model='Department'>
+                            <option value='0' selected disabled>Department</option>
+                            <option v-for='i in Extra' v-if='i.departmentName !== "Master Admin"' :value='i.departmentId' :key='i.departmentId'>{{ i.departmentName}}</option>
+                        </select>
+                    </td>
+                    <td class='_flx_15'>
+                        <select class='w-20' v-model='Design'>
+                            <option value='0' selected disabled>Designation</option>
+                            <option v-for='i in DesignList' v-if='i.label !== "Master Admin"' :value='i' :key='i.value'>{{ i.label }}</option>
+                        </select>                        
+                    </td>
+                    <td class="_flx_1">
+                        <select class='w-20' v-model='Policy'>
+                            <option value='0' selected disabled>Policy</option>
+                            <option v-for='i in BundleList' v-if='i.label !== "Master Admin"' :value='i' :key='i.value'>{{ i.label }}</option>
+                        </select>
+                    </td>
+                    <td class="_flx_1">
+                        <select style="width:90px !important;" v-model='Account'>
+                            <option value='null' selected disabled>Account</option>
+                            <option  value='1'>Enable</option>
+                            <option  value='0'>Disable</option>
+                        </select>
+                        <button @click='MultipleAssign' class='btn btn-xs btn-primary' :disabled='(Department === "0" || Design === "0") && Policy === "0" && (Account === null || Account === "null")'>
+                            <i class="fa fa-check-square-o" aria-hidden="true"></i> 
+                        </button>
+                    </td>
+                    
+     
+                <!-- </div> -->
             </tr>
         </thead>
         <tbody v-if='ViewType === "Employee"'>
@@ -59,7 +74,7 @@
                 <td class='_flx_15' :class='{"light-red": i.designation === null}'>{{ (i.designation !== null ) ? i.designation.label : 'Unassigned' }}</td>
                 <td class='_flx_1' :class='{"light-red": i.benefitBundle === null}'>{{ (i.benefitBundle !== null) ? i.benefitBundle.label : 'Unassigned' }}</td>
                 <!-- <td class='_flx_1 tc' :class='{"light-red": i.hierarchyId === null}'>{{ (i.hierarchyId !== null) ? i.hierarchyId : 'Unassigned' }}</td> -->
-                <td class='_flx_1'>
+                <td class='_flx_1 tr'>
                     <button class="btn-spl"
                             v-if='i.department !== null && i.department.departmentName !== "Master Admin"'
                             @click='sendThis(i,"Update")'>
@@ -87,7 +102,7 @@
                 >
                 <td class="_flx_15">{{ i.departmentName }}</td>
                 <td class="_flx_15">{{ i.departmentCode }}</td>
-                <td class='_flx_15'>
+                <td class='_flx_15 tr'>
                    <button class="btn-spl"
                            v-if='i.departmentName !== "Master Admin"'
                            @click='sendThis(i,"Update")'>
@@ -116,7 +131,7 @@
                 <td class="_flx_15">{{ i.designationName }}</td>
                 <td class="_flx_15">{{ i.department.departmentName }}</td>                
                 <td class="_flx_15">{{ i.benefitBundle.label }}</td>
-                <td class='_flx_1'>
+                <td class='_flx_1 tr'>
                     <button class="btn-spl"
                             v-if="i.designationName !== 'Master Admin'"
                             @click='sendThis(i,"Update")'>
@@ -198,6 +213,7 @@ export default {
   watch : {
       'ViewType' : function(val){
                 this.ActiveRow = {};
+                
       },
       'Department': function(val){
           this.GetDesignation(val)
@@ -369,7 +385,7 @@ table{
     display: flex;
     flex-direction: column;
 }
-thead{ height : 40px; flex: 0 0 0 ; background-color: lightgray;}
+thead{ height : 40px; flex: 0 0 0 ;}
 
 tbody{
 /* flex: 1 0 0 ;  */
