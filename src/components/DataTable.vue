@@ -44,12 +44,12 @@
                         </select>
                     </td>
                     <td class="_flx_1">
-                        <select style="width:90px !important;" v-model='Account'>
+                        <select style="width:75px !important;" v-model='Account'>
                             <option value='null' selected disabled>Account</option>
                             <option  value='1'>Enable</option>
                             <option  value='0'>Disable</option>
                         </select>
-                        <button @click='MultipleAssign' class='btn btn-xs btn-primary' :disabled='(Department === "0" || Design === "0") && Policy === "0" && (Account === null || Account === "null")'>
+                        <button @click='MultipleAssign' class='btn btn-xs btn-primary fr' :disabled='(Department === "0" || Design === "0") && Policy === "0" && (Account === null || Account === "null")'>
                             <i class="fa fa-check-square-o" aria-hidden="true"></i> 
                         </button>
                     </td>
@@ -334,7 +334,7 @@ export default {
          if(confirm('Warning! Applying changes is permanent and cannot be undone. Are you sure you want to proceed?')){
             var delay = alertify.get('notifier','delay');
             alertify.set('notifier','delay', 200);
-            alertify.warning('Processing the CSV...');
+            alertify.warning('Processing the Assign...');
             alertify.set('notifier','delay', delay);
              $.post(api.updateBulk,{employee:self.ToDelete,department:self.Department,designation:self.Design,policy:self.Policy,account:self.Account}).done(function(data){
                  if(data.includes("true")){

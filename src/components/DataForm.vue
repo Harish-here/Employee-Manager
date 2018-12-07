@@ -14,7 +14,7 @@
     <div class="middle">
       <!-- <form> -->
         <!-- Employee Form View -->
-       <ul class="w100 flex pointer" v-if='ViewType === "Employee" && (SubViewType ==="Create" || SubViewType === "Update" )'>
+       <ul class="w100 flex pointer" v-if='ViewType === "Employee" && (SubViewType ==="Create")'>
          <li class="w-50 pa2 tc bb b--light-gray ul-trans"
              @click='EmpSub = "create"'
              :class='{"act-tab" : EmpSub === "create"}'>Create</li>
@@ -46,6 +46,7 @@
             </div>
           </span>
         </li>
+        <!-- Resign details -->
         <li v-if='EmpData["resign"] == "1"' class='pa1'>
           <span class="flex  flex-column">
             <label for="" class="w-40">Resigned</label>
@@ -66,7 +67,7 @@
         </li>
        </ul>
        <!-- Employee create && Employee update -->
-       <ul v-if='ViewType === "Employee" && EmpSub ==="create" && (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
+       <ul v-if='ViewType === "Employee" && EmpSub ==="create" || (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
         <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa1'> 
           <span class='flex flex-column items-baseline' >
             <label class='w-40'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
@@ -147,7 +148,7 @@
           </span>
         </li>
        </ul>
-       <div class='upload-contanier tc pa1 relative' v-if='ViewType === "Employee" && EmpSub ==="import" && (SubViewType ==="Create" || SubViewType === "Update" )'>
+       <div class='upload-contanier tc pa1 relative' v-if='ViewType === "Employee" && EmpSub ==="import" && (SubViewType ==="Create")'>
           <div>
             <a target="_blank" :href='Global + "/public_html/csv_template/employee_csv_format.csv"'><span class='absolute top-1 right-1'>Format <i class="fa fa-download" aria-hidden="true"></i></span></a>
             <form id='fileUpload' enctype='multipart/form-data' class='flex flex-column' @submit.prevent='FileUpload'>
@@ -281,7 +282,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import struct from '../assets/formData'
 import api from '../assets/api'
 import vSelect from 'vue-select'
@@ -324,7 +325,12 @@ export default {
       default: function(){
         return []
       },
+    },
+    EmpSub: {
+      type: String,
+      default: "create"
     }
+    
    },
 
    data: function(){
@@ -356,7 +362,6 @@ export default {
        Error: [],
        File: null,
        DisableAction: false,
-       EmpSub: 'create',
        Resign: false,
        ResignDate: '',
        ResignTime: '',
@@ -553,18 +558,18 @@ export default {
                         }
                       });
                       self.ActionDone();
-                      alertify.dismissAll();
                       self.ThroughAlert('Error in imported CSV','bg-light-red');
                       self.createCSV(csv,"Rectify the Errors, upload this CSV",true);
                     }catch(e){
                      self.ActionDone();
                      self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
                     }
-                    
+                      alertify.dismissAll();                    
                   }
                },
               error: function(jqXHR, textStatus, errorThrown)
               {
+                      alertify.dismissAll();                    
                   self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
               }
         });

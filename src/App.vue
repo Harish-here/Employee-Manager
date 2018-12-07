@@ -34,10 +34,13 @@
     </section>
     <!-- first panel -->
     <section class='sec1' >
-      <div class='fl w-30 pa3'>
+      <div class='fl w-20 pa3'>
         {{ Found }} {{ActiveView + '(s)'}} found.
       </div>
-      <div class="fr w-20 pa3 tr"><button @click='ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add {{ActiveView}}</button></div>
+      <div class="fr w-40 pa3 tr">
+        <button @click='ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add {{ActiveView}}</button>
+        <button v-if='ActiveView === "Employee"' @click='ActiveSubView = "Create",EmpSub = "import"' class="btn ml2 btn-xs btn-primary">Import {{ActiveView}}</button>
+      </div>
       <div class='fr w-40 pa3'>
         <div class=' fr w-70 flex justify-center items-center' >
           <span class='flex ba b--light-silver w-80'>
@@ -67,7 +70,8 @@
     </section>
     <!-- Third -->
     <section class='sec3 bl b--light-silver'>
-      <data-form :ViewType='ActiveView' 
+      <data-form :ViewType='ActiveView'
+                 :EmpSub='EmpSub' 
                  :ActiveData='ActiveViewData'
                  :SubViewType='ActiveSubView'
                  :DeptData='DepartList'
@@ -83,6 +87,7 @@
 import Approvals from '@/components/Approvals'
 import DataTable from './components/DataTable'
 import DataForm from './components/DataForm'
+// import axios from 'axios'
 // import $.get  from '$.get'
 import api from './assets/api'
 
@@ -105,10 +110,11 @@ export default {
       SearchString: '',
       BtnClass: 'f6 dim br2 ph3 pv2 mb2 dib white bg-dark-blue',
       Found: 0,
+      EmpSub: 'create',
       url: {
         Employee: 'employees',
         Department: 'department',
-        Designation: 'designation'
+        Designation: 'designations'
       }
       
     }
@@ -129,6 +135,9 @@ export default {
     setSubView: function(data){
       this.ActiveViewData = data.data;
       this.ActiveSubView = data.view;
+      if(data.view === "Update"){
+        this.EmpSub = 'create'
+      }
     },
     SetDelete : function(data){
       this.ToDelete = data;
@@ -173,7 +182,7 @@ export default {
     },
     CreateHistory: function(type){
       const self = this;
-      let url  = location.href.split('/').filter(x => x != 'employees' && x != 'department' && x != 'designation').join('/');
+      let url  = location.href.split('/').filter(x => x != 'employees' && x != 'department' && x != 'designations').join('/');
       
       history.pushState({liveRoute: type},'Page'+type,url+'/'+type);
 
@@ -215,13 +224,14 @@ export default {
     });
       //for url stuffs
      let arr = location.href.split('/');
-     let type = (arr[arr.length -1 ] == 'employees' || arr[arr.length -1 ] == 'department' || arr[arr.length -1 ] == 'designation') ? arr[arr.length -1 ] : 'employees';//get last element
+     let type = (arr[arr.length -1 ] == 'employees' || arr[arr.length -1 ] == 'department' || arr[arr.length -1 ] == 'designations') ? arr[arr.length -1 ] : 'employees';//get last element
       switch(type){
         case 'employees' : self.ActiveView = 'Employee';break;
         case 'department' : self.ActiveView = 'Department';break;
-        case 'designation' : self.ActiveView = 'Designation';break;
+        case 'designations' : self.ActiveView = 'Designation';break;
       }
      this.CreateHistory(type);
+
   },
 }
 </script>

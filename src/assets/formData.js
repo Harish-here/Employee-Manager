@@ -28,6 +28,7 @@ const EmployeeLabel = {
     mobile: { label: "Mobile Number", type: 'text' },
     department: { label: "Department", type: 'select' },
     designation: { label: "Designation", type: 'select' },
+    approverList: { label: "Approval Hierachy", type:'select'},
     resign: null,
     hierarchyId: null,
     // hierarchyId: { label: "Set Hierachy", type: 'select' },
@@ -36,7 +37,7 @@ const EmployeeLabel = {
     startDate: { label: "Date of Joining", type: 'date' },
     status: { label: "Account", type:'radio'},
     travelDesk: {label: "Travel Desk",type:"select"},
-    approverList: { label: "Approval Hierachy", type:'select'},
+    
     
 };
 const Department = {
