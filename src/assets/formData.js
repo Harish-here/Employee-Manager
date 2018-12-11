@@ -85,12 +85,15 @@ const DesignationLabel = {
     // approval: { label: 'No of Approval', type: 'select' },
     approval: null,
     role: { label: 'Role', type: 'select' },
-    reservHandle: { label: 'Does booking approvals apply to this designation?', type: 'select' },
-    rightsHotel: { label: 'Who has rights to choose hotel?', type: 'select' },
+    reservHandle: { label: 'Does this designation eligible to approve the bookings?', type: 'select' },
+    // rightsHotel: { label: 'Who has rights to choose hotel?', type: 'select' },
+    rightsHotel: null,
+
     // dayCount: { label: 'No of day to approval', type: 'select' },
     dayCount: null,
     
-    bookRoomPersion: { label: 'Who will book the room?', type: 'select' },
+    // bookRoomPersion: { label: 'Who will book the room?', type: 'select' },
+    bookRoomPersion: null,
     // overBudget: { label: 'Over Budget Policy can be approved by', type: 'select' },
     overBudget: null,
     // bookingTool: { label: 'Booking Tool', type: 'checkbox' },

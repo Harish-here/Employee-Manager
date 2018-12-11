@@ -38,7 +38,7 @@
         {{ Found }} {{ActiveView + '(s)'}} found.
       </div>
       <div class="fr w-40 pa3 tr">
-        <button @click='ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add {{ActiveView}}</button>
+        <button @click='ActiveSubView = "Create",EmpSub = "create"' class="btn btn-xs btn-primary">Add {{ActiveView}}</button>
         <button v-if='ActiveView === "Employee"' @click='ActiveSubView = "Create",EmpSub = "import"' class="btn ml2 btn-xs btn-primary">Import {{ActiveView}}</button>
       </div>
       <div class='fr w-40 pa3'>
@@ -135,7 +135,7 @@ export default {
     setSubView: function(data){
       this.ActiveViewData = data.data;
       this.ActiveSubView = data.view;
-      if(data.view === "Update"){
+      if(data.view === "Update" || data.view === "Create"){
         this.EmpSub = 'create'
       }
     },

@@ -7,7 +7,7 @@
     </transition>
     <div class="head bb b--light-silver flex justify-center items-center pa2">
       <div class='f4'>
-        {{ SubViewType }} {{ ViewType }}
+        {{ (SubViewType != 'Display') ? SubViewType : "" }} {{ ViewType }} {{(SubViewType == 'Display') ? "Details" : ""}}
       </div>
     </div>
     
@@ -67,7 +67,7 @@
         </li>
        </ul>
        <!-- Employee create && Employee update -->
-       <ul v-if='ViewType === "Employee" && EmpSub ==="create" || (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
+       <ul v-if='ViewType === "Employee" && EmpSub ==="create" &&( SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
         <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa1'> 
           <span class='flex flex-column items-baseline' >
             <label class='w-40'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
@@ -99,7 +99,7 @@
                 <span class='flex justify-evenly w-50'><input type='radio' name='active' value='0' v-model='EmpData[index]' >&nbsp;Disable</span>
               </div>
               <div v-if="index === 'approverList'"><!-- approver select -->
-                  <v-select v-model='EmpData[index]' :options='ApproverData.filter(x => x.value != EmpData["travelAgencyUsersId"])' multiple></v-select>
+                  <v-select :multiple='sam' :options='Option' v-model='EmpData[index]' ></v-select>
                   <span v-if='EmpData[index].length > 0'>
                     <ul class='ba b--light-gray pa1 mt1'>
                       <li class='gray'>Your approval tree</li>
@@ -122,24 +122,25 @@
             </div>
           </span>
         </li>
+        <!-- <pre>{{EmpData}}</pre><pre>{{ApproverData}}</pre> -->
         <li class="pa1" v-if="SubViewType !== 'Create'">
           <span class="flex flex-column items-baseline">
-            <label for="" class="w-40">Resignation</label>
+            <label for="" class="w-40">Employment Status</label>
             <div class="w-60 flex">
-              <span class='w-50 pa1 flex justify-around'><input v-model='EmpData.resign' type="radio" value='0'><span> No</span></span>
-              <span class='w-50 flex justify-around pa1'><input v-model='EmpData.resign' type="radio" value='1'><span>Yes</span></span>
+              <span class='w-50 pa1 flex justify-around'><input v-model='EmpData.resign' type="radio" value='0'><span> On-roll</span></span>
+              <span class='w-50 flex justify-around pa1'><input v-model='EmpData.resign' type="radio" value='1'><span> Resigned</span></span>
             </div>
           </span>
         </li>
         <li class='pa1' v-if='EmpData.resign == "1"'>
           <span class='flex flex-column items-baseline'>
-            <label class="w-40">Resignation Date</label>
+            <label class="w-40">Resignation Date <sup class='b6'>*</sup></label>
             <div class="w-60 flex ">
               <input v-model='EmpData.resignDate' type="date" name='resignDate' />
             </div>
           </span>
         </li>
-        <li class='pa1' v-if='EmpData.resign == "1"'>
+        <li class='pa1' v-if='false'>
           <span class='flex flex-column items-baseline'>
             <label class="w-40 pa1">Resignation Time</label>
             <div class="w-60 flex">
@@ -187,6 +188,7 @@
             </div>
           </span>
         </li>
+        <li class='pa2 tc'><button class='btn-spl --not-ghost' v-if="ViewType === 'Department'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button></li>
        </ul>
         <!-- Department Display View -->
        <ul v-if='ViewType === "Department" && SubViewType === "Display"' class='pa3'>
@@ -269,12 +271,12 @@
     </div>
     <!-- button section -->
     <div class="footer bt b--light-silver flex justify-center items-center">
-      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType !== 'Employee'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button>
+      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType !== 'Employee' && ViewType !== 'Department'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button>
       <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType === 'Employee' && File === null && EmpSub ==='create'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
       <button class="btn-spl --not-ghost" @click='ResignEmployee' v-if='ShowResign && SubViewType !== "Create"'>Resign this Employee</button>
       <button class='btn-spl --not-ghost' v-if="SubViewType === 'Update' && !ShowResign" @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
       <button class='btn-spl' v-if="(SubViewType === 'Update'   || SubViewType === 'Display') && !ShowResign" @click='$emit("CancelViewType")' :disabled='DisableAction'><span v-if='SubViewType === "Update"'>Cancel</span><span v-else>Back to create</span></button>
-      <button class='btn-spl btn-dlt' v-if="SubViewType === 'Update' && !ShowResign" @click='DeleteData' :disabled='DisableAction'>Delete <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
+      <button class='btn-spl btn-dlt' v-if="SubViewType === 'Update' && !ShowResign" @click='DeleteData' :disabled='DisableAction'>Delete </button>
       
     </div>
     <!-- <pre>{{EmployeeForm.label}}</pre> -->
@@ -285,9 +287,11 @@
 // import axios from 'axios'
 import struct from '../assets/formData'
 import api from '../assets/api'
-import vSelect from 'vue-select'
+// import vSelect from 'vue-select'
 import draggable from 'vuedraggable'
 // import { fail } from 'assert';
+import vSelect from 'vue-select'
+
 
 
 export default {
@@ -337,6 +341,7 @@ export default {
     //  var self = this
      return {
       //  SubViewType: 'Create',
+       sam: true,
        Global: global_url,
        EmployeeForm : { 
          data: JSON.parse(JSON.stringify(struct.employee.data)),
@@ -387,6 +392,14 @@ export default {
             
             return this.ActiveData
          }
+       }
+     },
+     Option(){
+       if(this.ViewType ===  'Employee' && "travelAgencyUsersId" in  this.EmpData){
+       return this.ApproverData.filter(x => x.value != this.EmpData["travelAgencyUsersId"])
+
+       }else{
+         return []
        }
      },
      DepData(){
@@ -485,8 +498,8 @@ export default {
      },
      ResignEmployee: function(){
        const self = this;
-       if(self.EmpData.resignDate === null || self.EmpData.resignTime === null || self.EmpData.resignDate === '' || self.EmpData.resignTime === ''){
-         self.ThroughAlert('Resign Date and Resign Time is Mandatory','bg-light-red');
+       if(self.EmpData.resignDate === null ||  self.EmpData.resignDate === ''){
+         self.ThroughAlert('Please fill in Resignation Date','bg-light-red');
          return
        }
        $.post(api.resignEmployee,{employee:self.SendData,resignDate: self.SendData.resignDate,resignTime: self.SendData.resignTime}).done(function(data){
@@ -496,7 +509,7 @@ export default {
           //  self.Resign = false;
            self.flush();
            self.ActionDone();
-           self.ThroughAlert('Employee Resigned Successfully','bg-green');
+           self.ThroughAlert('Employment status updated successfully','bg-green');
          }else{
            self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
          }
@@ -734,13 +747,13 @@ export default {
 
 
 
-       //error checking code when onblur is not at fired
+       //error checking code when onblur is not at al fired
         if(self.Error.length === 0){
           for(var i in self.SendData){
             if( self.SendData[i] === null || self.SendData[i] === ' ' || self.SendData[i] === '') {
               //to skip designation department code
                 
-                self.ThroughAlert('None of the Mandatory fields should be Empty!','bg-light-red');
+                self.ThroughAlert('Please fill in all required fields','bg-light-red');
                 return
               
               
@@ -758,7 +771,7 @@ export default {
             self.flush();
             self.ActionDone();
             self.GetTravelDesk();
-            self.ThroughAlert(self.ViewType + ' Successfully added.','bg-green');
+            self.ThroughAlert(self.ViewType + ' created successfully.','bg-green');
             
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
@@ -784,7 +797,7 @@ export default {
         if(self.Error.length === 0){
           for(var i in self.SendData){
             if(i !== 'resignDate' && i !== 'resignTime' && i !== 'benefitBundle' && (self.SendData[i] === ' ' || self.SendData[i] === '' || self.SendData[i] === null)) {
-              self.ThroughAlert('None of the Mandatory fields should be Empty!','bg-light-red');
+              self.ThroughAlert('Please fill in all required fields','bg-light-red');
               return
             }
           }
@@ -798,7 +811,7 @@ export default {
             self.ActionDone();
             self.GetTravelDesk();
             self.$emit("CancelViewType");
-            self.ThroughAlert(self.ViewType + ' Successfully updated.','bg-gold');
+            self.ThroughAlert(self.ViewType + ' details updated successfully.','bg-green');
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
           }
@@ -820,7 +833,7 @@ export default {
               self.ActionDone();
               self.$emit("CancelViewType");
               self.GetTravelDesk();
-              self.ThroughAlert(self.ViewType + ' Successfully deleted.','bg-light-red');
+              self.ThroughAlert(self.ViewType + ' deleted successfully.','bg-light-red');
             }else{
                 self.ThroughAlert(data.split('|')[1],'bg-light-red');
             }
