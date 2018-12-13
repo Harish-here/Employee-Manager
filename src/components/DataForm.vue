@@ -99,14 +99,17 @@
                 <span class='flex justify-evenly w-50'><input type='radio' name='active' value='0' v-model='EmpData[index]' >&nbsp;Disable</span>
               </div>
               <div v-if="index === 'approverList'"><!-- approver select -->
-                  <v-select :multiple='sam' :options='Option' v-model='EmpData[index]' ></v-select>
+                  <multiselect :multiple="true" v-model='EmpData[index]' :options='ApproverData.filter(x => x.value != EmpData["travelAgencyUsersId"])' 
+                      :close-on-select="true" :clear-on-select="false" :preserve-search="false"  label="label" track-by="value" :preselect-first="false">
+                          <!-- <template slot="selection" slot-scope="{ options }">
+                          </template> -->
+                  </multiselect>
                   <span v-if='EmpData[index].length > 0'>
                     <ul class='ba b--light-gray pa1 mt1'>
-                      <li class='gray'>Your approval tree</li>
+                      <li class='gray'>Your approval tree (drag employees to reorder)</li>
                       <draggable v-model="EmpData[index]" :options="{group:'people'}" @start="drag=true" @end="drag=false">
                         <li v-for='(i,index) in EmpData[index]' :key="i.value" class='pa1 drag-cur'><i class="fa fa-bars" aria-hidden="true"></i> {{ i.label }} <span class='fr badge badge-primary'>{{ index + 1 }}</span></li>
                       </draggable>
-                      
                     </ul>
                   </span>
               </div>
@@ -117,7 +120,7 @@
                       >
                       Provide a valid {{EmployeeForm.label[index].label}}
                   </span>
-                </transition>
+               </transition>
               
             </div>
           </span>
@@ -207,7 +210,7 @@
         <li v-for='(i,index) in DesignationForm.label' :key='index' v-if="i !== null && DesignationForm.label[index].label !== ''" class='pa1'> 
           <span class='flex flex-column' >
             <label class='fl w-90'>{{ DesignationForm.label[index].label }} <sup class='b6'>*</sup></label>
-            <div class='w-100 flex'>
+            <div class='w-100 flex flex-column'>
               <input v-if='index === "designationCode" || index === "designationName"' 
                     class='fl pa1'
                     @blur='Validate(index,DesignationForm.label[index])'
@@ -216,20 +219,24 @@
                     type='text' />
               
               <select class='fl pa1' 
-                      v-if='index !== "bookingTool" && index !== "designationCode" && index !== "designationName"'
-                      v-model='DesData[index]' :disabled="index === 'rightsHotel' || index === 'bookRoomPersion' ">
+                      v-if='index !== "bookingTool" && index !== "designationCode" && index !== "designationName" && index !== "reservHandle"'
+                      v-model='DesData[index]'>
                 <!-- <option value='' selected disabled>{{ DesignationForm.label[index].label }}</option> -->
                 <option v-for='j in DeptData' v-if='index === "department" && j.departmentName !== "Master Admin"' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
                 <option v-if='index === "role"' v-for='k in Role' :value='k' :key='k.value'>{{ k.label }}</option>
                 <option v-if='index === "rightsHotel"' v-for='j in Rights' :value='j' :key='j.value'>{{ j.label }}</option>
                 <option v-if='index === "bookRoomPersion"' v-for='j in Permission' :value='j' :key='j.value'>{{ j.label }}</option>
                 <option v-if='index === "overBudget"' v-for='j in OverBudget' :value='j' :key='j.value'>{{ j.label }}</option>
-                <option v-if='index === "reservHandle"' v-for='j in Reserve' :value='j' :key='j.value'>{{ j.label }}</option>
+                <!-- <option v-if='index === "reservHandle"' v-for='j in Reserve'  :value='j' :key='j.value'>{{ j.label }}</option> -->
                 <option v-if='index === "hierarchyId"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
                 <option v-if='index === "dayCount"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
                 <option v-if='index === "approval"' v-for='j in SetHierachy' :value='j' :key='j'>{{ j }}</option>
                 <option  v-for='j in BundleList' v-if='index === "benefitBundle" && j.label !== "Master Admin"' :value='j' :key='j.value'>{{ j.label }}</option>
                 <!-- <option  v-else value=''>Sample</option> -->
+              </select>
+              <!-- exception -->
+              <select class="fl pa1"  v-if='index === "reservHandle"' :disabled='DesData["role"].value && (DesData["role"].value == 1 || DesData["role"].value == 2)' v-model='TempRole'>
+                <option v-for='j in Reserve'  :value='j' :key='j.value'>{{ j.label }}</option>
               </select>
               <div class='pa1 flex flex-wrap items-baseline' v-if='index === "bookingTool"'>
                 <span class='pa1 flex items-baseline'><input class='pa1 self-baseline' value='1' type='checkbox' v-model='DesData[index]'><span  class='pa1 self'>Book Now</span></span>
@@ -245,8 +252,6 @@
                   </span>
                 </transition>
             </div>
-            
-
 
           </span>
         </li>
@@ -288,6 +293,8 @@
 import struct from '../assets/formData'
 import api from '../assets/api'
 // import vSelect from 'vue-select'
+// import multi from 'vue-select'
+import Multiselect from 'vue-multiselect'
 import draggable from 'vuedraggable'
 // import { fail } from 'assert';
 import vSelect from 'vue-select'
@@ -296,7 +303,7 @@ import vSelect from 'vue-select'
 
 export default {
   name: 'DataForm',
-  components: { vSelect,draggable },
+  components: { draggable, Multiselect},
   props: {
     ViewType : {
         type: String,
@@ -370,7 +377,9 @@ export default {
        Resign: false,
        ResignDate: '',
        ResignTime: '',
-       TravelDeskList: []
+       TravelDeskList: [],
+       TempRole: "",
+       TempApp: []
 
      }
    },
@@ -396,7 +405,7 @@ export default {
      },
      Option(){
        if(this.ViewType ===  'Employee' && "travelAgencyUsersId" in  this.EmpData){
-       return this.ApproverData.filter(x => x.value != this.EmpData["travelAgencyUsersId"])
+        return this.ApproverData.filter(x => x.value != this.EmpData["travelAgencyUsersId"])
 
        }else{
          return []
@@ -457,12 +466,32 @@ export default {
        'SubViewType': function(val){
          this.Error.length = 0;
 
-        //  if(this.ViewType === 'Employee' && val === 'Update'){
-        //    this.Resign = '';
-        //    this.ResignDate = '';
-        //    this.ResignTime = '';
-        //  }
-       }
+
+       },
+       DesData: {
+         deep: true,
+         handler: function(val){
+           if(this.SubViewType === 'Create'){
+              if( val['role'].value && (val['role'].value == '1' || val['role'].value == '2') ){
+                this.TempRole = { label: 'Yes', value: '1|yes' };
+              }else{
+                this.TempRole = "";
+              }
+           }else{
+             this.TempRole = this.ActiveData['reservHandle'];
+           }
+
+         }
+       },
+      //  EmpData: {
+      //    deep: true,
+      //    handler: function(val){
+      //      if(this.SubViewType === 'Update'){
+      //        this.TempApp = this.ActiveData['approverList'];
+      //      }
+      //    }
+      //  }
+       
      },
 
   created(){
@@ -718,7 +747,13 @@ export default {
       //data sending functions
      CreateData: function(){ //general create operation
        var self = this;
-
+        if(self.ViewType === 'Designation' && self.SubViewType === 'Create'){
+          //create
+          this.DesignationForm.data['reservHandle'] = this.TempRole;
+        }
+        // if(self.ViewType === 'Employee' && self.SubViewType === 'Create'){
+        //   this.EmployeeForm.data['approverList'] == this.TempApp;
+        // }
        //emp join date
       //  if(this.ViewType === 'Employee'){
       //    let y = new Date(self.SendData['startDate']).getFullYear();
@@ -788,20 +823,24 @@ export default {
      UpdateData: function(){
        const self = this;
 
+      //  if(this.ViewType == 'Designation'){
+      //     //update
+      //     this.ActiveData['reservHandle'] = this.TempRole;
+      //   }
+
         //error checking
        if(self.Error.length > 0){
          self.ThroughAlert('Please fill in all required fields','bg-light-red');
          return
        }
        //error checking code when onblur is not at fired
-        if(self.Error.length === 0){
           for(var i in self.SendData){
             if(i !== 'resignDate' && i !== 'resignTime' && i !== 'benefitBundle' && (self.SendData[i] === ' ' || self.SendData[i] === '' || self.SendData[i] === null)) {
               self.ThroughAlert('Please fill in all required fields','bg-light-red');
               return
             }
           }
-        }
+        
       
       self.DisableAction = true;
       $.post(this.UpdateUrl,this.SendData).done(function(data){

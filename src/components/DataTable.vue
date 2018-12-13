@@ -129,6 +129,7 @@
                 :class='{"opa" : i.designationName === "Master Admin"}'
                 >
                 <td class="_flx_15">{{ i.designationName }}</td>
+                <td class="_flx_15">{{ i.designationCode }}</td>
                 <td class="_flx_15">{{ i.department.departmentName }}</td>                
                 <td class="_flx_15">{{ i.benefitBundle.label }}</td>
                 <td class='_flx_1 tr'>
@@ -194,7 +195,7 @@ export default {
       return {
         EmployeeHeading: ['Employee','Department','Designation','Grade Policy','Actions'],
         DepartmentHeading: ['Department','Code','Action'],
-        DesignationHeading: ['Designation','Department','Grade Policy','Actions'],
+        DesignationHeading: ['Designation','Designation Code','Department','Grade Policy','Actions'],
         ToDelete:[],
         ActiveRow: {},
         Department:'0',

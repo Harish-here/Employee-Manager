@@ -10,7 +10,7 @@ const Employee = {
     designation: "",
     hierarchyId: "1",//defalut value sending since we are gonna hide this shit
     approverList: [],
-    travelDesk: '',
+    travelDesk: "",
     employeeCode: '',
     resign: '0',
     personalEmail: "",
@@ -28,7 +28,7 @@ const EmployeeLabel = {
     mobile: { label: "Mobile Number", type: 'text' },
     department: { label: "Department", type: 'select' },
     designation: { label: "Designation", type: 'select' },
-    approverList: { label: "Approval Hierachy", type:'select'},
+    
     resign: null,
     hierarchyId: null,
     // hierarchyId: { label: "Set Hierachy", type: 'select' },
@@ -37,6 +37,7 @@ const EmployeeLabel = {
     startDate: { label: "Date of Joining", type: 'date' },
     status: { label: "Account", type:'radio'},
     travelDesk: {label: "Travel Desk",type:"select"},
+    approverList: { label: "Approval Hierachy", type:'select'},
     
     
 };
@@ -65,7 +66,7 @@ const Designation = {
     approval: 'null',
     rightsHotel: { label: 'Yes', value: '1' },
     dayCount: 'null',
-    reservHandle: '',
+    reservHandle: "",
     bookRoomPersion:  { label: "Approver", value: "2|approvar" },
     overBudget: 'null',
     bookingTool: [],
