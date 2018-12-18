@@ -3,6 +3,13 @@
     <section class='sec4 br b--light-silver  ghost-white' id='sidebar'>
       <ul class="flex flex-column-reverse" >
           <li class='p10-20 centering'>
+            <a style="text-align:center" :href='global + "/company/fileImport/1"'>
+            <span class='tc'>
+              <i class="fa fa-cloud-upload" aria-hidden="true"></i><br>
+               Import
+            </span> </a>
+          </li>        
+          <li class='p10-20 centering'>
             <a style="text-align:center" :href='global + "/customer/policy"'>
             <span class='tc'>
               <i class="fa fa-cog" aria-hidden="true"></i><br>
@@ -38,8 +45,8 @@
         {{ Found }} {{ActiveView + '(s)'}} found.
       </div>
       <div class="fr w-40 pa3 tr">
-        <button @click='ActiveSubView = "Create",EmpSub = "create"' class="btn btn-xs btn-primary">Add {{ActiveView}}</button>
-        <button v-if='ActiveView === "Employee"' @click='ActiveSubView = "Create",EmpSub = "import"' class="btn ml2 btn-xs btn-primary">Import {{ActiveView}}</button>
+        <button @click='ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add {{ActiveView}}</button>
+        <!-- <button v-if='ActiveView === "Employee"' @click='ActiveSubView = "Create"' class="btn ml2 btn-xs btn-primary">Import {{ActiveView}}</button> -->
       </div>
       <div class='fr w-40 pa3'>
         <div class=' fr w-70 flex justify-center items-center' >
@@ -135,9 +142,9 @@ export default {
     setSubView: function(data){
       this.ActiveViewData = data.data;
       this.ActiveSubView = data.view;
-      if(data.view === "Update" || data.view === "Create"){
-        this.EmpSub = 'create'
-      }
+      // if(data.view === "Update" || data.view === "Create"){
+      //   this.EmpSub = 'create'
+      // }
     },
     SetDelete : function(data){
       this.ToDelete = data;

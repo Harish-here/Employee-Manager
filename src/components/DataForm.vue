@@ -14,14 +14,16 @@
     <div class="middle">
       <!-- <form> -->
         <!-- Employee Form View -->
-       <ul class="w100 flex pointer" v-if='ViewType === "Employee" && (SubViewType ==="Create")'>
+       <!-- <ul class="w100 flex pointer" v-if='ViewType === "Employee" && (SubViewType ==="Create")'>
          <li class="w-50 pa2 tc bb b--light-gray ul-trans"
              @click='EmpSub = "create"'
              :class='{"act-tab" : EmpSub === "create"}'>Create</li>
          <li class="w-50 pa2 tc bb b--light-gray ul-trans"
              @click='EmpSub = "import"'
              :class='{"act-tab" : EmpSub === "import"}'>Import</li>
-       </ul>
+       </ul> -->
+       <!-- Basic text  -->
+       <div class="pa3 tc gray" v-if='SubViewType !== "Display" && SubViewType !== "Create" && SubViewType !== "Update"'>Manage your {{ViewType}} Details here</div>
        <!--Employee display view display view-->
        <ul v-if='ViewType === "Employee" && SubViewType ==="Display"' class='pa3'>
         <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa1'> 
@@ -67,7 +69,7 @@
         </li>
        </ul>
        <!-- Employee create && Employee update -->
-       <ul v-if='ViewType === "Employee" && EmpSub ==="create" &&( SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
+       <ul v-if='ViewType === "Employee" &&( SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
         <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa1'> 
           <span class='flex flex-column items-baseline' >
             <label class='w-40'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
@@ -100,7 +102,7 @@
               </div>
               <div v-if="index === 'approverList'"><!-- approver select -->
                   <multiselect :multiple="true" v-model='EmpData[index]' :options='ApproverData.filter(x => x.value != EmpData["travelAgencyUsersId"])' 
-                      :close-on-select="true" :clear-on-select="false" :preserve-search="false"  label="label" track-by="value" :preselect-first="false">
+                      :close-on-select="true" :clear-on-select="false" selectLabel='Choose'  label="label" track-by="value" :preselect-first="false">
                           <!-- <template slot="selection" slot-scope="{ options }">
                           </template> -->
                   </multiselect>
@@ -152,7 +154,7 @@
           </span>
         </li>
        </ul>
-       <div class='upload-contanier tc pa1 relative' v-if='ViewType === "Employee" && EmpSub ==="import" && (SubViewType ==="Create")'>
+       <!-- <div class='upload-contanier tc pa1 relative' v-if='ViewType === "Employee" && EmpSub ==="import" && (SubViewType ==="Create")'>
           <div>
             <a target="_blank" :href='Global + "/public_html/csv_template/employee_csv_format.csv"'><span class='absolute top-1 right-1'>Format <i class="fa fa-download" aria-hidden="true"></i></span></a>
             <form id='fileUpload' enctype='multipart/form-data' class='flex flex-column' @submit.prevent='FileUpload'>
@@ -165,7 +167,7 @@
             </form>
 
           </div>
-       </div>
+       </div> -->
         <!-- End of employee -->
 
         <!-- Department Form View -->
@@ -235,7 +237,7 @@
                 <!-- <option  v-else value=''>Sample</option> -->
               </select>
               <!-- exception -->
-              <select class="fl pa1"  v-if='index === "reservHandle"' :disabled='DesData["role"].value && (DesData["role"].value == 1 || DesData["role"].value == 2)' v-model='TempRole'>
+              <select class="fl pa1"  v-if='index === "reservHandle"' :disabled='DesData["role"].value !== undefined && (DesData["role"].value == 1 || DesData["role"].value == 2)' v-model='TempRole'>
                 <option v-for='j in Reserve'  :value='j' :key='j.value'>{{ j.label }}</option>
               </select>
               <div class='pa1 flex flex-wrap items-baseline' v-if='index === "bookingTool"'>
@@ -472,13 +474,18 @@ export default {
          deep: true,
          handler: function(val){
            if(this.SubViewType === 'Create'){
-              if( val['role'].value && (val['role'].value == '1' || val['role'].value == '2') ){
+              if( val['role'].value !== undefined && (val['role'].value == '1' || val['role'].value == '2') ){
                 this.TempRole = { label: 'Yes', value: '1|yes' };
               }else{
                 this.TempRole = "";
               }
            }else{
-             this.TempRole = this.ActiveData['reservHandle'];
+             if( val['role'].value !== undefined && (val['role'].value == '1' || val['role'].value == '2') ){
+                this.TempRole = { label: 'Yes', value: '1|yes' };
+              }else{
+                this.TempRole = JSON.parse(JSON.stringify(this.ActiveData['reservHandle']));
+              }
+             
            }
 
          }
@@ -823,10 +830,10 @@ export default {
      UpdateData: function(){
        const self = this;
 
-      //  if(this.ViewType == 'Designation'){
-      //     //update
-      //     this.ActiveData['reservHandle'] = this.TempRole;
-      //   }
+       if(this.ViewType == 'Designation'){
+          //update
+          this.ActiveData['reservHandle'] = this.TempRole;
+        }
 
         //error checking
        if(self.Error.length > 0){

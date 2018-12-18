@@ -9,7 +9,7 @@
               <th v-for='(i,index) in TableHead'
                   :key='i'
                   class='tl' 
-                  :class='{"_flx_15" : index <3,"_flx_1" : index >3,"flex justify-evenly items-center" : ViewType === "Employee" }'>
+                  :class='{"_flx_15" : index <3,"_flx_1" : index >=3,"flex justify-evenly items-center" : ViewType === "Employee","--mod": ViewType === "Department" && index === 2 }'>
                  <span v-if='List.length > 0 && ViewType === "Employee" && i === "Employee"'>
                      <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.filter(x =>  x.department.departmentName != 'Master Admin').map(y => y.travelAgencyUsersId)">&nbsp;&nbsp;&nbsp;</span>
                        {{i}}
@@ -19,7 +19,7 @@
 
            <!-- </transition> -->
         </thead>
-        <thead calss='assign' v-if="ToDelete.length > 0 && ViewType === 'Employee'">
+        <thead v-if="ToDelete.length > 0 && ViewType === 'Employee'">
             <tr class='bg-white pa1 flex'>
                 <!-- <div class='flex w-100 justify-between items-baseline'> -->
                     <td class='_flx_15'>
@@ -130,8 +130,10 @@
                 >
                 <td class="_flx_15">{{ i.designationName }}</td>
                 <td class="_flx_15">{{ i.designationCode }}</td>
-                <td class="_flx_15">{{ i.department.departmentName }}</td>                
+                <td class="_flx_15">{{ i.department.departmentName || "" }}</td>                
                 <td class="_flx_15">{{ i.benefitBundle.label }}</td>
+                <td class="_flx_1">{{ i.role.label || "" }}</td>
+                <td class="_flx_1">{{ i.reservHandle.label || "" }}</td>
                 <td class='_flx_1 tr'>
                     <button class="btn-spl"
                             v-if="i.designationName !== 'Master Admin'"
@@ -195,7 +197,7 @@ export default {
       return {
         EmployeeHeading: ['Employee','Department','Designation','Grade Policy','Actions'],
         DepartmentHeading: ['Department','Code','Action'],
-        DesignationHeading: ['Designation','Designation Code','Department','Grade Policy','Actions'],
+        DesignationHeading: ['Designation','Code','Department','Grade Policy',"Role","Approver",'Actions'],
         ToDelete:[],
         ActiveRow: {},
         Department:'0',
@@ -404,5 +406,9 @@ tr > th, tr > td { flex:1 0 0; align-self: baseline;}
 }
 .act-row{
     background-color: #00a0c20f;
+}
+.--mod{
+    text-align: right;
+    padding-right: 40px;
 }
 </style>
