@@ -61,12 +61,12 @@
             <div class="w-100 flex fw6">{{ EmpData['resignDate'] }}</div>
           </span>
         </li>
-        <li v-if='EmpData["resign"] == "1"' class='pa1'>
+        <!-- <li v-if='EmpData["resign"] == "1"' class='pa1'>
           <span class="flex">
             <label for="" class="w-70">Resigned Time</label>
             <div class="w-100 flex fw6">{{ EmpData['resignTime'] }}</div>
           </span>
-        </li>
+        </li> -->
        </ul>
        <!-- Employee create && Employee update -->
        <ul v-if='ViewType === "Employee" &&( SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
@@ -102,7 +102,8 @@
               </div>
               <div v-if="index === 'approverList'"><!-- approver select -->
                   <multiselect :multiple="true" v-model='EmpData[index]' :options='ApproverData.filter(x => x.value != EmpData["travelAgencyUsersId"])' 
-                      :close-on-select="true" :clear-on-select="false" selectLabel='Choose'  label="label" track-by="value" :preselect-first="false">
+                      :close-on-select="false" :clear-on-select="false" :preserve-search="true" :searchable='false' 
+                      selectLabel='Choose'  label="label" track-by="value" >
                           <!-- <template slot="selection" slot-scope="{ options }">
                           </template> -->
                   </multiselect>
@@ -193,7 +194,12 @@
             </div>
           </span>
         </li>
-        <li class='pa2 tc'><button class='btn-spl --not-ghost' v-if="ViewType === 'Department'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button></li>
+        <li class='pa2 tc mt3' v-if="SubViewType === 'Create'"><button class='btn-spl --not-ghost'  @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button></li>
+        <li class='pa2 tc mt3' v-if="SubViewType === 'Update'">
+          <button class='btn-spl --not-ghost' @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
+          <button class='btn-spl'  @click='$emit("CancelViewType")' :disabled='DisableAction'><span v-if='SubViewType === "Update"'>Cancel</span><span v-else>Back to create</span></button>
+          <button class='btn-spl btn-dlt' @click='DeleteData' :disabled='DisableAction'>Delete </button>
+        </li>
        </ul>
         <!-- Department Display View -->
        <ul v-if='ViewType === "Department" && SubViewType === "Display"' class='pa3'>
@@ -281,9 +287,9 @@
       <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType !== 'Employee' && ViewType !== 'Department'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button>
       <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType === 'Employee' && File === null && EmpSub ==='create'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
       <button class="btn-spl --not-ghost" @click='ResignEmployee' v-if='ShowResign && SubViewType !== "Create"'>Resign this Employee</button>
-      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Update' && !ShowResign" @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
-      <button class='btn-spl' v-if="(SubViewType === 'Update'   || SubViewType === 'Display') && !ShowResign" @click='$emit("CancelViewType")' :disabled='DisableAction'><span v-if='SubViewType === "Update"'>Cancel</span><span v-else>Back to create</span></button>
-      <button class='btn-spl btn-dlt' v-if="SubViewType === 'Update' && !ShowResign" @click='DeleteData' :disabled='DisableAction'>Delete </button>
+      <button class='btn-spl --not-ghost' v-if="ViewType !== 'Department' && SubViewType === 'Update' && !ShowResign" @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
+      <button class='btn-spl' v-if="ViewType !== 'Department' && (SubViewType === 'Update'   || SubViewType === 'Display') && !ShowResign" @click='$emit("CancelViewType")' :disabled='DisableAction'><span v-if='SubViewType === "Update"'>Cancel</span><span v-else>Back to create</span></button>
+      <button class='btn-spl btn-dlt' v-if="ViewType !== 'Department' && SubViewType === 'Update' && !ShowResign" @click='DeleteData' :disabled='DisableAction'>Delete </button>
       
     </div>
     <!-- <pre>{{EmployeeForm.label}}</pre> -->
@@ -490,14 +496,6 @@ export default {
 
          }
        },
-      //  EmpData: {
-      //    deep: true,
-      //    handler: function(val){
-      //      if(this.SubViewType === 'Update'){
-      //        this.TempApp = this.ActiveData['approverList'];
-      //      }
-      //    }
-      //  }
        
      },
 
@@ -506,7 +504,6 @@ export default {
       this.GetBundle(1);
       this.GetTravelDesk();
 
-      //
   },
 
    methods : {
@@ -539,12 +536,13 @@ export default {
          return
        }
        $.post(api.resignEmployee,{employee:self.SendData,resignDate: self.SendData.resignDate,resignTime: self.SendData.resignTime}).done(function(data){
-         if(data.toLowerCase().includes('true')){
-          //  self.ResignDate = '';
+         if(data.includes('true')){
+           self.ResignDate = '';
           //  self.ResignTime = '';
           //  self.Resign = false;
            self.flush();
            self.ActionDone();
+          self.$emit("CancelViewType");
            self.ThroughAlert('Employment status updated successfully','bg-green');
          }else{
            self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
@@ -793,11 +791,9 @@ export default {
         if(self.Error.length === 0){
           for(var i in self.SendData){
             if( self.SendData[i] === null || self.SendData[i] === ' ' || self.SendData[i] === '') {
-              //to skip designation department code
-                
+              //to skip designation department code  
                 self.ThroughAlert('Please fill in all required fields','bg-light-red');
                 return
-              
               
             }
           }
@@ -810,6 +806,7 @@ export default {
             // self.DepartmentForm.data = {};
             // self.EmployeeForm.data = {};
             // self.DesignationForm.data = {};
+            self.$emit("CancelViewType");
             self.flush();
             self.ActionDone();
             self.GetTravelDesk();
@@ -857,11 +854,12 @@ export default {
             self.ActionDone();
             self.GetTravelDesk();
             self.$emit("CancelViewType");
+            // self.GetTravelDesk();
             self.ThroughAlert(self.ViewType + ' details updated successfully.','bg-green');
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
           }
-          
+           self.GetTravelDesk();
         }).fail(function(x,s,err){
           self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
          
@@ -883,7 +881,8 @@ export default {
             }else{
                 self.ThroughAlert(data.split('|')[1],'bg-light-red');
             }
-            //  self.flush();
+             self.flush();
+             self.GetTravelDesk();
           }).fail(function(x,s,err){
             self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
             // self.flush();
@@ -994,5 +993,8 @@ li.ul-trans {
 }
 .drag-cur{
   cursor: move;
+}
+.mt3{
+  margin-top:5rem !important;
 }
 </style>

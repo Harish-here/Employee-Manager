@@ -10,7 +10,7 @@
             </span> </a>
           </li>        
           <li class='p10-20 centering'>
-            <a style="text-align:center" :href='global + "/customer/policy"'>
+            <a style="text-align:center" :href='global + "/customer/policy/grade"'>
             <span class='tc'>
               <i class="fa fa-cog" aria-hidden="true"></i><br>
               Grade Policy
@@ -84,7 +84,7 @@
                  :DeptData='DepartList'
                  :ApproverData='Approver'
                  @ActionDone='GetFreshData'
-                 @CancelViewType='ActiveSubView = "Create"'
+                 @CancelViewType='ActiveSubView = "",ActiveSubView = "Create";'
                  ></data-form>
     </section>
   </div>
@@ -253,5 +253,7 @@ export default {
   padding:5px;
   border: 1px solid  rgba(13, 37, 69, .1);
 } */
- 
+ *{
+        word-wrap: break-word;
+      }
 </style>

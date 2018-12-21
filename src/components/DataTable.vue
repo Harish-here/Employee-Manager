@@ -9,7 +9,7 @@
               <th v-for='(i,index) in TableHead'
                   :key='i'
                   class='tl' 
-                  :class='{"_flx_15" : index <3,"_flx_1" : index >=3,"flex justify-evenly items-center" : ViewType === "Employee","--mod": ViewType === "Department" && index === 2 }'>
+                  :class='{"_flx_15" : index <=3,"_flx_1" : index >3,"--mod": ViewType === "Department" && index === 2 }'>
                  <span v-if='List.length > 0 && ViewType === "Employee" && i === "Employee"'>
                      <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.filter(x =>  x.department.departmentName != 'Master Admin').map(y => y.travelAgencyUsersId)">&nbsp;&nbsp;&nbsp;</span>
                        {{i}}
@@ -50,7 +50,7 @@
                             <option  value='0'>Disable</option>
                         </select>
                         <button @click='MultipleAssign' class='btn btn-xs btn-primary fr' :disabled='(Department === "0" || Design === "0") && Policy === "0" && (Account === null || Account === "null")'>
-                            <i class="fa fa-check-square-o" aria-hidden="true"></i> 
+                            <!-- <i class="fa fa-check-square-o" aria-hidden="true"></i>  -->save
                         </button>
                     </td>
                     
@@ -72,8 +72,16 @@
                 </td>
                 <td class='_flx_15' :class='{"light-red": i.department === null}'>{{ (i.department !== null ) ? i.department.departmentName : 'Unassigned' }}</td>
                 <td class='_flx_15' :class='{"light-red": i.designation === null}'>{{ (i.designation !== null ) ? i.designation.label : 'Unassigned' }}</td>
-                <td class='_flx_1' :class='{"light-red": i.benefitBundle === null}'>{{ (i.benefitBundle !== null) ? i.benefitBundle.label : 'Unassigned' }}</td>
+                <td class='_flx_15' :class='{"light-red": i.benefitBundle === null}'>{{ (i.benefitBundle !== null) ? i.benefitBundle.label : 'Unassigned' }}</td>
                 <!-- <td class='_flx_1 tc' :class='{"light-red": i.hierarchyId === null}'>{{ (i.hierarchyId !== null) ? i.hierarchyId : 'Unassigned' }}</td> -->
+                <td class='_flx_1'>{{(i.travelDeskResr !== null && i.travelDeskResr.length > 0) ? (i.travelDeskResr.split('|')[1] == "yes") ? "Yes" : "No" : ""}}</td>
+                <td class='_flx_1'>{{(function(){
+                        switch(i.role){
+                            case '1': return "Travel Desk";break;
+                            case '2': return "Finance";break;
+                            case '3': return "Employee"; break;
+                        }
+                    })()}}</td>
                 <td class='_flx_1 tr'>
                     <button class="btn-spl"
                             v-if='i.department !== null && i.department.departmentName !== "Master Admin"'
@@ -195,7 +203,7 @@ export default {
   },
   data(){
       return {
-        EmployeeHeading: ['Employee','Department','Designation','Grade Policy','Actions'],
+        EmployeeHeading: ['Employee','Department','Designation','Grade Policy','Approver','Role','Actions'],
         DepartmentHeading: ['Department','Code','Action'],
         DesignationHeading: ['Designation','Code','Department','Grade Policy',"Role","Approver",'Actions'],
         ToDelete:[],
@@ -232,7 +240,7 @@ export default {
               this.Department = '0';
               this.Design = '0';
               this.Policy = '0';
-              this.Account = 0;
+              this.Account = null;
           }
       },
       'subView': function(val){
@@ -337,7 +345,7 @@ export default {
          if(confirm('Warning! Applying changes is permanent and cannot be undone. Are you sure you want to proceed?')){
             var delay = alertify.get('notifier','delay');
             alertify.set('notifier','delay', 200);
-            alertify.warning('Processing the Assign...');
+            alertify.warning('Assigning to the selected People');
             alertify.set('notifier','delay', delay);
              $.post(api.updateBulk,{employee:self.ToDelete,department:self.Department,designation:self.Design,policy:self.Policy,account:self.Account}).done(function(data){
                  if(data.includes("true")){
@@ -399,7 +407,7 @@ td,th{
     padding: 10px;
     text-align: left;
 }
-tr > th, tr > td { flex:1 0 0; align-self: baseline;}
+tr > th, tr > td { flex:1 1 0; align-self: baseline;}
 .assign{
     position: absolute;
     top:40px;
