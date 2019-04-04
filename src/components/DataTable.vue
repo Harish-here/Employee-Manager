@@ -9,7 +9,7 @@
               <th v-for='(i,index) in TableHead'
                   :key='i'
                   class='tl' 
-                  :class='{"_flx_15" : index <=3,"_flx_1" : index >3,"--mod": ViewType === "Department" && index === 2 }'>
+                  :class='{"_flx_15" : index <=3,"_flx_1" : index >3,"--mod": (ViewType === "Department" || ViewType === "Team") && index === 2 }'>
                  <span v-if='List.length > 0 && ViewType === "Employee" && i === "Employee"'>
                      <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.filter(x =>  x.department.departmentName != 'Master Admin').map(y => y.travelAgencyUsersId)">&nbsp;&nbsp;&nbsp;</span>
                        {{i}}
@@ -70,7 +70,7 @@
                         {{i.travelAgencyNameTemp}} {{ i.virtualName }}
                     </span>
                 </td>
-                <td class='_flx_15' :class='{"light-red": i.department === null}'>{{ (i.department !== null ) ? i.department.departmentName : 'Unassigned' }}</td>
+                <td class='_flx_15' :class='{"light-red": i.department === null}'>{{ (i.department !== null && i.department !== "" ) ? (i.department.departmentName || "") : 'Unassigned' }}</td>
                 <td class='_flx_15' :class='{"light-red": i.designation === null}'>{{ (i.designation !== null ) ? i.designation.label : 'Unassigned' }}</td>
                 <td class='_flx_15' :class='{"light-red": i.benefitBundle === null}'>{{ (i.benefitBundle !== null) ? i.benefitBundle.label : 'Unassigned' }}</td>
                 <!-- <td class='_flx_1 tc' :class='{"light-red": i.hierarchyId === null}'>{{ (i.hierarchyId !== null) ? i.hierarchyId : 'Unassigned' }}</td> -->
@@ -102,7 +102,7 @@
                 <td colspan='6' class='gray tc w-100'>No Employees Available </td>
             </tr>
         </tbody>
-        <tbody v-if='ViewType === "Department"'>
+        <tbody v-if='ViewType === "Department" || ViewType === "Team"'>
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
@@ -138,7 +138,7 @@
                 >
                 <td class="_flx_15">{{ i.designationName }}</td>
                 <td class="_flx_15">{{ i.designationCode }}</td>
-                <td class="_flx_15">{{ i.department.departmentName || "" }}</td>                
+                <!-- <td class="_flx_15">{{ i.department.departmentName || "" }}</td>                 -->
                 <td class="_flx_15">{{ i.benefitBundle.label }}</td>
                 <td class="_flx_1">{{ i.role.label || "" }}</td>
                 <td class="_flx_1">{{ i.reservHandle.label || "" }}</td>
@@ -203,9 +203,9 @@ export default {
   },
   data(){
       return {
-        EmployeeHeading: ['Employee','Department','Designation','Grade Policy','Approver','Role','Actions'],
+        EmployeeHeading: ['Employee','Department','Designation','Travel Policy','Approver','Role','Actions'],
         DepartmentHeading: ['Department','Code','Action'],
-        DesignationHeading: ['Designation','Code','Department','Grade Policy',"Role","Approver",'Actions'],
+        DesignationHeading: ['Designation','Code','Travel Policy',"Role","Approver",'Actions'],
         ToDelete:[],
         ActiveRow: {},
         Department:'0',
@@ -267,7 +267,7 @@ export default {
               if(self.ViewType === 'Employee'){
                   return ( x['travelAgencyNameTemp'] +' ' + x[self.SearchProperty]+' '+x['department'].departmentName+' '+x['benefitBundle'].label+' '+x['designation'].label).toLowerCase().includes(self.Query.toLowerCase())
               }else{
-                  if(self.ViewType === 'Department')
+                  if(self.ViewType === 'Department' || self.ViewType === 'Team')
                   return x[self.SearchProperty].toLowerCase().includes(self.Query.toLowerCase())
                   else{
                       return (x[self.SearchProperty]+' '+x['department'].departmentName+' '+x['benefitBundle'].label).toLowerCase().includes(self.Query.toLowerCase())
@@ -283,13 +283,13 @@ export default {
       SearchProperty(){
           const self = this;
         if(self.ViewType === 'Employee') return 'virtualName'
-        if(self.ViewType === 'Department') return 'departmentName'
+        if(self.ViewType === 'Department' || this.ViewType === 'Team') return 'departmentName'
         if(self.ViewType === 'Designation') return 'designationName'
       },
 
       TableHead(){
           if(this.ViewType === 'Employee') return this.EmployeeHeading
-          if(this.ViewType === 'Department') return this.DepartmentHeading
+          if(this.ViewType === 'Department' || this.ViewType === 'Team') return this.DepartmentHeading
           if(this.ViewType === 'Designation') return this.DesignationHeading
 
       },

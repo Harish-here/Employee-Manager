@@ -13,11 +13,11 @@
             <a style="text-align:center" :href='global + "/customer/policy/grade"'>
             <span class='tc'>
               <i class="fa fa-cog" aria-hidden="true"></i><br>
-              Grade Policy
+              Travel Policy
             </span> </a>
           </li>
           <li class='p10-20 centering'
-              :class='{"btn-rev" : ActiveView === "Department"}' @click='ActiveView = "Department"'>
+              :class='{"btn-rev" : ActiveView === "Department" || ActiveView === "Team"}' @click='ActiveView = "Department"'>
             <span class='tc'>
               <i class="fa fa-briefcase" aria-hidden="true"></i><br>
               Department
@@ -45,7 +45,8 @@
         {{ Found }} {{ActiveView + '(s)'}} found.
       </div>
       <div class="fr w-40 pa3 tr">
-        <button @click='ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add {{ActiveView}}</button>
+        <button @click='ActiveSubView = "Create",changeViewToDepartment()' class="btn btn-xs btn-primary">Add {{(ActiveView === "Team") ? "Department" : ActiveView}}</button>
+        <button v-if='ActiveView === "Department" || ActiveView === "Team"' @click='ActiveView = "Team",ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add Team</button>
         <!-- <button v-if='ActiveView === "Employee"' @click='ActiveSubView = "Create"' class="btn ml2 btn-xs btn-primary">Import {{ActiveView}}</button> -->
       </div>
       <div class='fr w-40 pa3'>
@@ -130,7 +131,7 @@ export default {
   computed : {
     SelectedList(){
       if(this.ActiveView === 'Employee') return this.SourceList
-      if(this.ActiveView === 'Department') return this.DepartList
+      if(this.ActiveView === 'Department' || this.ActiveView === 'Team') return this.DepartList
       if(this.ActiveView === 'Designation') return this.DesignList
     }
   },
@@ -139,9 +140,23 @@ export default {
     SetLength: function(data){
       this.Found = data;
     },
+    changeViewToDepartment: function(){
+      if(this.ActiveView === "Team"){
+        this.ActiveView = "Department"
+      }
+    },
     setSubView: function(data){
+      if("parent" in  data.data && this.ActiveView !== "Department"){
+        if(data.data["parent"] != 0){
+           this.ActiveView = "Team"
+        }else{
+          this.ActiveView = "Department"
+        }
+       
+      }
       this.ActiveViewData = data.data;
       this.ActiveSubView = data.view;
+      
       // if(data.view === "Update" || data.view === "Create"){
       //   this.EmpSub = 'create'
       // }
@@ -197,6 +212,9 @@ export default {
   },
   watch: {
     ActiveView: function(val){
+      if(val === "Team"){
+        return
+      }
       this.CreateHistory(this.url[val]);
       this.ActiveSubView = "";
     }
@@ -236,6 +254,7 @@ export default {
         case 'employees' : self.ActiveView = 'Employee';break;
         case 'department' : self.ActiveView = 'Department';break;
         case 'designations' : self.ActiveView = 'Designation';break;
+        // case 'department' : self.ActiveView = 'Department';break;
       }
      this.CreateHistory(type);
 

@@ -33,7 +33,7 @@
               <span v-if='index !== "department" && index !== "designation" && index !== "approverList" && index !=="travelDesk" && index !== "status"'>{{EmpData[index]}}</span>
               <span v-if='index === "department"'>{{ EmpData[index].departmentName || '' }}</span>
               <span v-if='index === "designation"'>{{ EmpData[index].label || '' }}</span>
-              <span v-if='index ==="travelDesk"'>{{ (EmpData[index].label !== undefined ) ? EmpData[index].label : "" }}</span>
+              <!-- <span v-if='index ==="travelDesk"'>{{ (EmpData[index].label !== undefined ) ? EmpData[index].label : "" }}</span> -->
               <span v-if='index === "status"'> {{ (EmpData[index] === '1') ? 'Enable' : 'Disable'}}</span>
               <div v-if="index === 'approverList'"><!-- approver select -->
                   <!-- <v-select v-model='EmpData[index]' :options='ApproverData.filter(x => x.value != EmpData["travelAgencyUsersId"])' multiple></v-select> -->
@@ -86,7 +86,7 @@
               
               <select class='pa1'
                       v-model='EmpData[index]'
-                      @change='CheckForDep(EmpData[index],index)'
+                      
                       v-if='index ==="travelDesk" || index === "department" || index === "designation" || index === "benefitBundle" || index === "hierarchyId"'>
                 <!-- <option value='' selected disabled>{{ EmployeeForm.label[index].label }}</option> -->
                 <option v-for='j in DeptData'  v-if='index === "department" && j.departmentName !== "Master Admin"' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
@@ -170,19 +170,79 @@
           </div>
        </div> -->
         <!-- End of employee -->
-
+        <!-- Team Form View -->
+       <ul v-if='ViewType === "Team" && (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
+        <li v-for='(i,index) in TeamForm.label' :key='index' v-if="i !== null && TeamForm.label[index].label !== ''" class='pa1'> 
+          <span class='flex flex-column items-baseline' >
+            <label class='w-70'>{{ TeamForm.label[index].label }} <sup class='b6'>*</sup></label>
+            <div class='w-100 flex flex-column'>
+              <input class='pa1'
+                     v-if='TeamForm.label[index].type === "text"' 
+                     v-model='TeamData[index]' 
+                     :type='TeamForm.label[index].type'
+                     @blur='Validate(index,TeamForm.label[index])'
+                     :class='{"ba b--red" : Error.includes(TeamForm.label[index].label)}'
+                     required='required' />
+              <select class='pa1'
+                      v-if='TeamForm.label[index].type === "select"'
+                      v-model='TeamData[index]'
+                      @blur='Validate(index,TeamForm.label[index])'
+                     :class='{"ba b--red" : Error.includes(TeamForm.label[index].label)}'>
+                 <option v-for='j in TeamOption["departments"]'
+                         v-if='index === "parent" && j.departmentName !== "Master Admin"'
+                         :key='j.departmentId' :value='j.departmentId'>
+                         {{ j.departmentName}}
+                  </option>
+                 <option v-for='j in TeamOption[index]'
+                         v-if='index !== "parent" && j.label !== "Master Admin"'
+                         :key='j.value'
+                         :value='j.value'>
+                         {{j.label}}
+                  </option>
+              </select>
+              <!-- Error msg-->
+               <transition name='fade'>
+                <span class='red pv1' style="font-size:10px;" 
+                      v-if='Error.includes(TeamForm.label[index].label)'
+                      >
+                      Provide a valid {{TeamForm.label[index].label}}
+                  </span>
+                </transition>
+            </div>
+          </span>
+        </li>
+        <!-- <li class='pa2 tc mt3' v-if="SubViewType === 'Create'"><button class='btn-spl --not-ghost'  @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button></li>
+        <li class='pa2 tc mt3' v-if="SubViewType === 'Update'">
+          <button class='btn-spl --not-ghost' @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
+          <button class='btn-spl'  @click='$emit("CancelViewType")' :disabled='DisableAction'><span v-if='SubViewType === "Update"'>Cancel</span><span v-else>Back to create</span></button>
+          <button class='btn-spl btn-dlt' @click='DeleteData' :disabled='DisableAction'>Delete </button>
+        </li> -->
+       </ul>
+       <!--- end of team form --->
         <!-- Department Form View -->
        <ul v-if='ViewType === "Department" && (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
         <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa1'> 
           <span class='flex flex-column items-baseline' >
             <label class='w-70'>{{ DepartmentForm.label[index].label }} <sup class='b6'>*</sup></label>
             <div class='w-100 flex flex-column'>
-              <input class='pa1' 
+              <input class='pa1'
+                      v-if='DepartmentForm.label[index].type !== "select"'
                      v-model='DepData[index]' 
                      :type='DepartmentForm.label[index].type'
                      @blur='Validate(index,DepartmentForm.label[index])'
                      :class='{"ba b--red" : Error.includes(DepartmentForm.label[index].label)}'
                      required='required' />
+              <select class='pa1'
+                      v-if='DepartmentForm.label[index].type === "select"'
+                      v-model='DepData[index]'
+                      @blur='Validate(index,DepartmentForm.label[index])'
+                     :class='{"ba b--red" : Error.includes(DepartmentForm.label[index].label)}'>
+                 <option v-for='j in TeamOption["financeApprover"]'
+                         v-if='j.value !== "Master Admin"'
+                         :key='j.value' :value='j.value'>
+                         {{ j.label}}
+                  </option>
+              </select>
               <!-- Error msg-->
                <transition name='fade'>
                 <span class='red pv1' style="font-size:10px;" 
@@ -230,7 +290,7 @@
                       v-if='index !== "bookingTool" && index !== "designationCode" && index !== "designationName" && index !== "reservHandle"'
                       v-model='DesData[index]'>
                 <!-- <option value='' selected disabled>{{ DesignationForm.label[index].label }}</option> -->
-                <option v-for='j in DeptData' v-if='index === "department" && j.departmentName !== "Master Admin"' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
+                <!-- <option v-for='j in DeptData' v-if='index === "department" && j.departmentName !== "Master Admin"' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option> -->
                 <option v-if='index === "role"' v-for='k in Role' :value='k' :key='k.value'>{{ k.label }}</option>
                 <option v-if='index === "rightsHotel"' v-for='j in Rights' :value='j' :key='j.value'>{{ j.label }}</option>
                 <option v-if='index === "bookRoomPersion"' v-for='j in Permission' :value='j' :key='j.value'>{{ j.label }}</option>
@@ -284,7 +344,7 @@
     </div>
     <!-- button section -->
     <div class="footer bt b--light-silver flex justify-center items-center">
-      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType !== 'Employee' && ViewType !== 'Department'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button>
+      <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType !== 'Employee' && ViewType !== 'Department' " @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button>
       <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType === 'Employee' && File === null && EmpSub ==='create'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
       <button class="btn-spl --not-ghost" @click='ResignEmployee' v-if='ShowResign && SubViewType !== "Create"'>Resign this Employee</button>
       <button class='btn-spl --not-ghost' v-if="ViewType !== 'Department' && SubViewType === 'Update' && !ShowResign" @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
@@ -307,7 +367,7 @@ import draggable from 'vuedraggable'
 // import { fail } from 'assert';
 import vSelect from 'vue-select'
 
-
+// var userType = 3;
 
 export default {
   name: 'DataForm',
@@ -356,6 +416,8 @@ export default {
     //  var self = this
      return {
       //  SubViewType: 'Create',
+       userType: userType,
+        // userType: 3, 
        sam: true,
        Global: global_url,
        EmployeeForm : { 
@@ -366,6 +428,10 @@ export default {
        DepartmentForm : {
          data : JSON.parse(JSON.stringify(struct.department.data)),
          label: struct.department.label, 
+       },
+       TeamForm: {
+         label: JSON.parse(JSON.stringify(struct.team.label)),
+         data: JSON.parse(JSON.stringify(struct.team.data))
        },
        SetHierachy : ['1','2','3','4','5','6','7','8','9','10'],
        Role: struct.role,
@@ -387,7 +453,8 @@ export default {
        ResignTime: '',
        TravelDeskList: [],
        TempRole: "",
-       TempApp: []
+       TempApp: [],
+       TeamOption: {}
 
      }
    },
@@ -427,6 +494,14 @@ export default {
          return this.ActiveData
        }
      },
+     TeamData(){
+       if(this.SubViewType === 'Create'){
+         return this.TeamForm.data
+       }else{
+         
+         return this.ActiveData
+       }
+     },
      DesData(){
        if(this.SubViewType === 'Create'){
          return this.DesignationForm.data
@@ -446,23 +521,24 @@ export default {
 
      CreateUrl(){
       if(this.ViewType === 'Employee') return api.emp.create
-      if(this.ViewType === 'Department') return api.depart.create
+      if(this.ViewType === 'Department' || this.ViewType === 'Team') return api.depart.create
       if(this.ViewType === 'Designation') return api.design.create
      },
      UpdateUrl(){
        if(this.ViewType === 'Employee') return api.emp.update
-      if(this.ViewType === 'Department') return api.depart.update
+      if(this.ViewType === 'Department' || this.ViewType === 'Team') return api.depart.update
       if(this.ViewType === 'Designation') return api.design.update
      },
      DeleteUrl(){
        if(this.ViewType === 'Employee') return api.emp.delete
-      if(this.ViewType === 'Department') return api.depart.delete
+      if(this.ViewType === 'Department' || this.ViewType === 'Team') return api.depart.delete
       if(this.ViewType === 'Designation') return api.design.delete
      },
      SendData(){
        if(this.ViewType === 'Employee') return this.EmpData
       if(this.ViewType === 'Department') return this.DepData
       if(this.ViewType === 'Designation') return this.DesData
+      if(this.ViewType === 'Team') return this.TeamData
      },
     
    },
@@ -503,7 +579,8 @@ export default {
     const self = this;
       this.GetBundle(1);
       this.GetTravelDesk();
-
+      this.GetTeamOptions();
+      this.GetDesignation();
   },
 
    methods : {
@@ -518,17 +595,18 @@ export default {
           this.DepartmentForm.data = JSON.parse(JSON.stringify(struct.department.data));
           
           }
+      if(this.ViewType === 'Team'){
+          this.TeamForm.data = {};
+          this.TeamForm.data = JSON.parse(JSON.stringify(struct.department.data));
+          
+       }
       if(this.ViewType === 'Designation'){ 
         this.DesignationForm.data = {};
         this.DesignationForm.data = JSON.parse(JSON.stringify(struct.designation.data))
         }
       },
 
-     CheckForDep: function(obj,index){
-       if(this.ViewType === 'Employee' && index === 'department'){
-         this.GetDesignation(obj.departmentId);
-       }
-     },
+     
      ResignEmployee: function(){
        const self = this;
        if(self.EmpData.resignDate === null ||  self.EmpData.resignDate === ''){
@@ -724,7 +802,7 @@ export default {
 
        //validating the field on their rules set
        var emailreg = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,'g')
-       var self = this;
+       const self = this;
       //  if(obj === undefined){ console.log(index)}
        switch(obj.type){
          case 'number': if(!(self.SendData[index].toString().length === 10) ||
@@ -791,9 +869,12 @@ export default {
         if(self.Error.length === 0){
           for(var i in self.SendData){
             if( self.SendData[i] === null || self.SendData[i] === ' ' || self.SendData[i] === '') {
-              //to skip designation department code  
-                self.ThroughAlert('Please fill in all required fields','bg-light-red');
-                return
+              //to skip traveldesk for usertype 4
+                if( i !== 'travelDesk' && self.userType !== '4'){
+                  self.ThroughAlert('Please fill in all required fields','bg-light-red');
+                  return
+                }  
+
               
             }
           }
@@ -895,10 +976,10 @@ export default {
        this.$emit('ActionDone');
      },
 
-     GetDesignation: function(id){ //dropdown for the Design
+     GetDesignation: function(){ //dropdown for the Design
        var self = this
        
-      $.post(api.dropdown.design,{"dataId":id}).done(function(data){
+      $.post(api.dropdown.design,{"dataId":""}).done(function(data){
          try{
            self.DesignList = JSON.parse(data);
          }catch(e){
@@ -906,6 +987,18 @@ export default {
          }
          
        }).fail(x => alert('Service Not Available due to Network issuse. Please Refresh or Login again.!'));
+     },
+     GetTeamOptions: function(){
+       const self = this;
+       $.post(api.teamOptions,{data: ""})
+       .done(function(data){
+         try{
+           self.TeamOption = JSON.parse(data);
+         }catch(e){
+           alert('An Unexpected Error occurred. Please try again');
+           console.log("Wrong JSON"+e)
+         }
+       })
      },
 
      GetBundle: function(id){ //dropdown for the Bundle

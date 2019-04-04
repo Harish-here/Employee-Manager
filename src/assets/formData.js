@@ -8,9 +8,9 @@ const Employee = {
     mobile: "",
     department: "",
     designation: "",
-    hierarchyId: "1",//defalut value sending since we are gonna hide this shit
+    hierarchyId: "1",//sending defalut value  since we are gonna hide this shit
     approverList: [],
-    travelDesk: "",
+    // travelDesk: "null",
     employeeCode: '',
     resign: '0',
     personalEmail: "",
@@ -26,7 +26,7 @@ const EmployeeLabel = {
     employeeCode: {label: "Employee Code",type:'text'},
     email: { label: "Official Email", type: 'email' },
     mobile: { label: "Mobile Number", type: 'text' },
-    department: { label: "Department", type: 'select' },
+    department: { label: "Department / Team", type: 'select' },
     designation: { label: "Designation", type: 'select' },
     
     resign: null,
@@ -36,7 +36,7 @@ const EmployeeLabel = {
     personalEmail: { label: "Personal Email", type: 'email' },
     startDate: { label: "Date of Joining", type: 'date' },
     status: { label: "Account", type:'radio'},
-    travelDesk: {label: "Travel Desk",type:"select"},
+    // travelDesk: {label: "Travel Desk",type:"select"},
     approverList: { label: "Approval Hierachy", type:'select'},
     
     
@@ -46,17 +46,39 @@ const Department = {
     departmentName: "",
     departmentCode: "",
     travelAgencyMasterId: 'null',
+    financeApprover:"",
+    team:"0"
+}
+const DepartmentTeam = {
+    departmentId: 'null',
+    departmentName: "",
+    departmentCode: "",
+    parent:"",
+    budgetApprover: "",
+    financeApprover: "",
+    travelDesk: "",
+    team:'1'
 }
 
+const DepartmentTeamLabel = {
+    departmentId: null,
+    departmentName: { label: "Team Name", type: 'text' },
+    departmentCode: { label: "Team Code", type: 'text' },
+    parent: { label: "Parent Team", type: 'select' },
+    budgetApprover: { label: "Budget Approver", type: 'select' },
+    financeApprover: { label: "Finance Approver", type: 'select' },
+    travelDesk: { label: "Travel Desk", type: 'select' }
+}
 const DepartmentLabel = {
     departmentId: null,
     departmentName: { label: "Department Name", type: 'text' },
     departmentCode: { label: "Department Code", type: 'text' },
+    financeApprover: { label: "Finance Approver", type: 'select' },
     travelAgencyMasterId: null,
 }
 
 const Designation = {
-    department: '',
+    // department: '',
     designationId: 'null',
     designationName: '',
     designationCode: '',
@@ -77,12 +99,12 @@ const Designation = {
 const DesignationLabel = {
     travelAgencyMasterId: null,
     designationId: null,
-    department: { label: 'Department', type: 'select' },
+    // department: { label: 'Department', type: 'select' },
     designationName: { label: 'Designation', type: 'text' },
     designationCode: { label: 'Designation Code', type: 'text' },
     hierarchyId : null,
     // hierarchyId: { label: 'Set hierarchy', type: 'select' },
-    benefitBundle: { label: 'Grade Policy', type: 'select' },
+    benefitBundle: { label: 'Travel Policy', type: 'select' },
     // approval: { label: 'No of Approval', type: 'select' },
     approval: null,
     role: { label: 'Role', type: 'select' },
@@ -144,6 +166,10 @@ export default {
     designation: {
         data: Designation,
         label: DesignationLabel
+    },
+    team: {
+        data: DepartmentTeam,
+        label: DepartmentTeamLabel
     },
     role: Role,
     rights: Rights,

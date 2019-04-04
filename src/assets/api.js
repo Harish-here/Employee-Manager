@@ -45,5 +45,6 @@ export default {
     fileUpload: BaseUrl + 'employeeImport',
     getApprovar: BaseUrl + 'approverList',
     resignEmployee: BaseUrl + 'resign',
-    travelDeskList: BaseUrl + 'travelDesk' 
+    travelDeskList: BaseUrl + 'travelDesk',
+    teamOptions: BaseUrl + 'deptProps' 
 }
