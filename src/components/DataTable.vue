@@ -9,9 +9,9 @@
               <th v-for='(i,index) in TableHead'
                   :key='i'
                   class='tl' 
-                  :class='{"_flx_15" : index <=3,"_flx_1" : index >3,"--mod": (ViewType === "Department" || ViewType === "Team") && index === 2 }'>
+                  :class='{"_flx_15" : index <=3,"_flx_1" : index >3,"-mod": (ViewType === "Department" || ViewType === "Team") && index === 2 }'>
                  <span v-if='List.length > 0 && ViewType === "Employee" && i === "Employee"'>
-                     <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.filter(x =>  x.department.departmentName != 'Master Admin').map(y => y.travelAgencyUsersId)">&nbsp;&nbsp;&nbsp;</span>
+                     <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.filter(x => x.department !== null &&  x.department.departmentName != 'Master Admin').map(y => y.travelAgencyUsersId)">&nbsp;&nbsp;&nbsp;</span>
                        {{i}}
               </th> 
             </tr>
@@ -27,8 +27,10 @@
                     </td>
                     <td class='_flx_15'>
                         <select class='w-20' v-model='Department'>
-                            <option value='0' selected disabled>Department</option>
-                            <option v-for='i in Extra' v-if='i.departmentName !== "Master Admin"' :value='i.departmentId' :key='i.departmentId'>{{ i.departmentName}}</option>
+                            <option value='0' selected disabled>Team</option>
+                            <option v-for='i in TeamOption["departments"].filter(x => x.parent !== "0")'
+                                    v-if='i.departmentName !== "Master Admin"'
+                                    :value='i.departmentId' :key='i.departmentId'>{{ i.departmentName}}</option>
                         </select>
                     </td>
                     <td class='_flx_15'>
@@ -43,14 +45,18 @@
                             <option v-for='i in BundleList' v-if='i.label !== "Master Admin"' :value='i' :key='i.value'>{{ i.label }}</option>
                         </select>
                     </td>
-                    <td class="_flx_1">
-                        <select style="width:75px !important;" v-model='Account'>
+                    <td class="_flx_1 flex justify-around">
+                        <select style="width:68px !important;" v-model='Account'>
                             <option value='null' selected disabled>Account</option>
                             <option  value='1'>Enable</option>
                             <option  value='0'>Disable</option>
                         </select>
-                        <button @click='MultipleAssign' class='btn btn-xs btn-primary fr' :disabled='(Department === "0" || Design === "0") && Policy === "0" && (Account === null || Account === "null")'>
+                        <button @click='MultipleAssign' class='btn btn-xs btn-primary fr'
+                                :disabled='(Department === "0") && Policy === "0" && (Account === null || Account === "null")'>
                             <!-- <i class="fa fa-check-square-o" aria-hidden="true"></i>  -->save
+                        </button>
+                        <button @click='ToDelete =[],Account=null,Policy="0",Design="0",Department="0"' class='btn btn-xs btn-default fr'>
+                            <!-- <i class="fa fa-check-square-o" aria-hidden="true"></i>  -->Clear
                         </button>
                     </td>
                     
@@ -70,7 +76,7 @@
                         {{i.travelAgencyNameTemp}} {{ i.virtualName }}
                     </span>
                 </td>
-                <td class='_flx_15' :class='{"light-red": i.department === null}'>{{ (i.department !== null && i.department !== "" ) ? (i.department.departmentName || "") : 'Unassigned' }}</td>
+                <td class='_flx_15' :class='{"light-red": i.department === null}'>{{ (i.department === null || i.department == "") ? "-" : (i.department.departmentName || "") }}</td>
                 <td class='_flx_15' :class='{"light-red": i.designation === null}'>{{ (i.designation !== null ) ? i.designation.label : 'Unassigned' }}</td>
                 <td class='_flx_15' :class='{"light-red": i.benefitBundle === null}'>{{ (i.benefitBundle !== null) ? i.benefitBundle.label : 'Unassigned' }}</td>
                 <!-- <td class='_flx_1 tc' :class='{"light-red": i.hierarchyId === null}'>{{ (i.hierarchyId !== null) ? i.hierarchyId : 'Unassigned' }}</td> -->
@@ -106,11 +112,14 @@
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
                 :key='index'
-                :class='{"opa" : i.active === "0" || i.departmentName === "Master Admin"}'
+                :class='{"opa" : i.active === "0" || i.departmentName === "Master Admin","no-app": i.parent != "0"}'
                 >
                 <td class="_flx_15">{{ i.departmentName }}</td>
                 <td class="_flx_15">{{ i.departmentCode }}</td>
-                <td class='_flx_15 tr'>
+                <td class="_flx_15">{{ GetTheLabel("travelDesk",i.travelDesk)  }}</td>
+                <td class="_flx_1">{{ GetTheLabel("budgetApprover",i.budgetApprover)  }}</td>
+                <td class="_flx_1">{{ GetTheLabel("financeApprover",i.financeApprover)  }}</td>
+                <td class='_flx_1 tr'>
                    <button class="btn-spl"
                            v-if='i.departmentName !== "Master Admin"'
                            @click='sendThis(i,"Update")'>
@@ -200,17 +209,20 @@ export default {
   },
   created: function(){
       this.GetBundle(1);
+      this.GetTeamOptions();
+      this.GetDesignation()
   },
   data(){
       return {
-        EmployeeHeading: ['Employee','Department','Designation','Travel Policy','Approver','Role','Actions'],
-        DepartmentHeading: ['Department','Code','Action'],
+        EmployeeHeading: ['Employee','Team','Designation','Travel Policy','Approver','Role','Actions'],
+        DepartmentHeading: ['Department / Team','Code',"Travel Desk","Budget Approver","Finance Approver",'Action'],
         DesignationHeading: ['Designation','Code','Travel Policy',"Role","Approver",'Actions'],
         ToDelete:[],
         ActiveRow: {},
         Department:'0',
         Design: '0',
         Policy: '0',
+        TeamOption: {},
         DesignList: [],
         ShowAlert: false,
         AlertMsg: 'Alert Message',
@@ -226,9 +238,9 @@ export default {
                 this.ActiveRow = {};
                 
       },
-      'Department': function(val){
-          this.GetDesignation(val)
-      },
+    //   'Department': function(val){
+          
+    //   },
       'SelectAll': function(val,old){
           if(val.length > 0 && val[0].length > 0){
               this.ToDelete = [...this.ToDelete,...val[0]];
@@ -301,6 +313,27 @@ export default {
           this.ActiveRow = data; 
           this.$emit('rowClicked',{data:JSON.parse(JSON.stringify(data)),view: type});
       },
+      GetTheLabel:  function(label,id){
+        let a =  this.TeamOption[label].filter(x => {
+            return (label === "parent") ? 
+                            (x["departmentId"] == id) :
+                            (x["value"] == id)
+        });
+
+        return (a.length > 0) ? (label === 'parent') ?  a[0]['departmentName'] : a[0]['label'] : "NA"
+      },
+      GetTeamOptions: function(){
+            const self = this;
+            $.post(api.teamOptions,{data: ""})
+            .done(function(data){
+                try{
+                self.TeamOption = JSON.parse(data);
+                }catch(e){
+                alert('An Unexpected Error occurred. Please try again');
+                console.log("Wrong JSON"+e)
+                }
+            })
+      },
       DeleteAll: function(){
           var self = this;
           if(confirm('Are you Sure to delete the Selected employees?')){
@@ -328,10 +361,10 @@ export default {
          
        }).fail(x => self.ThroughAlert('Service Not Available due to Network issuse. Please Refresh or Login again.!','bg-red'));
      },
-      GetDesignation: function(id){ //dropdown for the Design
+      GetDesignation: function(){ //dropdown for the Design
        var self = this
        
-      $.post(api.dropdown.design,{"dataId":id}).done(function(data){
+      $.post(api.dropdown.design,{"dataId":""}).done(function(data){
          try{
            self.DesignList = JSON.parse(data);
          }catch(e){

@@ -70,7 +70,9 @@
        </ul>
        <!-- Employee create && Employee update -->
        <ul v-if='ViewType === "Employee" &&( SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
-        <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa1'> 
+        <li v-for='(i,index) in EmployeeForm.label'
+            :key='index'
+            v-if="i !== null" class='pa1'> 
           <span class='flex flex-column items-baseline' >
             <label class='w-40'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
             <div class='w-100 flex flex-column'>
@@ -89,9 +91,9 @@
                       
                       v-if='index ==="travelDesk" || index === "department" || index === "designation" || index === "benefitBundle" || index === "hierarchyId"'>
                 <!-- <option value='' selected disabled>{{ EmployeeForm.label[index].label }}</option> -->
-                <option v-for='j in DeptData'  v-if='index === "department" && j.departmentName !== "Master Admin"' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
+                <option v-for='j in TeamOption["departments"]'  v-if='index === "department" && j.departmentName !== "Master Admin" && j.parent != 0' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
                 <!-- <option v-else value='{}'>1</option> -->
-                <option v-if='index === "designation"' v-for='j in DesignList' :value="j" :key='j.value'>{{ j.label }}</option>
+                <option  v-for='j in DesignList' v-if='index === "designation" && j.label !== "Master Admin"' :value="j" :key='j.value'>{{ j.label }}</option>
                 <option v-for='j in BundleList' v-if='index === "benefitBundle" && j.label !== "Master Admin"' :value="j" :key='j.value'>{{ j.label }}</option>
                 <option v-if='index === "hierarchyId"' v-for='j in SetHierachy' :value="j" :key='j'>{{ j }}</option>
                 <option  v-for='j in TravelDeskList' v-if='index === "travelDesk" && j.value !== EmpData["travelAgencyUsersId"]' :value="j" :key='j.value'>{{ j.label }}</option>
@@ -174,7 +176,7 @@
        <ul v-if='ViewType === "Team" && (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
         <li v-for='(i,index) in TeamForm.label' :key='index' v-if="i !== null && TeamForm.label[index].label !== ''" class='pa1'> 
           <span class='flex flex-column items-baseline' >
-            <label class='w-70'>{{ TeamForm.label[index].label }} <sup class='b6'>*</sup></label>
+            <label class='w-70'>{{ TeamForm.label[index].label }} <sup class='b6' v-if='index !== "budgetApprover" && index !== "financeApprover"'>*</sup></label>
             <div class='w-100 flex flex-column'>
               <input class='pa1'
                      v-if='TeamForm.label[index].type === "text"' 
@@ -186,8 +188,11 @@
               <select class='pa1'
                       v-if='TeamForm.label[index].type === "select"'
                       v-model='TeamData[index]'
+                      :disabled = 'index === "financeApprover"'
+                      @change='SetFinApprover'
                       @blur='Validate(index,TeamForm.label[index])'
                      :class='{"ba b--red" : Error.includes(TeamForm.label[index].label)}'>
+                 <option class='gray' value='0' v-if='["budgetApprover","financeApprover"].includes(index)'>Select {{TeamForm.label[index].label}}</option>
                  <option v-for='j in TeamOption["departments"]'
                          v-if='index === "parent" && j.departmentName !== "Master Admin"'
                          :key='j.departmentId' :value='j.departmentId'>
@@ -219,6 +224,29 @@
         </li> -->
        </ul>
        <!--- end of team form --->
+        <!-- Team Display View -->
+       <ul v-if='ViewType === "Team" && SubViewType === "Display"' class='pa3'>
+        <li v-for='(i,index) in TeamForm.label' :key='index' v-if="i !== null && TeamForm.label[index].label !== ''" class='pa1'> 
+          <span class='flex flex-column items-baseline' >
+            <label class='w-70'>{{ TeamForm.label[index].label }}</label>
+            <div class='w-100 flex flex-column pa1' v-if='index === "departmentName" || index === "departmentCode"'>
+              {{TeamData[index]}}
+            </div>
+            <div v-else class="w-100 flex flex-column pa">
+              {{ (function(){
+                let lookUpIndex = (index === "parent") ? "departments" : index;
+                  let a = TeamOption[lookUpIndex].filter(x => {
+                    return (index === "parent") ? 
+                            (x["departmentId"] == TeamData[index]) :
+                            (x["value"] == TeamData[index])
+                  })
+                  return (a.length > 0) ? (index === 'parent') ?  a[0]['departmentName'] : a[0]['label'] : "NA"
+              })() 
+              }}
+            </div>
+          </span>
+        </li>
+       </ul>
         <!-- Department Form View -->
        <ul v-if='ViewType === "Department" && (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
         <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa1'> 
@@ -266,8 +294,22 @@
         <li v-for='(i,index) in DepartmentForm.label' :key='index' v-if="i !== null && DepartmentForm.label[index].label !== ''" class='pa1'> 
           <span class='flex flex-column items-baseline' >
             <label class='w-70'>{{ DepartmentForm.label[index].label }}</label>
-            <div class='w-100 flex flex-column pa1'>
+            <div class='w-100 flex flex-column pa1' v-if='index !== "financeApprover"'>
               {{DepData[index]}}
+            </div>
+            <div class='w-100 flex flex-column pa1' v-if='index === "financeApprover"'>
+              {{
+                 (function(){
+                  let lookUpIndex = (index === "parent") ? "departments" : index;
+                  let a = TeamOption[lookUpIndex].filter(x => {
+                    return (index === "parent") ? 
+                            (x["departmentId"] == DepData[index]) :
+                            (x["value"] == DepData[index])
+                  })
+                  return (a.length > 0) ? (index === 'parent') ?  a[0]['departmentName'] : a[0]['label'] : "NA"
+              })() 
+              
+              }}
             </div>
           </span>
         </li>
@@ -306,11 +348,11 @@
               <select class="fl pa1"  v-if='index === "reservHandle"' :disabled='DesData["role"].value !== undefined && (DesData["role"].value == 1 || DesData["role"].value == 2)' v-model='TempRole'>
                 <option v-for='j in Reserve'  :value='j' :key='j.value'>{{ j.label }}</option>
               </select>
-              <div class='pa1 flex flex-wrap items-baseline' v-if='index === "bookingTool"'>
+              <!-- <div class='pa1 flex flex-wrap items-baseline' v-if='index === "bookingTool"'>
                 <span class='pa1 flex items-baseline'><input class='pa1 self-baseline' value='1' type='checkbox' v-model='DesData[index]'><span  class='pa1 self'>Book Now</span></span>
                 <span class='pa1 flex items-baseline'><input  class='pa1' value='2' type='checkbox' v-model='DesData[index]'><span  class='pa1'>Enquiry</span></span>
                 <span class='pa1 flex items-baseline'><input  class='pa1' value='3' type='checkbox' v-model='DesData[index]'><span  class='pa1'>Trip Scheduler</span></span>
-              </div>
+              </div> -->
               <!-- Error msg-->
                <transition name='fade'>
                 <span class='red pv1' style="font-size:10px;" 
@@ -454,7 +496,14 @@ export default {
        TravelDeskList: [],
        TempRole: "",
        TempApp: [],
-       TeamOption: {}
+       TeamOption: {},
+       propToSkip: ["budgetApprover","financeApprover"],
+       skip: {
+         "Employee" : ["approverList"],
+         "Department": [],
+         "Team": ["budgetApprover","financeApprover"],
+         "Designation": [] 
+       }
 
      }
    },
@@ -549,8 +598,6 @@ export default {
        },
        'SubViewType': function(val){
          this.Error.length = 0;
-
-
        },
        DesData: {
          deep: true,
@@ -584,6 +631,14 @@ export default {
   },
 
    methods : {
+     SetFinApprover: function(){
+       if(this.ViewType === "Team"){
+
+         let id = this.TeamOption['departments'].find(x => this.TeamData['parent'] == x['departmentId']);
+         this.TeamData['financeApprover'] = id['financeApprover'] || 0;
+
+       }
+     },
      flush: function(){
        if(this.ViewType === 'Employee'){
           this.EmployeeForm.data = {};
@@ -833,6 +888,8 @@ export default {
         if(self.ViewType === 'Designation' && self.SubViewType === 'Create'){
           //create
           this.DesignationForm.data['reservHandle'] = this.TempRole;
+          // console.log(self.SendData);
+          // return;
         }
         // if(self.ViewType === 'Employee' && self.SubViewType === 'Create'){
         //   this.EmployeeForm.data['approverList'] == this.TempApp;
@@ -866,19 +923,29 @@ export default {
 
 
        //error checking code when onblur is not at al fired
-        if(self.Error.length === 0){
+        // if(self.Error.length === 0){
           for(var i in self.SendData){
-            if( self.SendData[i] === null || self.SendData[i] === ' ' || self.SendData[i] === '') {
-              //to skip traveldesk for usertype 4
-                if( i !== 'travelDesk' && self.userType !== '4'){
+            // console.log( i + " - " +self.SendData[i] + " " +(self.SendData[i] === "")+" " + (self.SendData[i] == ""))
+            if((self.userType === '4' && i === 'travelDesk')){
+              continue //to skip the travel desk for travelagent
+            }
+            if(self.skip[self.ViewType].includes(i)){
+              //to skipt he not manadatory field
+              continue
+            }
+            //clear logic to validate the error and skip the prop
+            // debugger;
+            if(
+               (self.SendData[i] === null || self.SendData[i] == ' ' || self.SendData[i] == '')) {
+                 console.log( i + ' - ' + self.SendData[i])
                   self.ThroughAlert('Please fill in all required fields','bg-light-red');
                   return
-                }  
-
               
             }
           }
-        }
+          // console.log(self.SendData)
+          
+        // }
       self.DisableAction = true;
       $.post(this.CreateUrl,this.SendData).done(function(data){
           
@@ -891,6 +958,8 @@ export default {
             self.flush();
             self.ActionDone();
             self.GetTravelDesk();
+            self.GetTeamOptions();
+            self.GetDesignation();
             self.ThroughAlert(self.ViewType + ' created successfully.','bg-green');
             
           }else{
@@ -934,6 +1003,8 @@ export default {
             self.flush();
             self.ActionDone();
             self.GetTravelDesk();
+            self.GetTeamOptions();
+            self.GetDesignation();
             self.$emit("CancelViewType");
             // self.GetTravelDesk();
             self.ThroughAlert(self.ViewType + ' details updated successfully.','bg-green');
@@ -958,6 +1029,8 @@ export default {
               self.ActionDone();
               self.$emit("CancelViewType");
               self.GetTravelDesk();
+              self.GetTeamOptions();
+              self.GetDesignation();
               self.ThroughAlert(self.ViewType + ' deleted successfully.','bg-light-red');
             }else{
                 self.ThroughAlert(data.split('|')[1],'bg-light-red');

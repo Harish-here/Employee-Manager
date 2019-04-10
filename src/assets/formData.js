@@ -8,7 +8,7 @@ const Employee = {
     mobile: "",
     department: "",
     designation: "",
-    hierarchyId: "1",//sending defalut value  since we are gonna hide this shit
+    // hierarchyId: "1",//sending defalut value  since we are gonna hide this shit
     approverList: [],
     // travelDesk: "null",
     employeeCode: '',
@@ -54,8 +54,8 @@ const DepartmentTeam = {
     departmentName: "",
     departmentCode: "",
     parent:"",
-    budgetApprover: "",
-    financeApprover: "",
+    budgetApprover: "0",
+    financeApprover: "0",
     travelDesk: "",
     team:'1'
 }
@@ -91,7 +91,7 @@ const Designation = {
     reservHandle: "",
     bookRoomPersion:  { label: "Approver", value: "2|approvar" },
     overBudget: 'null',
-    bookingTool: [],
+    // bookingTool: [],
     role: '',
     travldesk: 'null',
 };
@@ -120,7 +120,7 @@ const DesignationLabel = {
     // overBudget: { label: 'Over Budget Policy can be approved by', type: 'select' },
     overBudget: null,
     // bookingTool: { label: 'Booking Tool', type: 'checkbox' },
-    bookingTool: null,
+    // bookingTool: null,
     travldesk: null,
 }
 

@@ -45,7 +45,7 @@
         {{ Found }} {{ActiveView + '(s)'}} found.
       </div>
       <div class="fr w-40 pa3 tr">
-        <button @click='ActiveSubView = "Create",changeViewToDepartment()' class="btn btn-xs btn-primary">Add {{(ActiveView === "Team") ? "Department" : ActiveView}}</button>
+        <button @click='changeViewToDepartment(),ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add {{(ActiveView === "Team") ? "Department" : ActiveView}}</button>
         <button v-if='ActiveView === "Department" || ActiveView === "Team"' @click='ActiveView = "Team",ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add Team</button>
         <!-- <button v-if='ActiveView === "Employee"' @click='ActiveSubView = "Create"' class="btn ml2 btn-xs btn-primary">Import {{ActiveView}}</button> -->
       </div>
@@ -142,11 +142,12 @@ export default {
     },
     changeViewToDepartment: function(){
       if(this.ActiveView === "Team"){
-        this.ActiveView = "Department"
+        this.ActiveView = "Department";
+        this.ActiveSubView = "Create"
       }
     },
     setSubView: function(data){
-      if("parent" in  data.data && this.ActiveView !== "Department"){
+      if("parent" in  data.data){
         if(data.data["parent"] != 0){
            this.ActiveView = "Team"
         }else{
@@ -211,12 +212,17 @@ export default {
     },
   },
   watch: {
-    ActiveView: function(val){
+    ActiveView: function(val,old){
+      let temp = this.ActiveSubView;
       if(val === "Team"){
         return
       }
       this.CreateHistory(this.url[val]);
       this.ActiveSubView = "";
+
+      if(val === "Department" && old === "Team"){
+        this.ActiveSubView = temp
+      }
     }
   },
 
