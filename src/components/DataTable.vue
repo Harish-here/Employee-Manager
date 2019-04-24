@@ -108,9 +108,10 @@
                 <td colspan='6' class='gray tc w-100'>No Employees Available </td>
             </tr>
         </tbody>
-        <tbody v-if='ViewType === "Department" || ViewType === "Team"'>
+        <tbody v-if='ViewType === "Team"'>
             <tr class='flex bb b--light-silver'
                 v-for='(i,index) in List'
+                v-if='i.parent != "0"'
                 :key='index'
                 :class='{"opa" : i.active === "0" || i.departmentName === "Master Admin","no-app": i.parent != "0"}'
                 >
@@ -120,6 +121,35 @@
                 <td class="_flx_1">{{ GetTheLabel("budgetApprover",i.budgetApprover)  }}</td>
                 <td class="_flx_1">{{ GetTheLabel("financeApprover",i.financeApprover)  }}</td>
                 <td class='_flx_1 tr'>
+                   <button class="btn-spl"
+                           v-if='i.departmentName !== "Master Admin"'
+                           @click='sendThis(i,"Update")'>
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                        
+                    </button>
+                   <button class="btn-spl"
+                           v-if='i.departmentName !== "Master Admin"'
+                           @click='sendThis(i,"Display")'>
+                        <i class="fa fa-eye" aria-hidden="true"></i>
+                        
+                    </button>                    
+                </td>
+             </tr>
+             <tr class='flex justify-center bb b--light-silver' v-if='List.length === 0'>
+                <td colspan='6' class='gray tc w-100'>No Departments Available</td>
+            </tr>
+        </tbody>
+        <tbody v-if='ViewType === "Department"'>
+            <tr class='flex bb b--light-silver'
+                v-for='(i,index) in List'
+                v-if='i.parent == "0"'
+                :key='index'
+                :class='{"opa" : i.active === "0" || i.departmentName === "Master Admin"}'
+                >
+                <td class="_flx_15">{{ i.departmentName }}</td>
+                <td class="_flx_15">{{ i.departmentCode }}</td>
+                <td class="_flx_1">{{ GetTheLabel("financeApprover",i.financeApprover)  }}</td>
+                <td class='_flx_15 tr'>
                    <button class="btn-spl"
                            v-if='i.departmentName !== "Master Admin"'
                            @click='sendThis(i,"Update")'>
@@ -215,7 +245,8 @@ export default {
   data(){
       return {
         EmployeeHeading: ['Employee','Team','Designation','Travel Policy','Approver','Role','Actions'],
-        DepartmentHeading: ['Department / Team','Code',"Travel Desk","Budget Approver","Finance Approver",'Action'],
+        TeamHeading: ['Team','Code',"Travel Desk","Budget Approver","Finance Approver",'Action'],
+        DepartmentHeading: ['Team','Code',"Finance Approver",'Action'],
         DesignationHeading: ['Designation','Code','Travel Policy',"Role","Approver",'Actions'],
         ToDelete:[],
         ActiveRow: {},
@@ -301,8 +332,9 @@ export default {
 
       TableHead(){
           if(this.ViewType === 'Employee') return this.EmployeeHeading
-          if(this.ViewType === 'Department' || this.ViewType === 'Team') return this.DepartmentHeading
+          if(this.ViewType === 'Department') return this.DepartmentHeading
           if(this.ViewType === 'Designation') return this.DesignationHeading
+          if(this.ViewType === 'Team') return this.TeamHeading
 
       },
   },

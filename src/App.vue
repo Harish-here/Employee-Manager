@@ -17,10 +17,17 @@
             </span> </a>
           </li>
           <li class='p10-20 centering'
-              :class='{"btn-rev" : ActiveView === "Department" || ActiveView === "Team"}' @click='ActiveView = "Department"'>
+              :class='{"btn-rev" : ActiveView === "Department"}' @click='ActiveView = "Department"'>
             <span class='tc'>
               <i class="fa fa-briefcase" aria-hidden="true"></i><br>
               Department
+            </span>
+          </li>
+          <li class='p10-20 centering'
+              :class='{"btn-rev" : ActiveView === "Team"}' @click='ActiveView = "Team"'>
+            <span class='tc'>
+              <i class="fa fa-users" aria-hidden="true"></i><br>
+              Team
             </span>
           </li>
           <li class='p10-20 centering'
@@ -45,8 +52,8 @@
         {{ Found }} {{ActiveView + '(s)'}} found.
       </div>
       <div class="fr w-40 pa3 tr">
-        <button @click='changeViewToDepartment(),ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add {{(ActiveView === "Team") ? "Department" : ActiveView}}</button>
-        <button v-if='ActiveView === "Department" || ActiveView === "Team"' @click='ActiveView = "Team",ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add Team</button>
+        <button @click='ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add {{ActiveView}}</button>
+        <!-- <button v-if='ActiveView === "Department" || ActiveView === "Team"' @click='ActiveView = "Team",ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add Team</button> -->
         <!-- <button v-if='ActiveView === "Employee"' @click='ActiveSubView = "Create"' class="btn ml2 btn-xs btn-primary">Import {{ActiveView}}</button> -->
       </div>
       <div class='fr w-40 pa3'>
