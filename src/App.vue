@@ -138,8 +138,9 @@ export default {
   computed : {
     SelectedList(){
       if(this.ActiveView === 'Employee') return this.SourceList
-      if(this.ActiveView === 'Department' || this.ActiveView === 'Team') return this.DepartList
+      if(this.ActiveView === 'Department') return this.DepartList.filter(x => x.parent == "0")
       if(this.ActiveView === 'Designation') return this.DesignList
+      if(this.ActiveView === 'Team') return this.DepartList.filter(x => x.parent != "0")
     }
   },
 

@@ -52,7 +52,7 @@
                             <option  value='0'>Disable</option>
                         </select>
                         <button @click='MultipleAssign' class='btn btn-xs btn-primary fr'
-                                :disabled='(Department === "0") && Policy === "0" && (Account === null || Account === "null")'>
+                                :disabled='(Department === "0") && Design === "0" && Policy === "0" && (Account === null || Account === "null")'>
                             <!-- <i class="fa fa-check-square-o" aria-hidden="true"></i>  -->save
                         </button>
                         <button @click='ToDelete =[],Account=null,Policy="0",Design="0",Department="0"' class='btn btn-xs btn-default fr'>
@@ -113,7 +113,7 @@
                 v-for='(i,index) in List'
                 v-if='i.parent != "0"'
                 :key='index'
-                :class='{"opa" : i.active === "0" || i.departmentName === "Master Admin","no-app": i.parent != "0"}'
+                :class='{"opa" : i.active === "0" || i.departmentName === "Master Admin"}'
                 >
                 <td class="_flx_15">{{ i.departmentName }}</td>
                 <td class="_flx_15">{{ i.departmentCode }}</td>
@@ -136,7 +136,7 @@
                 </td>
              </tr>
              <tr class='flex justify-center bb b--light-silver' v-if='List.length === 0'>
-                <td colspan='6' class='gray tc w-100'>No Departments Available</td>
+                <td colspan='6' class='gray tc w-100'>No Teams Available</td>
             </tr>
         </tbody>
         <tbody v-if='ViewType === "Department"'>
@@ -295,7 +295,7 @@ export default {
       'List':{
           immediate: true,
           handler:  function(arr){
-                this.$emit('ListChanged',arr.length);
+                    this.$emit('ListChanged',arr.length);
                 //emitting the new value array length
             }
       }
@@ -412,7 +412,20 @@ export default {
             alertify.set('notifier','delay', 200);
             alertify.warning('Assigning to the selected People');
             alertify.set('notifier','delay', delay);
-             $.post(api.updateBulk,{employee:self.ToDelete,department:self.Department,designation:self.Design,policy:self.Policy,account:self.Account}).done(function(data){
+            var dataToSend = {
+                employee:self.ToDelete,
+                 department:self.Department,
+                 designation:self.Design,
+                 policy:self.Policy,
+                 account:self.Account
+                 };
+                if(dataToSend["designation"] == "0"){
+                    delete dataToSend.designation
+                }
+                if(dataToSend["policy"] == "0"){
+                    delete dataToSend.policy
+                }
+             $.post(api.updateBulk,{...dataToSend}).done(function(data){
                  if(data.includes("true")){
                      self.ToDelete = [];
                      self.SelectAll = [];
