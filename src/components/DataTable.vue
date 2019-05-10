@@ -246,7 +246,7 @@ export default {
       return {
         EmployeeHeading: ['Employee','Team','Designation','Travel Policy','Approver','Role','Actions'],
         TeamHeading: ['Team','Code',"Travel Desk","Budget Approver","Finance Approver",'Action'],
-        DepartmentHeading: ['Team','Code',"Finance Approver",'Action'],
+        DepartmentHeading: ['Department','Code',"Finance Approver",'Action'],
         DesignationHeading: ['Designation','Code','Travel Policy',"Role","Approver",'Actions'],
         ToDelete:[],
         ActiveRow: {},

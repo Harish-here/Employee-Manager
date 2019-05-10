@@ -17,14 +17,14 @@
             </span> </a>
           </li>
           <li class='p10-20 centering'
-              :class='{"btn-rev" : ActiveView === "Department"}' @click='ActiveView = "Department"'>
+              :class='{"btn-rev" : ActiveView === "Department"}' @click='ActiveView = "Department",ActiveSubView = ""'>
             <span class='tc'>
               <i class="fa fa-briefcase" aria-hidden="true"></i><br>
               Department
             </span>
           </li>
           <li class='p10-20 centering'
-              :class='{"btn-rev" : ActiveView === "Team"}' @click='ActiveView = "Team"'>
+              :class='{"btn-rev" : ActiveView === "Team"}' @click='ActiveView = "Team",ActiveSubView = ""'>
             <span class='tc'>
               <i class="fa fa-users" aria-hidden="true"></i><br>
               Team
