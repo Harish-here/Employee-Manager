@@ -41,7 +41,7 @@
               :class='{"btn-rev" : (ActiveView === "Employee")}' @click='ActiveView = "Employee"'>
             <span class='tc'>
               <i class="fa fa-user" aria-hidden="true"></i><br>
-              Employee
+              Traveller
             </span>
           </li>
       </ul>
@@ -49,10 +49,10 @@
     <!-- first panel -->
     <section class='sec1' >
       <div class='fl w-20 pa3'>
-        {{ Found }} {{ActiveView + '(s)'}} found.
+        {{ Found }} {{((ActiveView === "Employee") ? "Traveller" : ActiveView) + '(s)'}} found.
       </div>
       <div class="fr w-40 pa3 tr">
-        <button @click='ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add {{ActiveView}}</button>
+        <button @click='ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add {{(ActiveView === "Employee") ? "Traveller" : ActiveView}}</button>
         <!-- <button v-if='ActiveView === "Department" || ActiveView === "Team"' @click='ActiveView = "Team",ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add Team</button> -->
         <!-- <button v-if='ActiveView === "Employee"' @click='ActiveSubView = "Create"' class="btn ml2 btn-xs btn-primary">Import {{ActiveView}}</button> -->
       </div>

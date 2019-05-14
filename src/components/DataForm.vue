@@ -7,7 +7,7 @@
     </transition>
     <div class="head bb b--light-silver flex justify-center items-center pa2">
       <div class='f4'>
-        {{ (SubViewType != 'Display') ? SubViewType : "" }} {{ ViewType }} {{(SubViewType == 'Display') ? "Details" : ""}}
+        {{ (SubViewType != 'Display') ? SubViewType : "" }} {{ (ViewType === 'Employee') ? "Travellers" : ViewType }} {{(SubViewType == 'Display') ? "Details" : ""}}
       </div>
     </div>
     
@@ -23,7 +23,7 @@
              :class='{"act-tab" : EmpSub === "import"}'>Import</li>
        </ul> -->
        <!-- Basic text  -->
-       <div class="pa3 tc gray" v-if='SubViewType !== "Display" && SubViewType !== "Create" && SubViewType !== "Update"'>Manage your {{ViewType}} Details here</div>
+       <div class="pa3 tc gray" v-if='SubViewType !== "Display" && SubViewType !== "Create" && SubViewType !== "Update"'>Manage your {{(ViewType === 'Employee') ? "Travellers" : ViewType}} Details here</div>
        <!--Employee display view display view-->
        <ul v-if='ViewType === "Employee" && SubViewType ==="Display"' class='pa3'>
         <li v-for='(i,index) in EmployeeForm.label' :key='index' v-if="i !== null" class='pa1'> 
@@ -111,7 +111,7 @@
                   </multiselect>
                   <span v-if='EmpData[index].length > 0'>
                     <ul class='ba b--light-gray pa1 mt1'>
-                      <li class='gray'>Your approval tree (drag employees to reorder)</li>
+                      <li class='gray'>Your approval tree (drag Travellers to reorder)</li>
                       <draggable v-model="EmpData[index]" :options="{group:'people'}" @start="drag=true" @end="drag=false">
                         <li v-for='(i,index) in EmpData[index]' :key="i.value" class='pa1 drag-cur'><i class="fa fa-bars" aria-hidden="true"></i> {{ i.label }} <span class='fr badge badge-primary'>{{ index + 1 }}</span></li>
                       </draggable>
@@ -388,7 +388,7 @@
     <div class="footer bt b--light-silver flex justify-center items-center">
       <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType !== 'Employee' && ViewType !== 'Department' " @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i> </button>
       <button class='btn-spl --not-ghost' v-if="SubViewType === 'Create' && ViewType === 'Employee' && File === null && EmpSub ==='create'" @click='CreateData' :disabled='DisableAction'>Add <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
-      <button class="btn-spl --not-ghost" @click='ResignEmployee' v-if='ShowResign && SubViewType !== "Create"'>Resign this Employee</button>
+      <button class="btn-spl --not-ghost" @click='ResignEmployee' v-if='ShowResign && SubViewType !== "Create"'>Resign this Traveller</button>
       <button class='btn-spl --not-ghost' v-if="ViewType !== 'Department' && SubViewType === 'Update' && !ShowResign" @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
       <button class='btn-spl' v-if="ViewType !== 'Department' && (SubViewType === 'Update'   || SubViewType === 'Display') && !ShowResign" @click='$emit("CancelViewType")' :disabled='DisableAction'><span v-if='SubViewType === "Update"'>Cancel</span><span v-else>Back to create</span></button>
       <button class='btn-spl btn-dlt' v-if="ViewType !== 'Department' && SubViewType === 'Update' && !ShowResign" @click='DeleteData' :disabled='DisableAction'>Delete </button>
@@ -960,7 +960,7 @@ export default {
             self.GetTravelDesk();
             self.GetTeamOptions();
             self.GetDesignation();
-            self.ThroughAlert(self.ViewType + ' created successfully.','bg-green');
+            self.ThroughAlert(((self.ViewType === "Employee") ? "Traveller" : self.ViewType) + ' created successfully.','bg-green');
             
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
@@ -1007,7 +1007,7 @@ export default {
             self.GetDesignation();
             self.$emit("CancelViewType");
             // self.GetTravelDesk();
-            self.ThroughAlert(self.ViewType + ' details updated successfully.','bg-green');
+            self.ThroughAlert(((self.ViewType === "Employee") ? "Traveller" : self.ViewType) + ' details updated successfully.','bg-green');
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
           }
@@ -1031,7 +1031,7 @@ export default {
               self.GetTravelDesk();
               self.GetTeamOptions();
               self.GetDesignation();
-              self.ThroughAlert(self.ViewType + ' deleted successfully.','bg-light-red');
+              self.ThroughAlert(((self.ViewType === "Employee") ? "Traveller" : self.ViewType) + ' deleted successfully.','bg-light-red');
             }else{
                 self.ThroughAlert(data.split('|')[1],'bg-light-red');
             }

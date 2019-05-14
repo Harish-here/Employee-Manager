@@ -23,7 +23,7 @@
             <tr class='bg-white pa1 flex'>
                 <!-- <div class='flex w-100 justify-between items-baseline'> -->
                     <td class='_flx_15'>
-                      Apply to <span v-if='ToDelete.length > 0' class='badge'>{{ToDelete.length}}</span> Employee(s)
+                      Apply to <span v-if='ToDelete.length > 0' class='badge'>{{ToDelete.length}}</span> Traveller(s)
                     </td>
                     <td class='_flx_15'>
                         <select class='w-20' v-model='Department'>
@@ -85,7 +85,7 @@
                         switch(i.role){
                             case '1': return "Travel Desk";break;
                             case '2': return "Finance";break;
-                            case '3': return "Employee"; break;
+                            case '3': return "Traveller"; break;
                         }
                     })()}}</td>
                 <td class='_flx_1 tr'>
@@ -105,7 +105,7 @@
                 </td>
             </tr>
             <tr class='flex justify-center bb b--light-silver' v-if='List.length === 0'>
-                <td colspan='6' class='gray tc w-100'>No Employees Available </td>
+                <td colspan='6' class='gray tc w-100'>No Travellers Available </td>
             </tr>
         </tbody>
         <tbody v-if='ViewType === "Team"'>
@@ -244,7 +244,7 @@ export default {
   },
   data(){
       return {
-        EmployeeHeading: ['Employee','Team','Designation','Travel Policy','Approver','Role','Actions'],
+        EmployeeHeading: ['Traveller','Team','Designation','Travel Policy','Approver','Role','Actions'],
         TeamHeading: ['Team','Code',"Travel Desk","Budget Approver","Finance Approver",'Action'],
         DepartmentHeading: ['Department','Code',"Finance Approver",'Action'],
         DesignationHeading: ['Designation','Code','Travel Policy',"Role","Approver",'Actions'],
@@ -368,7 +368,7 @@ export default {
       },
       DeleteAll: function(){
           var self = this;
-          if(confirm('Are you Sure to delete the Selected employees?')){
+          if(confirm('Are you Sure to delete the Selected Travellers?')){
             $.post(api.deleteAll,{dataId : self.ToDelete}).done(function(data){
                 if(data.toString().includes('true')){
                     self.ToDelete = [];

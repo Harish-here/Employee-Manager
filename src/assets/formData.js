@@ -23,7 +23,7 @@ const EmployeeLabel = {
     companyName: null,
     travelAgencyNameTemp: { label: "First Name", type: 'text' },
     virtualName: { label: "Last Name", type: 'text' },
-    employeeCode: {label: "Employee Code",type:'text'},
+    employeeCode: {label: "Traveller Code",type:'text'},
     email: { label: "Official Email", type: 'email' },
     mobile: { label: "Mobile Number", type: 'text' },
     department: { label: "Department / Team", type: 'select' },
@@ -125,7 +125,7 @@ const DesignationLabel = {
 }
 
 const Role = [
-    { label: 'Employee', value: '3' },
+    { label: 'Traveller', value: '3' },
     { label: 'Travel Desk', value: '1' },
     { label: 'Finance', value: '2' },
     
@@ -143,13 +143,13 @@ const Rights = [
 ];
 
 const Permission = [
-    { label: "Employee After Approval", value: "1|employee" },
+    { label: "Traveller After Approval", value: "1|employee" },
     { label: "Approver", value: "2|approvar" },
     { label: "Travel Desk", value: "3|travel desk" },
 ];
 
 const OverBudget = [
-    { label: "Employee", value: "1|employee" },
+    { label: "Traveller", value: "1|employee" },
     { label: "Approver", value: "2|approvar" },
     { label: "Travel Desk", value: "3|travel desk" },
 ];
