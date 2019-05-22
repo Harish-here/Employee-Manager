@@ -188,7 +188,6 @@
               <select class='pa1'
                       v-if='TeamForm.label[index].type === "select"'
                       v-model='TeamData[index]'
-                      :disabled = 'index === "financeApprover"'
                       @change='SetFinApprover'
                       @blur='Validate(index,TeamForm.label[index])'
                      :class='{"ba b--red" : Error.includes(TeamForm.label[index].label)}'>

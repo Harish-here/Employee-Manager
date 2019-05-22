@@ -67,7 +67,7 @@
       
     </section>
     <!-- second panel -->
-    <section class='sec2 bb b--light-silver' >
+    <section class='sec2 bb b--light-silver flex flex-column' >
       <!-- <div v-if='SearchString !== ""' class='pa1'>Results for <b>{{ SearchString}}</b> <span @click='SearchString = ""' class='fr gray' style="cursor:pointer;">Clear <b>X</b></span></div> -->
       <data-table v-if='ActiveView !== "Approvals"'
                   :ListData='SelectedList'

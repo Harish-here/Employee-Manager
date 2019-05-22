@@ -1,5 +1,5 @@
 <template>
-  <div id="DataTable" class='relative'>
+  <div id="DataTable" class='relative flex flex-column'>
       <transition name='fade'>
         <div class='absolute self-center pa2 bg-light-red br2 white' style='margin-left:50%;z-index:1000;' :class="AlertCls" v-show='ShowAlert'><span>{{AlertMsg}}</span></div>
       </transition>
@@ -9,7 +9,7 @@
               <th v-for='(i,index) in TableHead'
                   :key='i'
                   class='tl' 
-                  :class='{"_flx_15" : index <=3,"_flx_1" : index >3,"-mod": (ViewType === "Department" || ViewType === "Team") && index === 2 }'>
+                  :class='{"_flx_15" : index <=3,"_flx_1" : index >3,"-mod": (ViewType === "Department" || ViewType === "Team") && index === 2,"tr mr3": i === "Action" }'>
                  <span v-if='List.length > 0 && ViewType === "Employee" && i === "Traveller"'>
                      <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.filter(x => x.department !== null &&  x.department.departmentName != 'Master Admin').map(y => y.travelAgencyUsersId)">&nbsp;&nbsp;&nbsp;</span>
                        {{i}}
@@ -313,7 +313,7 @@ export default {
                   if(self.ViewType === 'Department' || self.ViewType === 'Team')
                   return x[self.SearchProperty].toLowerCase().includes(self.Query.toLowerCase())
                   else{
-                      return (x[self.SearchProperty]+' '+x['department'].departmentName+' '+x['benefitBundle'].label).toLowerCase().includes(self.Query.toLowerCase())
+                      return (x[self.SearchProperty]+' '+x['benefitBundle'].label).toLowerCase().includes(self.Query.toLowerCase())
                   }
               }
              
@@ -466,10 +466,10 @@ export default {
 
 <style>
 #DataTable{
- height: 100%;
+ flex:1 0 0;
 }
 table{
-    height:100%;
+    flex:1 0 0;
     display: -webkit-flex;
     display: flex;
     flex-direction: column;
@@ -477,9 +477,9 @@ table{
 thead{ height : 40px; flex: 0 0 0 ;}
 
 tbody{
-/* flex: 1 0 0 ;  */
+flex: 1 0 0 ; 
 overflow-y:auto;
-height: calc(100% - 130px);
+/* height: calc(100% - 130px); */
 }
 td,th{
     padding: 10px;

@@ -37,7 +37,7 @@ const EmployeeLabel = {
     startDate: { label: "Date of Joining", type: 'date' },
     status: { label: "Account", type:'radio'},
     // travelDesk: {label: "Travel Desk",type:"select"},
-    approverList: { label: "Approval Hierachy", type:'select'},
+    approverList: { label: "Approval Hierarchy", type:'select'},
     
     
 };

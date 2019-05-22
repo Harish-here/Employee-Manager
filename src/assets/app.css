@@ -1,11 +1,11 @@
 .app {
     display: grid;
     grid-template-columns: .3fr 1.5fr 1fr 1fr;
-    grid-template-rows : 55px 250px 250px;
+    grid-template-rows : 55px 1fr 1fr;
     grid-template-areas:"d a a c"
                         "d b b c"
                         "d b b c";
-    height: 580px;
+    height: calc(100% - (54px + 53px));
     box-shadow: 0px 1px 3px 0px rgba(13, 37, 69, .1);
     border: 1px solid  rgba(13, 37, 69, .1);
     background-color: #fff;
