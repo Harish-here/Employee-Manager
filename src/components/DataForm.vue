@@ -664,7 +664,7 @@ export default {
      ResignEmployee: function(){
        const self = this;
        if(self.EmpData.resignDate === null ||  self.EmpData.resignDate === ''){
-         self.ThroughAlert('Please fill in Resignation Date','bg-light-red');
+         self.ThroughAlert('Please fill in all required fields','bg-light-red');
          return
        }
        $.post(api.resignEmployee,{employee:self.SendData,resignDate: self.SendData.resignDate,resignTime: self.SendData.resignTime}).done(function(data){
@@ -915,7 +915,7 @@ export default {
 
         //error checking
        if(self.Error.length > 0){
-         self.ThroughAlert('Please fill in all required fields','bg-light-red');
+         self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
          return
        }
 
@@ -937,7 +937,7 @@ export default {
             if(
                (self.SendData[i] === null || self.SendData[i] == ' ' || self.SendData[i] == '')) {
                  console.log( i + ' - ' + self.SendData[i])
-                  self.ThroughAlert('Please fill in all required fields','bg-light-red');
+                  self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
                   return
               
             }
@@ -968,7 +968,7 @@ export default {
           
          //flag need to be shown from the backend
         }).fail(function(x,s,err){
-          self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
+          self.ThroughAlert('An unexpected error occurred. Please refresh or login again.','bg-light-red');
           
         });
      },
@@ -983,13 +983,13 @@ export default {
 
         //error checking
        if(self.Error.length > 0){
-         self.ThroughAlert('Please fill in all required fields','bg-light-red');
+         self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
          return
        }
        //error checking code when onblur is not at fired
           for(var i in self.SendData){
             if(i !== 'resignDate' && i !== 'resignTime' && i !== 'benefitBundle' && (self.SendData[i] === ' ' || self.SendData[i] === '' || self.SendData[i] === null)) {
-              self.ThroughAlert('Please fill in all required fields','bg-light-red');
+              self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
               return
             }
           }
@@ -1012,7 +1012,7 @@ export default {
           }
            self.GetTravelDesk();
         }).fail(function(x,s,err){
-          self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
+          self.ThroughAlert('It seems service not available due to network issue. Please refresh or login again.','bg-light-red');
          
         });
      },
@@ -1037,7 +1037,7 @@ export default {
              self.flush();
              self.GetTravelDesk();
           }).fail(function(x,s,err){
-            self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
+            self.ThroughAlert('An unexpected error occurred. Please refresh or login again.','bg-light-red');
             // self.flush();
           });
        }
@@ -1055,10 +1055,10 @@ export default {
          try{
            self.DesignList = JSON.parse(data);
          }catch(e){
-           alert('An Unexpected Error occurred. Please try again');
+           alert('An unexpected error occurred. Please refresh or login again.');
          }
          
-       }).fail(x => alert('Service Not Available due to Network issuse. Please Refresh or Login again.!'));
+       }).fail(x => alert('It seems service not available due to network issue. Please refresh or login again.'));
      },
      GetTeamOptions: function(){
        const self = this;
@@ -1067,7 +1067,7 @@ export default {
          try{
            self.TeamOption = JSON.parse(data);
          }catch(e){
-           alert('An Unexpected Error occurred. Please try again');
+           alert('An unexpected error occurred. Please refresh or login again.');
            console.log("Wrong JSON"+e)
          }
        })
@@ -1079,10 +1079,10 @@ export default {
          try{
            self.BundleList = JSON.parse(data);
          }catch(e){
-           alert('An Unexpected Error occurred. Please try again');
+           alert('An unexpected error occurred. Please refresh or login again.');
          }
          
-       }).fail(x => alert('Service Not Available due to Network issuse. Please Refresh or Login again.!'));
+       }).fail(x => alert('It seems service not available due to network issue. Please refresh or login again.'));
      },
      GetTravelDesk: function(){ //dropdown for the Bundle
        var self = this
@@ -1090,10 +1090,10 @@ export default {
          try{
            self.TravelDeskList = JSON.parse(data);
          }catch(e){
-           alert('An Unexpected Error occurred. Please try again');
+           alert('An unexpected error occurred. Please refresh or login again.');
          }
          
-       }).fail(x => alert('Service Not Available due to Network issuse. Please Refresh or Login again.!'));
+       }).fail(x => alert('It seems service not available due to network issue. Please refresh or login again.'));
      },
 
 

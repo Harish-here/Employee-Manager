@@ -9,7 +9,7 @@
               <th v-for='(i,index) in TableHead'
                   :key='i'
                   class='tl' 
-                  :class='{"_flx_15" : index <=3,"_flx_1" : index >3,"-mod": (ViewType === "Department" || ViewType === "Team") && index === 2,"tr mr3": i === "Action" }'>
+                  :class='{"_flx_15" : index <=3,"_flx_1" : index >3,"-mod": (ViewType === "Department" || ViewType === "Team") && index === 2,"tr mr3": i == "Actions" }'>
                  <span v-if='List.length > 0 && ViewType === "Employee" && i === "Traveller"'>
                      <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.filter(x => x.department !== null &&  x.department.departmentName != 'Master Admin').map(y => y.travelAgencyUsersId)">&nbsp;&nbsp;&nbsp;</span>
                        {{i}}
@@ -245,9 +245,9 @@ export default {
   data(){
       return {
         EmployeeHeading: ['Traveller','Team','Designation','Travel Policy','Approver','Role','Actions'],
-        TeamHeading: ['Team','Code',"Travel Desk","Budget Approver","Finance Approver",'Action'],
-        DepartmentHeading: ['Department','Code',"Finance Approver",'Action'],
+        TeamHeading: ['Team','Code',"Travel Desk","Budget Approver","Finance Approver",'Actions'],
         DesignationHeading: ['Designation','Code','Travel Policy',"Role","Approver",'Actions'],
+        DepartmentHeading: ['Department','Code',"Finance Approver",'Actions'],
         ToDelete:[],
         ActiveRow: {},
         Department:'0',
@@ -361,7 +361,7 @@ export default {
                 try{
                 self.TeamOption = JSON.parse(data);
                 }catch(e){
-                alert('An Unexpected Error occurred. Please try again');
+                alert('An unexpected error occurred. Please refresh or login again.');
                 console.log("Wrong JSON"+e)
                 }
             })
@@ -372,13 +372,13 @@ export default {
             $.post(api.deleteAll,{dataId : self.ToDelete}).done(function(data){
                 if(data.toString().includes('true')){
                     self.ToDelete = [];
-                    self.ThroughAlert('Succesfully Deleted','bg-light-red');
+                    self.ThroughAlert('Selected records got deleted successfully.','bg-light-red');
                     self.$emit('ActionDone')
                 }else{
-                    self.ThroughAlert('An Unexpected Error occured.Please try again!','bg-light-red');
+                    self.ThroughAlert('An unexpected error occurred. Please refresh or login again.','bg-light-red');
                 }
             }).fail(x=> {
-                self.ThroughAlert('Service Not Available due to Network issuse. Please Refresh or Login again.!','bg-red');
+                self.ThroughAlert('It seems service not available due to network issue. Please refresh or login again.','bg-red');
             });
           }
       },
@@ -388,10 +388,10 @@ export default {
          try{
            self.BundleList = JSON.parse(data);
          }catch(e){
-           self.ThroughAlert('An Unexpected Error occured.Please try again!','bg-light-red');
+           self.ThroughAlert('An unexpected error occurred. Please refresh or login again.','bg-light-red');
          }
          
-       }).fail(x => self.ThroughAlert('Service Not Available due to Network issuse. Please Refresh or Login again.!','bg-red'));
+       }).fail(x => self.ThroughAlert('It seems service not available due to network issue. Please refresh or login again.','bg-red'));
      },
       GetDesignation: function(){ //dropdown for the Design
        var self = this
@@ -400,10 +400,10 @@ export default {
          try{
            self.DesignList = JSON.parse(data);
          }catch(e){
-           self.ThroughAlert('An Unexpected Error occurred. Please try again!','bg-light-red');
+           self.ThroughAlert('An unexpected error occurred. Please refresh or login again.','bg-light-red');
          }
          
-       }).fail(x => self.ThroughAlert('Service Not Available due to Network issuse. Please Refresh or Login again.!','bg-light-red'));
+       }).fail(x => self.ThroughAlert('It seems service not available due to network issue. Please refresh or login again.','bg-light-red'));
      },
      MultipleAssign: function(){
          const self = this;
@@ -436,12 +436,12 @@ export default {
                      self.ThroughAlert('Successfully Assigned','bg-green');
                      self.$emit('ActionDone');
                  }else{
-                      self.ThroughAlert('An Unexpected Error occurred. Please try again!','bg-light-red');
+                      self.ThroughAlert('An unexpected error occurred. Please refresh or login again.','bg-light-red');
                  }
                  alertify.dismissAll();
              }).fail(x => {
                  alertify.dismissAll();
-                 self.ThroughAlert('Service Not Available due to Network issuse. Please Refresh or Login again.!','bg-light-red');
+                 self.ThroughAlert('It seems service not available due to network issue. Please refresh or login again.','bg-light-red');
 
              });
          }

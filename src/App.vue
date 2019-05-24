@@ -203,12 +203,12 @@ export default {
         try{
           var data = (typeof x === "object") ? x : JSON.parse(x); //development purpose problem
         }catch(e){
-          alert("An Unexpected Error occurred. Please try again!");
+          alert("An unexpected error occurred. Please refresh or login again.");
         }
          callback(data)
       }).fail(function(x,s,err){
         
-        alert("Service Not Available due to Network issuse. Please Refresh or Login again.!");
+        alert("It seems service not available due to network issue. Please refresh or login again.");
       })
     },
     CreateHistory: function(type){
