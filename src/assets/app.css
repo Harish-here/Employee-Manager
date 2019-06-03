@@ -65,9 +65,10 @@ ul li ,ul{list-style: none; margin:0px ;padding:0px;}
 .dlt:hover{visibility: visible;}
 .red{ background-color: #fff !important; }
 .app select, .app input[type='text'],.app input[type='email'],.app input[type='number'],.app input[type='date'],.app input[type='time']{
-     height:24px !important;width:100% !important;
-     border: 1px solid transparent;
-     border-bottom: 1px solid gray;
+     height:35px ;
+     width:100% ;
+     border: 1px solid #dadada;
+     padding:3px;
      }
 .opa{ opacity: 0.5;}
 .custom__tag {

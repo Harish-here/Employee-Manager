@@ -15,7 +15,8 @@ const Emp  = ReturnModel(
     BaseUrl + 'employeeCreate',
     BaseUrl + 'employeeJSON',
     BaseUrl + 'employeeUpdate',
-    BaseUrl + 'employeeDelete'
+    BaseUrl + 'employeeDelete',
+
 );
 
 const Depart = ReturnModel(
@@ -46,5 +47,6 @@ export default {
     getApprovar: BaseUrl + 'approverList',
     resignEmployee: BaseUrl + 'resign',
     travelDeskList: BaseUrl + 'travelDesk',
-    teamOptions: BaseUrl + 'deptProps' 
+    teamOptions: BaseUrl + 'deptProps',
+    config : BaseUrl + 'initialConfig' 
 }

@@ -20,7 +20,7 @@
            <!-- </transition> -->
         </thead>
         <thead v-if="ToDelete.length > 0 && ViewType === 'Employee'">
-            <tr class='bg-white pa1 flex'>
+            <tr id='applyAll' class='bg-white flex'>
                 <!-- <div class='flex w-100 justify-between items-baseline'> -->
                     <td class='_flx_15'>
                       Apply to <span v-if='ToDelete.length > 0' class='badge'>{{ToDelete.length}}</span> Traveller(s)
@@ -46,18 +46,22 @@
                         </select>
                     </td>
                     <td class="_flx_1 flex justify-around">
-                        <select style="width:68px !important;" v-model='Account'>
+                        <select  v-model='Account'>
                             <option value='null' selected disabled>Account</option>
                             <option  value='1'>Enable</option>
                             <option  value='0'>Disable</option>
                         </select>
-                        <button @click='MultipleAssign' class='btn btn-xs btn-primary fr'
-                                :disabled='(Department === "0") && Design === "0" && Policy === "0" && (Account === null || Account === "null")'>
-                            <!-- <i class="fa fa-check-square-o" aria-hidden="true"></i>  -->save
-                        </button>
-                        <button @click='ToDelete =[],Account=null,Policy="0",Design="0",Department="0"' class='btn btn-xs btn-default fr'>
-                            <!-- <i class="fa fa-check-square-o" aria-hidden="true"></i>  -->Clear
-                        </button>
+                    </td>
+                    <td class='flex items-center justify-center'>
+                        <div class='flex w-75 justify-between'>
+                            <button @click='MultipleAssign' class='btn btn-xs btn-primary fr'
+                                    :disabled='(Department === "0") && Design === "0" && Policy === "0" && (Account === null || Account === "null")'>
+                                <!-- <i class="fa fa-check-square-o" aria-hidden="true"></i>  -->save
+                            </button>
+                            <button @click='ToDelete =[],Account=null,Policy="0",Design="0",Department="0"' class='btn btn-xs btn-default fr'>
+                                <!-- <i class="fa fa-check-square-o" aria-hidden="true"></i>  -->Clear
+                            </button>
+                        </div>
                     </td>
                     
      
@@ -465,6 +469,9 @@ export default {
 </script>
 
 <style>
+#applyAll{
+    background-color: #f9f9f9;
+}
 #DataTable{
  flex:1 0 0;
 }
@@ -474,7 +481,7 @@ table{
     display: flex;
     flex-direction: column;
 }
-thead{ height : 40px; flex: 0 0 0 ;}
+thead{ height : auto; flex: 0 0 0 ;}
 
 tbody{
 flex: 1 0 0 ; 

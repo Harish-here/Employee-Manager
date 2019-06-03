@@ -21,23 +21,23 @@ const EmployeeLabel = {
     travelAgencyUserId: null,
     companyId: null,
     companyName: null,
-    travelAgencyNameTemp: { label: "First Name", type: 'text' },
-    virtualName: { label: "Last Name", type: 'text' },
-    employeeCode: {label: "Traveller Code",type:'text'},
-    email: { label: "Official Email", type: 'email' },
-    mobile: { label: "Mobile Number", type: 'text' },
-    department: { label: "Department / Team", type: 'select' },
-    designation: { label: "Designation", type: 'select' },
+    travelAgencyNameTemp: { label: "First Name", type: 'text',mandatory: true },
+    virtualName: { label: "Last Name", type: 'text',mandatory: true },
+    employeeCode: {label: "Traveller Code",type:'text',mandatory: true},
+    email: { label: "Official Email", type: 'email',mandatory: true },
+    mobile: { label: "Mobile Number", type: 'text',mandatory: true },
+    department: { label: "Department / Team", type: 'select',mandatory: true },
+    designation: { label: "Designation", type: 'select',mandatory: true },
     
     resign: null,
     hierarchyId: null,
     // hierarchyId: { label: "Set Hierachy", type: 'select' },
     // benefitBundle: { label: '', type:'select' },
-    personalEmail: { label: "Personal Email", type: 'email' },
-    startDate: { label: "Date of Joining", type: 'date' },
-    status: { label: "Account", type:'radio'},
+    personalEmail: { label: "Personal Email", type: 'email',mandatory: true },
+    startDate: { label: "Date of Joining", type: 'date',mandatory: true },
+    status: { label: "Account", type:'radio',mandatory: true},
     // travelDesk: {label: "Travel Desk",type:"select"},
-    approverList: { label: "Approval Hierarchy", type:'select'},
+    approverList: { label: "Approval Hierarchy", type:'select',mandatory: true},
     
     
 };
@@ -54,26 +54,26 @@ const DepartmentTeam = {
     departmentName: "",
     departmentCode: "",
     parent:"",
-    budgetApprover: "0",
-    financeApprover: "0",
+    budgetApprover: "",
+    financeApprover: "",
     travelDesk: "",
     team:'1'
 }
 
 const DepartmentTeamLabel = {
     departmentId: null,
-    departmentName: { label: "Team Name", type: 'text' },
-    departmentCode: { label: "Team Code", type: 'text' },
-    parent: { label: "Parent Team", type: 'select' },
-    budgetApprover: { label: "Budget Approver", type: 'select' },
-    financeApprover: { label: "Finance Approver", type: 'select' },
-    travelDesk: { label: "Travel Desk", type: 'select' }
+    departmentName: { label: "Team Name", type: 'text' ,mandatory: true },
+    departmentCode: { label: "Team Code", type: 'text' ,mandatory: true},
+    parent: { label: "Parent Team", type: 'select' ,mandatory: true},
+    budgetApprover: { label: "Budget Approver", type: 'select' ,mandatory: true},
+    financeApprover: { label: "Finance Approver", type: 'select' ,mandatory: true},
+    travelDesk: { label: "Travel Desk", type: 'select' ,mandatory: true}
 }
 const DepartmentLabel = {
     departmentId: null,
-    departmentName: { label: "Department Name", type: 'text' },
-    departmentCode: { label: "Department Code", type: 'text' },
-    financeApprover: { label: "Finance Approver", type: 'select' },
+    departmentName: { label: "Department Name", type: 'text',mandatory: true },
+    departmentCode: { label: "Department Code", type: 'text',mandatory: true },
+    financeApprover: { label: "Finance Approver", type: 'select',mandatory: true },
     travelAgencyMasterId: null,
 }
 
@@ -100,15 +100,15 @@ const DesignationLabel = {
     travelAgencyMasterId: null,
     designationId: null,
     // department: { label: 'Department', type: 'select' },
-    designationName: { label: 'Designation', type: 'text' },
-    designationCode: { label: 'Designation Code', type: 'text' },
+    designationName: { label: 'Designation', type: 'text',mandatory: true },
+    designationCode: { label: 'Designation Code', type: 'text',mandatory: true },
     hierarchyId : null,
     // hierarchyId: { label: 'Set hierarchy', type: 'select' },
-    benefitBundle: { label: 'Travel Policy', type: 'select' },
+    benefitBundle: { label: 'Travel Policy', type: 'select',mandatory: true },
     // approval: { label: 'No of Approval', type: 'select' },
     approval: null,
-    role: { label: 'Role', type: 'select' },
-    reservHandle: { label: 'Does this designation eligible to approve the bookings?', type: 'select' },
+    role: { label: 'Role', type: 'select',mandatory: true },
+    reservHandle: { label: 'Does this designation eligible to approve the bookings?', type: 'select',mandatory: true },
     // rightsHotel: { label: 'Who has rights to choose hotel?', type: 'select' },
     rightsHotel: null,
 

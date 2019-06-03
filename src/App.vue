@@ -47,22 +47,23 @@
       </ul>
     </section>
     <!-- first panel -->
-    <section class='sec1' >
+    <section class='sec1 flex items-center' >
       <div class='fl w-20 pa3'>
         {{ Found }} {{((ActiveView === "Employee") ? "Traveller" : ActiveView) + '(s)'}} found.
+      </div>
+      
+      <div class='fr w-40 pa3'>
+        <div class='fr w-70 flex justify-center items-center' >
+          <span class='flex items-center ba b--light-silver w-80'>
+            <input type="text" v-model="SearchString" style="border:0;outline:none;" placeholder="Search records" class='pa2 w-80'>
+            <i class="fa fa-search pa2 w-20 tc" aria-hidden="true"></i>
+          </span>
+        </div>
       </div>
       <div class="fr w-40 pa3 tr">
         <button @click='ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add {{(ActiveView === "Employee") ? "Traveller" : ActiveView}}</button>
         <!-- <button v-if='ActiveView === "Department" || ActiveView === "Team"' @click='ActiveView = "Team",ActiveSubView = "Create"' class="btn btn-xs btn-primary">Add Team</button> -->
         <!-- <button v-if='ActiveView === "Employee"' @click='ActiveSubView = "Create"' class="btn ml2 btn-xs btn-primary">Import {{ActiveView}}</button> -->
-      </div>
-      <div class='fr w-40 pa3'>
-        <div class=' fr w-70 flex justify-center items-center' >
-          <span class='flex ba b--light-silver w-80'>
-            <input type="text" v-model="SearchString" style="border:0;outline:none;" placeholder="Search records" class='pa2 w-80'>
-            <i class="fa fa-search pa2 w-20 tc" aria-hidden="true"></i>
-          </span>
-        </div>
       </div>
       
     </section>
@@ -93,6 +94,7 @@
                  :ApproverData='Approver'
                  @ActionDone='GetFreshData'
                  @CancelViewType='ActiveSubView = "",ActiveSubView = "Create";'
+                 :ModeOfWorking='mode'
                  ></data-form>
     </section>
   </div>
@@ -130,6 +132,15 @@ export default {
         Employee: 'employees',
         Department: 'department',
         Designation: 'designations'
+      },
+      mode: {
+        "initialSetupStatus": "2",
+        "defaultTeam": "",
+        "defaultDesignation": "",
+        "designationConfigApplicableStatus": "0",
+        "travelApprovalStatus": "0",
+        "departmentConfigApplicableStatus": "0",
+        "travelDeskConfigApplicableStatus": "0"
       }
       
     }
@@ -260,6 +271,9 @@ export default {
     });
     self.getData(api.getApprovar,function(data){
       self.Approver = data;
+    });
+    self.getData(api.config,function(data){ 
+          self.mode = data;
     });
       //for url stuffs
      let arr = location.href.split('/');

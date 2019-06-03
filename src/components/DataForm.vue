@@ -74,7 +74,7 @@
             :key='index'
             v-if="i !== null" class='pa1'> 
           <span class='flex flex-column items-baseline' >
-            <label class='w-40'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='index !== "approverList"'>*</sup></label>
+            <label class='w-40'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='!skip["Employee"].includes(index)'>*</sup></label>
             <div class='w-100 flex flex-column'>
               <input class='pa1'
                       v-if='index !=="travelDesk" && index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
@@ -176,7 +176,11 @@
        <ul v-if='ViewType === "Team" && (SubViewType ==="Create" || SubViewType === "Update" )' class='pa3'>
         <li v-for='(i,index) in TeamForm.label' :key='index' v-if="i !== null && TeamForm.label[index].label !== ''" class='pa1'> 
           <span class='flex flex-column items-baseline' >
-            <label class='w-70'>{{ TeamForm.label[index].label }} <sup class='b6' v-if='index !== "budgetApprover" && index !== "financeApprover"'>*</sup></label>
+            <label class='w-70'>{{ TeamForm.label[index].label }}
+               <sup class='b6'
+                    v-if='index !== "travelDesk"'>*</sup>
+               <sup class='b6' v-if='index === "travelDesk" && (ModeOfWorking["travelDeskConfigApplicableStatus"] === "1" || ModeOfWorking["isTdFinalApprover"] === "1")'>*</sup>
+            </label>
             <div class='w-100 flex flex-column'>
               <input class='pa1'
                      v-if='TeamForm.label[index].type === "text"' 
@@ -188,10 +192,10 @@
               <select class='pa1'
                       v-if='TeamForm.label[index].type === "select"'
                       v-model='TeamData[index]'
-                      @change='SetFinApprover'
+                      @change='SetFinApprover(index)'
                       @blur='Validate(index,TeamForm.label[index])'
                      :class='{"ba b--red" : Error.includes(TeamForm.label[index].label)}'>
-                 <option class='gray' value='0' v-if='["budgetApprover","financeApprover"].includes(index)'>Select {{TeamForm.label[index].label}}</option>
+                 <option class='gray' value='' v-if='["budgetApprover","financeApprover"].includes(index)'>Select {{TeamForm.label[index].label}}</option>
                  <option v-for='j in TeamOption["departments"]'
                          v-if='index === "parent" && j.departmentName !== "Master Admin"'
                          :key='j.departmentId' :value='j.departmentId'>
@@ -265,7 +269,6 @@
                       @blur='Validate(index,DepartmentForm.label[index])'
                      :class='{"ba b--red" : Error.includes(DepartmentForm.label[index].label)}'>
                  <option v-for='j in TeamOption["financeApprover"]'
-                         v-if='j.value !== "Master Admin"'
                          :key='j.value' :value='j.value'>
                          {{ j.label}}
                   </option>
@@ -299,13 +302,9 @@
             <div class='w-100 flex flex-column pa1' v-if='index === "financeApprover"'>
               {{
                  (function(){
-                  let lookUpIndex = (index === "parent") ? "departments" : index;
-                  let a = TeamOption[lookUpIndex].filter(x => {
-                    return (index === "parent") ? 
-                            (x["departmentId"] == DepData[index]) :
-                            (x["value"] == DepData[index])
-                  })
-                  return (a.length > 0) ? (index === 'parent') ?  a[0]['departmentName'] : a[0]['label'] : "NA"
+                  let value = DepData[index];
+                  let selected = TeamOption["financeApprover"].filter(x => x.value === value);
+                  return (selected.length > 0) ? selected[0]["label"] : "NA"
               })() 
               
               }}
@@ -449,177 +448,225 @@ export default {
     EmpSub: {
       type: String,
       default: "create"
+    },
+    ModeOfWorking:{
+      type: Object,
+      default: function(){
+        return {
+          "initialSetupStatus": "1",
+          "defaultTeam": "",
+          "defaultDesignation": "",
+          "designationConfigApplicableStatus": "1",
+          "travelApprovalStatus": "1",
+          "departmentConfigApplicableStatus": "1",
+          "travelDeskConfigApplicableStatus": "1",
+          "policyApplicableStatus" : "1",
+          "financeApproverStatus": "1"
+        }
+      }
+      
     }
     
    },
 
-   data: function(){
-    //  var self = this
-     return {
-      //  SubViewType: 'Create',
-       userType: userType,
-        // userType: 3, 
-       sam: true,
-       Global: global_url,
-       EmployeeForm : { 
-         data: JSON.parse(JSON.stringify(struct.employee.data)),
-         label: struct.employee.label
-       },
-       DesignationForm : JSON.parse(JSON.stringify(struct.designation)),
-       DepartmentForm : {
-         data : JSON.parse(JSON.stringify(struct.department.data)),
-         label: struct.department.label, 
-       },
-       TeamForm: {
-         label: JSON.parse(JSON.stringify(struct.team.label)),
-         data: JSON.parse(JSON.stringify(struct.team.data))
-       },
-       SetHierachy : ['1','2','3','4','5','6','7','8','9','10'],
-       Role: struct.role,
-       Rights: struct.rights,
-       Permission: struct.permission,
-       OverBudget: struct.overbudget,
-       Reserve: struct.reserve,
-       DesignList: [],
-       BundleList: [],
-       approvarList:[],
-       ShowAlert:false,
-       AlertMsg: 'Alert Message',
-       AlertCls : 'bg-green',
-       Error: [],
-       File: null,
-       DisableAction: false,
-       Resign: false,
-       ResignDate: '',
-       ResignTime: '',
-       TravelDeskList: [],
-       TempRole: "",
-       TempApp: [],
-       TeamOption: {},
-       propToSkip: ["budgetApprover","financeApprover"],
-       skip: {
-         "Employee" : ["approverList"],
-         "Department": [],
-         "Team": ["budgetApprover","financeApprover"],
-         "Designation": [] 
-       }
-
-     }
-   },
-
-   computed : {
-     EmpData(){
-       if(this.SubViewType === 'Create'){
-        
-         return this.EmployeeForm.data
-       }else{
-         if(this.ActiveData.virtualName !== undefined){
-            //err to be flushed when view changes
-         //this is done bcoz when emp obj matches with  model design dropdwon & bundle need to be populated
-          if(this.ActiveData.department !== null && this.ActiveData.designation !== null){ //avoid null conflict if it the obj has null
-             this.GetDesignation(this.ActiveData.department.departmentId);
-            this.GetBundle(this.ActiveData.designation.value);
-          }
-           
-            
-            return this.ActiveData
-         }
-       }
-     },
-     Option(){
-       if(this.ViewType ===  'Employee' && "travelAgencyUsersId" in  this.EmpData){
-        return this.ApproverData.filter(x => x.value != this.EmpData["travelAgencyUsersId"])
-
-       }else{
-         return []
-       }
-     },
-     DepData(){
-       if(this.SubViewType === 'Create'){
-         return this.DepartmentForm.data
-       }else{
-         
-         return this.ActiveData
-       }
-     },
-     TeamData(){
-       if(this.SubViewType === 'Create'){
-         return this.TeamForm.data
-       }else{
-         
-         return this.ActiveData
-       }
-     },
-     DesData(){
-       if(this.SubViewType === 'Create'){
-         return this.DesignationForm.data
-       }else{
-
-         return this.ActiveData
-       }
-     },
-     //check to show the resign
-     ShowResign(){
-       if(this.ViewType === 'Employee' && this.SubViewType === 'Update'){
-         return this.SendData.hasOwnProperty('resign') && this.SendData.resign == '1';
-       }else{
-         return false;
-       }
-     },
-
-     CreateUrl(){
-      if(this.ViewType === 'Employee') return api.emp.create
-      if(this.ViewType === 'Department' || this.ViewType === 'Team') return api.depart.create
-      if(this.ViewType === 'Designation') return api.design.create
-     },
-     UpdateUrl(){
-       if(this.ViewType === 'Employee') return api.emp.update
-      if(this.ViewType === 'Department' || this.ViewType === 'Team') return api.depart.update
-      if(this.ViewType === 'Designation') return api.design.update
-     },
-     DeleteUrl(){
-       if(this.ViewType === 'Employee') return api.emp.delete
-      if(this.ViewType === 'Department' || this.ViewType === 'Team') return api.depart.delete
-      if(this.ViewType === 'Designation') return api.design.delete
-     },
-     SendData(){
-       if(this.ViewType === 'Employee') return this.EmpData
-      if(this.ViewType === 'Department') return this.DepData
-      if(this.ViewType === 'Designation') return this.DesData
-      if(this.ViewType === 'Team') return this.TeamData
-     },
+  data: function(){
+  //  var self = this
+    return {
+    //  SubViewType: 'Create',
+      userType: userType,
+      // userType: 3, 
+      sam: true,
+      Global: global_url,
+      EmployeeForm : { 
+        data: JSON.parse(JSON.stringify(struct.employee.data)),
+        label: struct.employee.label
+      },
+      DesignationForm : JSON.parse(JSON.stringify(struct.designation)),
+      DepartmentForm : {
+        data : JSON.parse(JSON.stringify(struct.department.data)),
+        label: struct.department.label, 
+      },
+      TeamForm: {
+        label: JSON.parse(JSON.stringify(struct.team.label)),
+        data: JSON.parse(JSON.stringify(struct.team.data))
+      },
+      SetHierachy : ['1','2','3','4','5','6','7','8','9','10'],
+      Role: struct.role,
+      Rights: struct.rights,
+      Permission: struct.permission,
+      OverBudget: struct.overbudget,
+      Reserve: struct.reserve,
+      DesignList: [],
+      BundleList: [],
+      approvarList:[],
+      ShowAlert:false,
+      AlertMsg: 'Alert Message',
+      AlertCls : 'bg-green',
+      Error: [],
+      File: null,
+      DisableAction: false,
+      Resign: false,
+      ResignDate: '',
+      ResignTime: '',
+      TravelDeskList: [],
+      TempRole: "",
+      TempApp: [],
+      TeamOption: {},
+      propToSkip: ["budgetApprover","financeApprover"],
     
-   },
 
-   watch: {
-       'ViewType': function(){
-         this.Error.length = 0;
-       },
-       'SubViewType': function(val){
-         this.Error.length = 0;
-       },
-       DesData: {
-         deep: true,
-         handler: function(val){
-           if(this.SubViewType === 'Create'){
-              if( val['role'].value !== undefined && (val['role'].value == '1' || val['role'].value == '2') ){
-                this.TempRole = { label: 'Yes', value: '1|yes' };
-              }else{
-                this.TempRole = "";
-              }
-           }else{
-             if( val['role'].value !== undefined && (val['role'].value == '1' || val['role'].value == '2') ){
-                this.TempRole = { label: 'Yes', value: '1|yes' };
-              }else{
-                this.TempRole = JSON.parse(JSON.stringify(this.ActiveData['reservHandle']));
-              }
-             
-           }
+    }
+  },
 
-         }
-       },
-       
-     },
+  computed : {
+    skip(){
+      return {
+        "Employee" : ["approverList","personalEmail","startDate"],
+        "Department": [],
+        "Team": (this.ModeOfWorking["travelDeskConfigApplicableStatus"] === "1" || this.ModeOfWorking["isTdFinalApprover"] === "1") ? [] : ["travelDesk"],
+        "Designation": [] 
+      }
+    },
+    EmpData(){
+      if(this.SubViewType === 'Create'){
+      
+        return this.EmployeeForm.data
+      }else{
+        if(this.ActiveData.virtualName !== undefined){
+          //err to be flushed when view changes
+        //this is done bcoz when emp obj matches with  model design dropdwon & bundle need to be populated
+        if(this.ActiveData.department !== null && this.ActiveData.designation !== null){ //avoid null conflict if  the obj has null
+            this.GetDesignation(this.ActiveData.department.departmentId);
+          this.GetBundle(this.ActiveData.designation.value);
+        }
+          
+          return this.ActiveData
+        }
+      }
+    },
+    Option(){
+      if(this.ViewType ===  'Employee' && "travelAgencyUsersId" in  this.EmpData){
+      return this.ApproverData.filter(x => x.value != this.EmpData["travelAgencyUsersId"])
+
+      }else{
+        return []
+      }
+    },
+    DepData(){
+      if(this.SubViewType === 'Create'){
+        return this.DepartmentForm.data
+      }else{
+        
+        return this.ActiveData
+      }
+    },
+    TeamData(){
+      if(this.SubViewType === 'Create'){
+        return this.TeamForm.data
+      }else{
+        
+        return this.ActiveData
+      }
+    },
+    DesData(){
+      if(this.SubViewType === 'Create'){
+        return this.DesignationForm.data
+      }else{
+
+        return this.ActiveData
+      }
+    },
+    //check to show the resign
+    ShowResign(){
+      if(this.ViewType === 'Employee' && this.SubViewType === 'Update'){
+        return this.SendData.hasOwnProperty('resign') && this.SendData.resign == '1';
+      }else{
+        return false;
+      }
+    },
+    ActiveLabel(){
+      if(this.ViewType === 'Employee') return this.EmployeeForm.label
+      if(this.ViewType === 'Department') return this.DepartmentForm.label
+      if(this.ViewType === 'Designation') return this.DesignationForm.label //DepartmentForm
+      if(this.ViewType === 'Team') return this.TeamForm.label
+    },
+
+    CreateUrl(){
+    if(this.ViewType === 'Employee') return api.emp.create
+    if(this.ViewType === 'Department' || this.ViewType === 'Team') return api.depart.create
+    if(this.ViewType === 'Designation') return api.design.create
+    },
+    UpdateUrl(){
+      if(this.ViewType === 'Employee') return api.emp.update
+    if(this.ViewType === 'Department' || this.ViewType === 'Team') return api.depart.update
+    if(this.ViewType === 'Designation') return api.design.update
+    },
+    DeleteUrl(){
+      if(this.ViewType === 'Employee') return api.emp.delete
+    if(this.ViewType === 'Department' || this.ViewType === 'Team') return api.depart.delete
+    if(this.ViewType === 'Designation') return api.design.delete
+    },
+    SendData(){
+      if(this.ViewType === 'Employee') return this.EmpData
+    if(this.ViewType === 'Department') return this.DepData
+    if(this.ViewType === 'Designation') return this.DesData
+    if(this.ViewType === 'Team') return this.TeamData
+    },
+  
+  },
+
+  watch: {
+      'ViewType': function(val){
+        this.Error.length = 0;
+        
+      },
+      'SubViewType': function(val){
+        const self = this
+        this.Error.length = 0;
+        if(this.ViewType === 'Employee' && val == 'Create'){
+          //this is written to select the default designation and team for deafult mode
+          let le = this.TeamOption["departments"].length;
+          let le2 = this.DesignList.length;
+          if(this.ModeOfWorking["departmentConfigApplicableStatus"] === "0"){
+            this.EmployeeForm.data['department'] = this.TeamOption["departments"][le - 1];
+          }
+          if(this.ModeOfWorking["designationConfigApplicableStatus"] === "0"){
+            this.EmployeeForm.data['designation'] = this.DesignList[le2 - 1];
+          }
+          
+        }
+        //for designation default set up
+          if(self.ViewType === "Designation" && val == "Create" && self.ModeOfWorking["policyApplicableStatus"] == "0"){
+            self.DesignationForm.data["benefitBundle"] = self.BundleList.find(x => x.label === "Default Policy");
+          }
+
+          //if master admin is selected as Fin as default
+          if(self.ViewType === "Team" && val === "Create" && self.ModeOfWorking["financeApproverStatus"] === "0" ){
+            slef.TeamForm.data["financeApprover"] = self.TeamOption["financeApprover"].find(x => x.label === "Master Admin");
+          }
+      },
+      DesData: {
+        deep: true,
+        handler: function(val){
+          if(this.SubViewType === 'Create'){
+            if( val['role'].value !== undefined && (val['role'].value == '1' || val['role'].value == '2') ){
+              this.TempRole = { label: 'Yes', value: '1|yes' };
+            }else{
+              this.TempRole = "";
+            }
+          }else{
+            if( val['role'].value !== undefined && (val['role'].value == '1' || val['role'].value == '2') ){
+              this.TempRole = { label: 'Yes', value: '1|yes' };
+            }else{
+              this.TempRole = JSON.parse(JSON.stringify(this.ActiveData['reservHandle']));
+            }
+            
+          }
+
+        }
+      },
+      
+    },
 
   created(){
     const self = this;
@@ -630,11 +677,13 @@ export default {
   },
 
    methods : {
-     SetFinApprover: function(){
-       if(this.ViewType === "Team"){
+     SetFinApprover: function(index){
+       if(this.ViewType === "Team" && index === "parent"){
 
          let id = this.TeamOption['departments'].find(x => this.TeamData['parent'] == x['departmentId']);
-         this.TeamData['financeApprover'] = id['financeApprover'] || 0;
+         if(id["financeApprover"] !== undefined){
+           this.TeamData['financeApprover'] = id['financeApprover'];
+         }
 
        }
      },
@@ -681,152 +730,6 @@ export default {
          }
        }).fail(() => { self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red'); })
      },
-      SetUpload: function(el){
-          this.File = el.target.files[0];
-      },
-      ResetUpload: function(){
-        var obj = $('#fileUploadField');
-        obj.val(null);
-        this.File = null;
-      },
-      FileUpload: function(){  
-        var self = this;
-        if(confirm('Are you sure to upload?')){
-          var send = new FormData();
-          for(var i in self.File){
-            send.append(i,self.File[i]);
-          }
-
-          var input = document.querySelector('#fileUpload');
-          var delay = alertify.get('notifier','delay');
-          alertify.set('notifier','delay', 200);
-          alertify.warning('Processing the CSV...');
-          alertify.set('notifier','delay', delay);
-            
-          $.ajax({
-              url: api.fileUpload,
-              type: 'POST',
-              data: new FormData(input),
-              cache: false,
-              processData: false, // Don't process the files
-              contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-              success: function(data, textStatus, jqXHR){
-                  self.File = null;
-                  self.ResetUpload();
-                  let datas = data.toString();
-                if(datas.includes('true')){
-                    self.ActionDone();
-                    self.flush();
-                    
-                    self.ThroughAlert('File uploaded successfully','bg-green');
-                  }else{
-                    try{
-                      var s = JSON.parse(data);
-                      let csv = s.map(function(x){
-                        return {
-                          First_Name: x.firstName,
-                          Last_Name: x.lastName,
-                          Employee_Id: x.employeeId,
-                          Company_Email: x.email,
-                          Personal_Email: x.personalEmail,
-                          Phone: x.phone,
-                          Department: x.department,
-                          Designation: x.designation,
-                          Join_Date: x.joinDate,
-                          Error: x.Error
-                        }
-                      });
-                      self.ActionDone();
-                      self.ThroughAlert('Error in imported CSV','bg-light-red');
-                      self.createCSV(csv,"Rectify the Errors, upload this CSV",true);
-                    }catch(e){
-                     self.ActionDone();
-                     self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
-                    }
-                      alertify.dismissAll();                    
-                  }
-               },
-              error: function(jqXHR, textStatus, errorThrown)
-              {
-                      alertify.dismissAll();                    
-                  self.ThroughAlert('An unexpected error has occurred. Please try again.','bg-light-red');
-              }
-        });
-          
-        }
-      },
-      createCSV: function(JSONData, ReportTitle, ShowLabel){
-        //snippet from third party to create CSV
-        var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
-      
-        var CSV = '';    
-        //Set Report title in first row or line
-        
-        CSV += ReportTitle + '\r\n';
-
-        //This condition will generate the Label/Header
-        if (ShowLabel) {
-            var row = "";
-            
-            //This loop will extract the label from 1st index of on array
-            for (var index in arrData[0]) {
-                
-                //Now convert each value to string and comma-seprated
-                row += index + ',';
-            }
-
-            row = row.slice(0, -1);
-            
-            //append Label row with line break
-            CSV += row + '\r\n';
-        }
-        
-        //1st loop is to extract each row
-        for (var i = 0; i < arrData.length; i++) {
-            var row = "";
-            
-            //2nd loop will extract each column and convert it in string comma-seprated
-            for (var index in arrData[i]) {
-                row += '"' + arrData[i][index] + '",';
-            }
-
-            row.slice(0, row.length - 1);
-            
-            //add a line break after each row
-            CSV += row + '\r\n';
-        }
-
-        if (CSV == '') {        
-            alert("Invalid data");
-            return;
-        }   
-        
-        //Generate a file name
-        var fileName = "CSV_import_ErrorReport_";
-        //this will remove the blank-spaces from the title and replace it with an underscore
-        fileName += ReportTitle.replace(/ /g,"-");   
-        
-        //Initialize file format you want csv or xls
-        var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
-        
-        // Now the little tricky part.
-        // you can use either>> window.open(uri);
-        // but this will not work in some browsers
-        // or you will not get the correct file extension    
-        
-        //this trick will generate a temp <a /> tag
-        var link = document.createElement("a");    
-        link.href = uri;
-        
-        //set the visibility hidden so it will not effect on your web-layout
-        link.style = "visibility:hidden";
-        link.download = fileName + ".csv";
-        
-        //this part will append the anchor tag and remove it after automatic click
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      },
      ThroughAlert: function(msg,cls){
        var self = this;
       //  this.AlertMsg = msg;
@@ -835,7 +738,7 @@ export default {
       //  setTimeout(function(){ 
       //    self.ShowAlert=false;
       //     },4500)
-      
+      alertify.dismissAll();
       if(cls == 'bg-green'){
            alertify.success(msg);
        }else{
@@ -890,37 +793,7 @@ export default {
           // console.log(self.SendData);
           // return;
         }
-        // if(self.ViewType === 'Employee' && self.SubViewType === 'Create'){
-        //   this.EmployeeForm.data['approverList'] == this.TempApp;
-        // }
-       //emp join date
-      //  if(this.ViewType === 'Employee'){
-      //    let y = new Date(self.SendData['startDate']).getFullYear();
-      //    if( y < 1950 || y >2050){
-      //      self.Error.push(self.EmployeeForm.label['startDate']);
-      //      return
-      //    }
-      //  }
-      //   let label;
-      //   if(this.ViewType === 'Employee'){ label = self.EmployeeForm.label;}
-      //   if(this.ViewType === 'Department'){ label = self.DepartmentForm.label;}
-      //   if(this.ViewType === 'Designation'){label = self.DesignationForm.label}
-      //  //check the usual error stuff
-      //  for(let w in self.SendData){
-      //    if(this.ViewType === 'Employee'){ self.Validate(w,self.EmployeeForm.label[w]);}
-      //    if(this.ViewType === 'Department'){ self.Validate(w,self.DepartmentForm.label[w]); }
-      //    if(this.ViewType === 'Designation'){ self.Validate(w,self.DesignationForm.label[w]); }
-      //  }
-
-
-        //error checking
-       if(self.Error.length > 0){
-         self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
-         return
-       }
-
-
-
+      
        //error checking code when onblur is not at al fired
         // if(self.Error.length === 0){
           for(var i in self.SendData){
@@ -928,7 +801,13 @@ export default {
             if((self.userType === '4' && i === 'travelDesk')){
               continue //to skip the travel desk for travelagent
             }
+           
             if(self.skip[self.ViewType].includes(i)){
+             
+              if(self.Error.indexOf(self.ActiveLabel[i].label) !== -1){
+                self.Error.splice(self.Error.indexOf(self.ActiveLabel[i].label),1)
+              }
+              
               //to skipt he not manadatory field
               continue
             }
@@ -936,15 +815,28 @@ export default {
             // debugger;
             if(
                (self.SendData[i] === null || self.SendData[i] == ' ' || self.SendData[i] == '')) {
-                 console.log( i + ' - ' + self.SendData[i])
+                 
                   self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
                   return
               
             }
           }
-          // console.log(self.SendData)
-          
-        // }
+          //
+          if(self.ViewType === "Team" &&
+              (self.SendData["financeApprover"] == "0" ||
+             ((self.ModeOfWorking["travelDeskConfigApplicableStatus"] === "1" || self.ModeOfWorking["isTdFinalApprover"] === "1")  && 
+               (self.SendData["travelDesk"] == "0" )))){
+               self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
+              return 
+            }
+
+          //error checking
+          if(self.Error.length > 0){
+            self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
+            return
+          }
+
+         
       self.DisableAction = true;
       $.post(this.CreateUrl,this.SendData).done(function(data){
           
@@ -960,6 +852,28 @@ export default {
             self.GetTeamOptions();
             self.GetDesignation();
             self.ThroughAlert(((self.ViewType === "Employee") ? "Traveller" : self.ViewType) + ' created successfully.','bg-green');
+            //this is written to select the default designation and team for deafult mode
+            if(self.ViewType === 'Employee' && self.SubViewType == 'Create'){
+              
+              let le = self.TeamOption["departments"].length;
+              let le2 = self.DesignList.length;
+              if(self.ModeOfWorking["departmentConfigApplicableStatus"] === "0"){
+                self.EmployeeForm.data['department'] = self.TeamOption["departments"][le - 1];
+              }
+              if(self.ModeOfWorking["designationConfigApplicableStatus"] === "0"){
+                self.EmployeeForm.data['designation'] = self.DesignList[le2 - 1];
+              }
+              
+            }
+
+            //for designation default set up
+            if(self.ViewType === "Designation" && self.SubViewType == "Create"  && self.ModeOfWorking["policyApplicableStatus"] == "0"){
+              self.DesignationForm.data["benefitBundle"] = self.BundleList.find(x => x.label === "Default Policy");
+            }
+            //if master admin is selected as Fin as default
+            if(self.ViewType === "Team" && self.SubViewType === "Create" && self.ModeOfWorking["financeApproverStatus"] === "0" ){
+              slef.TeamForm.data["financeApprover"] = self.TeamOption["financeApprover"].find(x => x.label === "Master Admin");
+            }
             
           }else{
             self.ThroughAlert(data.split('|')[1],'bg-light-red');
@@ -980,19 +894,42 @@ export default {
           //update
           this.ActiveData['reservHandle'] = this.TempRole;
         }
-
-        //error checking
-       if(self.Error.length > 0){
-         self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
-         return
-       }
+      
+     
        //error checking code when onblur is not at fired
           for(var i in self.SendData){
-            if(i !== 'resignDate' && i !== 'resignTime' && i !== 'benefitBundle' && (self.SendData[i] === ' ' || self.SendData[i] === '' || self.SendData[i] === null)) {
+            if((self.userType === '4' && i === 'travelDesk')){
+              continue //to skip the travel desk for travelagent
+            }
+           
+            if(self.skip[self.ViewType].includes(i)){
+              
+              //to skipt he not manadatory field
+              if(self.Error.indexOf(self.ActiveLabel[i].label) !== -1){
+                self.Error.splice(self.Error.indexOf(self.ActiveLabel[i].label),1)
+              }
+              continue
+            }
+
+            if(self.ViewType === "Team" &&
+              (self.SendData["financeApprover"] == "0" ||
+             ((self.ModeOfWorking["travelDeskConfigApplicableStatus"] === "1" || self.ModeOfWorking["isTdFinalApprover"] === "1")  && 
+               (self.SendData["travelDesk"] == "0" )))){
+               self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
+              return 
+            }
+
+            if(i !== 'resignDate' && i !== 'resignTime' && i !== 'benefitBundle' &&
+               (self.SendData[i] === ' ' || self.SendData[i] === '' || self.SendData[i] === null)) {
               self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
               return
             }
           }
+           //error checking
+           if(self.Error.length > 0){
+              self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
+              return
+            }
         
       
       self.DisableAction = true;
