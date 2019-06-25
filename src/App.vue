@@ -75,8 +75,10 @@
                   :ViewType='ActiveView'
                   :Query='SearchString'
                   :Extra='DepartList'
+                  :NeedToRefresh='NeedToRefreshTable'
                   :subView='ActiveSubView'
                   @rowClicked='setSubView'
+                  @TableDataRefreshed ='NeedToRefreshTable = false'
                   @ListChanged ="SetLength"
                   @ActionDone='GetFreshData'></data-table>
 
@@ -127,6 +129,7 @@ export default {
       SearchString: '',
       BtnClass: 'f6 dim br2 ph3 pv2 mb2 dib white bg-dark-blue',
       Found: 0,
+      NeedToRefreshTable: false,
       EmpSub: 'create',
       url: {
         Employee: 'employees',
@@ -186,6 +189,7 @@ export default {
     },
     GetFreshData: function(){
       var self = this;
+      this.NeedToRefreshTable = true;
       self.getData(api.emp.read,function(data){
           let resign = data.filter(x => x.resign === '1');
           let noApp = data.filter(x => x.approverList.length === 0 && x.resign !== '1');

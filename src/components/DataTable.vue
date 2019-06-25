@@ -10,7 +10,7 @@
                   :key='i'
                   class='tl' 
                   :class='{"_flx_15" : index <=3,"_flx_1" : index >3,"-mod": (ViewType === "Department" || ViewType === "Team") && index === 2,"tr mr3": i == "Actions" }'>
-                 <span v-if='List.length > 0 && ViewType === "Employee" && i === "Traveller"'>
+                 <span v-if='List.length > 1 && ViewType === "Employee" && i === "Traveller"'>
                      <input type="checkbox" class='mr2' v-model='SelectAll' :value="List.filter(x => x.department !== null &&  x.department.departmentName != 'Master Admin').map(y => y.travelAgencyUsersId)">&nbsp;&nbsp;&nbsp;</span>
                        {{i}}
               </th> 
@@ -239,7 +239,11 @@ export default {
           default: function(){
               return []
           }
-      }
+      },
+      NeedToRefresh: {
+          type: Boolean,
+          default: false
+      },
   },
   created: function(){
       this.GetBundle(1);
@@ -302,6 +306,17 @@ export default {
                     this.$emit('ListChanged',arr.length);
                 //emitting the new value array length
             }
+      },
+      "NeedToRefresh": {
+          immediate: false,
+          handler: function(val){
+              if(val){
+                this.GetBundle(1);
+                this.GetTeamOptions();
+                this.GetDesignation()
+                this.$emit('TableDataRefreshed');
+              }
+          }
       }
   },
 

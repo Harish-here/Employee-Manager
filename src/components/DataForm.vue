@@ -74,21 +74,20 @@
             :key='index'
             v-if="i !== null" class='pa1'> 
           <span class='flex flex-column items-baseline' >
-            <label class='w-40'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='!skip["Employee"].includes(index)'>*</sup></label>
+            <label class='w-70'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='!skip["Employee"].includes(index)'>*</sup></label>
             <div class='w-100 flex flex-column'>
               <input class='pa1'
                       v-if='index !=="travelDesk" && index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
                       v-model='EmpData[index]' 
                       :type='EmployeeForm.label[index].type'
-                      @blur='Validate(index,EmployeeForm.label[index])'
-                      :class='{"ba b--red" : Error.includes(EmployeeForm.label[index].label)}'
+                      @focusout='Validate(index,EmployeeForm.label[index])'
+                      :class='{"ba b--red" : Error.includes(index)}'
                       min='1970-01-01'
                       max='2038-01-01'
                       />
               
               <select class='pa1'
                       v-model='EmpData[index]'
-                      
                       v-if='index ==="travelDesk" || index === "department" || index === "designation" || index === "benefitBundle" || index === "hierarchyId"'>
                 <!-- <option value='' selected disabled>{{ EmployeeForm.label[index].label }}</option> -->
                 <option v-for='j in TeamOption["departments"]'  v-if='index === "department" && j.departmentName !== "Master Admin" && j.parent != 0' :value='j' :key='j.departmenId'>{{ j.departmentName }}</option>
@@ -121,7 +120,7 @@
               <!-- Error msg-->
                <transition name='fade'>
                 <span class='red pv1' style="font-size:10px;" 
-                      v-if='Error.includes(EmployeeForm.label[index].label)'
+                      v-if='Error.includes(index)'
                       >
                       Provide a valid {{EmployeeForm.label[index].label}}
                   </span>
@@ -186,17 +185,17 @@
                      v-if='TeamForm.label[index].type === "text"' 
                      v-model='TeamData[index]' 
                      :type='TeamForm.label[index].type'
-                     @blur='Validate(index,TeamForm.label[index])'
-                     :class='{"ba b--red" : Error.includes(TeamForm.label[index].label)}'
+                     @focusout='Validate(index,TeamForm.label[index])'
+                     :class='{"ba b--red" : Error.includes(index)}'
                      required='required' />
               <select class='pa1'
                       v-if='TeamForm.label[index].type === "select"'
                       v-model='TeamData[index]'
                       @change='SetFinApprover(index)'
-                      @blur='Validate(index,TeamForm.label[index])'
-                     :class='{"ba b--red" : Error.includes(TeamForm.label[index].label)}'>
-                 <option class='gray' value='' v-if='["budgetApprover","financeApprover"].includes(index)'>Select {{TeamForm.label[index].label}}</option>
-                 <option v-for='j in TeamOption["departments"]'
+                     
+                     :class='{"ba b--red" : Error.includes(index)}'>
+                 <!-- <option class='gray' value='' v-if='["budgetApprover","financeApprover"].includes(index)'>Select {{TeamForm.label[index].label}}</option> -->
+                 <option v-for='j in (TeamOption["departments"].filter(x => x["departmentId"] !== TeamData["departmentId"]))'
                          v-if='index === "parent" && j.departmentName !== "Master Admin"'
                          :key='j.departmentId' :value='j.departmentId'>
                          {{ j.departmentName}}
@@ -211,7 +210,7 @@
               <!-- Error msg-->
                <transition name='fade'>
                 <span class='red pv1' style="font-size:10px;" 
-                      v-if='Error.includes(TeamForm.label[index].label)'
+                      v-if='Error.includes(index)'
                       >
                       Provide a valid {{TeamForm.label[index].label}}
                   </span>
@@ -260,14 +259,14 @@
                       v-if='DepartmentForm.label[index].type !== "select"'
                      v-model='DepData[index]' 
                      :type='DepartmentForm.label[index].type'
-                     @blur='Validate(index,DepartmentForm.label[index])'
-                     :class='{"ba b--red" : Error.includes(DepartmentForm.label[index].label)}'
+                     @focusout='Validate(index,DepartmentForm.label[index])'
+                     :class='{"ba b--red" : Error.includes(index)}'
                      required='required' />
               <select class='pa1'
                       v-if='DepartmentForm.label[index].type === "select"'
                       v-model='DepData[index]'
-                      @blur='Validate(index,DepartmentForm.label[index])'
-                     :class='{"ba b--red" : Error.includes(DepartmentForm.label[index].label)}'>
+                      
+                     :class='{"ba b--red" : Error.includes(index)}'>
                  <option v-for='j in TeamOption["financeApprover"]'
                          :key='j.value' :value='j.value'>
                          {{ j.label}}
@@ -276,7 +275,7 @@
               <!-- Error msg-->
                <transition name='fade'>
                 <span class='red pv1' style="font-size:10px;" 
-                      v-if='Error.includes(DepartmentForm.label[index].label)'
+                      v-if='Error.includes(index)'
                       >
                       Provide a valid {{DepartmentForm.label[index].label}}
                   </span>
@@ -321,8 +320,8 @@
             <div class='w-100 flex flex-column'>
               <input v-if='index === "designationCode" || index === "designationName"' 
                     class='fl pa1'
-                    @blur='Validate(index,DesignationForm.label[index])'
-                    :class='{"ba b--red" : Error.includes(DesignationForm.label[index].label)}'
+                    @focusout='Validate(index,DesignationForm.label[index])'
+                    :class='{"ba b--red" : Error.includes(index)}'
                     v-model='DesData[index]' 
                     type='text' />
               
@@ -354,7 +353,7 @@
               <!-- Error msg-->
                <transition name='fade'>
                 <span class='red pv1' style="font-size:10px;" 
-                      v-if='Error.includes(DesignationForm.label[index].label)'
+                      v-if='Error.includes(index)'
                       >
                       Provide a valid {{DesignationForm.label[index].label}}
                   </span>
@@ -628,16 +627,16 @@ export default {
           let le = this.TeamOption["departments"].length;
           let le2 = this.DesignList.length;
           if(this.ModeOfWorking["departmentConfigApplicableStatus"] === "0"){
-            this.EmployeeForm.data['department'] = this.TeamOption["departments"][le - 1];
+            this.EmployeeForm.data['department'] = this.TeamOption["departments"].find(x => x.isDefault === "1");
           }
           if(this.ModeOfWorking["designationConfigApplicableStatus"] === "0"){
-            this.EmployeeForm.data['designation'] = this.DesignList[le2 - 1];
+            this.EmployeeForm.data['designation'] = this.DesignList.find(x => x.isDefault === "1");
           }
           
         }
         //for designation default set up
           if(self.ViewType === "Designation" && val == "Create" && self.ModeOfWorking["policyApplicableStatus"] == "0"){
-            self.DesignationForm.data["benefitBundle"] = self.BundleList.find(x => x.label === "Default Policy");
+            self.DesignationForm.data["benefitBundle"] = self.BundleList.find(x => x.isDefault === "1");
           }
 
           //if master admin is selected as Fin as default
@@ -681,7 +680,7 @@ export default {
        if(this.ViewType === "Team" && index === "parent"){
 
          let id = this.TeamOption['departments'].find(x => this.TeamData['parent'] == x['departmentId']);
-         if(id["financeApprover"] !== undefined){
+         if(id !== undefined){
            this.TeamData['financeApprover'] = id['financeApprover'];
          }
 
@@ -756,7 +755,7 @@ export default {
        //null exception
        if(obj === null) return;
 
-
+        
        //validating the field on their rules set
        var emailreg = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,'g')
        const self = this;
@@ -764,25 +763,29 @@ export default {
        switch(obj.type){
          case 'number': if(!(self.SendData[index].toString().length === 10) ||
                             self.SendData[index].trim() === '' ||
-                            self.SendData[index] === ' '){
+                            self.SendData[index].trim() === ' '){
                             // console.log(self.SendData[index].toString().length)
-                          self.Error.push(obj.label)
+                          self.Error.push(index)
                           return
                         } ;
                         break;
-         case 'email': if(!emailreg.test(self.SendData[index])) {self.Error.push(obj.label); return}  ; break;
-         case 'text': if(self.SendData[index].trim() === '' || self.SendData[index] === ' ' ) {
+         case 'email': if(!emailreg.test(self.SendData[index])) {self.Error.push(index); return}  ; break;
+         case 'text': if(self.SendData[index].trim() === '' || self.SendData[index].trim() === ' ' ) {
                           //to make departcode and designation optional need to skip their prop check
                           // if( index !== 'departmentCode' && index !== 'designationCode'){
-                            self.Error.push(obj.label);
+                            self.Error.push(index);
                             return
                           // }
                          
                            };
                            break;  
-         case 'date' : if(self.SendData[index].trim() === '' || new Date(self.SendData[index]) === 'Invalid Date' || new Date(self.SendData[index]).getFullYear() > 2038 || new Date(self.SendData[index]).getFullYear() < 1970 ){self.Error.push(obj.label); return};break;
+         case 'date' : if(self.SendData[index].trim() === '' || new Date(self.SendData[index]) === 'Invalid Date' || new Date(self.SendData[index]).getFullYear() > 2038 || new Date(self.SendData[index]).getFullYear() < 1970 ){self.Error.push(index +'_'+ obj.label); return};break;
        }
-       self.Error.splice(self.Error.indexOf(obj.label),1);
+      if(self.Error.includes(index)){
+        self.Error.splice(self.Error.indexOf(index),1);
+      }
+       
+       
      },
       //data sending functions
      CreateData: function(){ //general create operation
@@ -814,7 +817,7 @@ export default {
             //clear logic to validate the error and skip the prop
             // debugger;
             if(
-               (self.SendData[i] === null || self.SendData[i] == ' ' || self.SendData[i] == '')) {
+               (self.SendData[i] === null || self.SendData[i] == ' ' || self.SendData[i] == '' || self.SendData[i].toString().trim() == "")) {
                  
                   self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
                   return
@@ -858,21 +861,21 @@ export default {
               let le = self.TeamOption["departments"].length;
               let le2 = self.DesignList.length;
               if(self.ModeOfWorking["departmentConfigApplicableStatus"] === "0"){
-                self.EmployeeForm.data['department'] = self.TeamOption["departments"][le - 1];
+                self.EmployeeForm.data['department'] = self.TeamOption["departments"].find(x => x.isDefault === "1");
               }
               if(self.ModeOfWorking["designationConfigApplicableStatus"] === "0"){
-                self.EmployeeForm.data['designation'] = self.DesignList[le2 - 1];
+                self.EmployeeForm.data['designation'] = self.DesignList.find(x => x.isDefault === "1");
               }
               
             }
 
             //for designation default set up
             if(self.ViewType === "Designation" && self.SubViewType == "Create"  && self.ModeOfWorking["policyApplicableStatus"] == "0"){
-              self.DesignationForm.data["benefitBundle"] = self.BundleList.find(x => x.label === "Default Policy");
+              self.DesignationForm.data["benefitBundle"] = self.BundleList.find(x => x.isDefault === "1");
             }
             //if master admin is selected as Fin as default
             if(self.ViewType === "Team" && self.SubViewType === "Create" && self.ModeOfWorking["financeApproverStatus"] === "0" ){
-              slef.TeamForm.data["financeApprover"] = self.TeamOption["financeApprover"].find(x => x.label === "Master Admin");
+              self.TeamForm.data["financeApprover"] = self.TeamOption["financeApprover"].find(x => x.label === "Master Admin");
             }
             
           }else{
@@ -894,6 +897,8 @@ export default {
           //update
           this.ActiveData['reservHandle'] = this.TempRole;
         }
+
+      
       
      
        //error checking code when onblur is not at fired
@@ -930,7 +935,13 @@ export default {
               self.ThroughAlert('Please fill in all the required fields.','bg-light-red');
               return
             }
-        
+        /// add team label to the sending data to differentiate that it is TEAM
+        if(this.ViewType === 'Team'){
+            self.ActiveData["team"] = '1'
+          }
+        if(this.ViewType === 'Department'){
+            self.ActiveData["team"] = '0'
+          }
       
       self.DisableAction = true;
       $.post(this.UpdateUrl,this.SendData).done(function(data){

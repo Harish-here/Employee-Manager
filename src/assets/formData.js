@@ -24,7 +24,7 @@ const EmployeeLabel = {
     travelAgencyNameTemp: { label: "First Name", type: 'text',mandatory: true },
     virtualName: { label: "Last Name", type: 'text',mandatory: true },
     employeeCode: {label: "Traveller Code",type:'text',mandatory: true},
-    email: { label: "Official Email", type: 'email',mandatory: true },
+    email: { label: "Official Email / Username", type: 'email',mandatory: true },
     mobile: { label: "Mobile Number", type: 'text',mandatory: true },
     department: { label: "Department / Team", type: 'select',mandatory: true },
     designation: { label: "Designation", type: 'select',mandatory: true },
