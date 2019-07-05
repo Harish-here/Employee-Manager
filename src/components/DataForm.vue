@@ -30,11 +30,12 @@
           <span class='flex flex-column'>
             <label class='w-70'>{{ i.label }}</label>
             <div class='w-100 flex flex-column fw6'>
-              <span v-if='index !== "department" && index !== "designation" && index !== "approverList" && index !=="travelDesk" && index !== "status"'>{{EmpData[index]}}</span>
+              <span v-if='index !== "canLetPassApproval" && index !== "department" && index !== "designation" && index !== "approverList" && index !=="travelDesk" && index !== "status"'>{{EmpData[index]}}</span>
               <span v-if='index === "department"'>{{ EmpData[index].departmentName || '' }}</span>
               <span v-if='index === "designation"'>{{ EmpData[index].label || '' }}</span>
               <!-- <span v-if='index ==="travelDesk"'>{{ (EmpData[index].label !== undefined ) ? EmpData[index].label : "" }}</span> -->
               <span v-if='index === "status"'> {{ (EmpData[index] === '1') ? 'Enable' : 'Disable'}}</span>
+              <span v-if='index === "canLetPassApproval"'>{{ (Boolean(EmpData[index])) ? "Yes" : "No"}}</span>
               <div v-if="index === 'approverList'"><!-- approver select -->
                   <!-- <v-select v-model='EmpData[index]' :options='ApproverData.filter(x => x.value != EmpData["travelAgencyUsersId"])' multiple></v-select> -->
                   <span v-if='EmpData[index].length > 0'>
@@ -77,7 +78,7 @@
             <label class='w-70'>{{ EmployeeForm.label[index].label }} <sup class='b6' v-if='!skip["Employee"].includes(index)'>*</sup></label>
             <div class='w-100 flex flex-column'>
               <input class='pa1'
-                      v-if='index !=="travelDesk" && index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
+                      v-if='index !=="travelDesk" && index !=="canLetPassApproval" && index !== "approverList" && index !== "status" && index !== "department" && index !== "designation" && index !== "hierarchyId" && index !== "benefitBundle"' 
                       v-model='EmpData[index]' 
                       :type='EmployeeForm.label[index].type'
                       @focusout='Validate(index,EmployeeForm.label[index])'
@@ -100,6 +101,10 @@
               <div v-if='index === "status"' class='flex justify-evenly items-baseline'>
                 <span class='flex justify-evenly w-50'><input type='radio' name='active'  value='1' v-model='EmpData[index]' >&nbsp;Enable </span>
                 <span class='flex justify-evenly w-50'><input type='radio' name='active' value='0' v-model='EmpData[index]' >&nbsp;Disable</span>
+              </div>
+              <div v-if='index === "canLetPassApproval"' class='flex justify-between items-center'>
+                <span class='w-10'><input type="checkbox" v-model='EmpData[index]' :value='true'></span>
+                <span class='w-90'> Travel approval process will not be applicable if it is enabled </span>
               </div>
               <div v-if="index === 'approverList'"><!-- approver select -->
                   <multiselect :multiple="true" v-model='EmpData[index]' :options='ApproverData.filter(x => x.value != EmpData["travelAgencyUsersId"])' 
@@ -388,7 +393,7 @@
       <button class="btn-spl --not-ghost" @click='ResignEmployee' v-if='ShowResign && SubViewType !== "Create"'>Resign this Traveller</button>
       <button class='btn-spl --not-ghost' v-if="ViewType !== 'Department' && SubViewType === 'Update' && !ShowResign" @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
       <button class='btn-spl' v-if="ViewType !== 'Department' && (SubViewType === 'Update'   || SubViewType === 'Display') && !ShowResign" @click='$emit("CancelViewType")' :disabled='DisableAction'><span v-if='SubViewType === "Update"'>Cancel</span><span v-else>Back to create</span></button>
-      <button class='btn-spl btn-dlt' v-if="ViewType !== 'Department' && SubViewType === 'Update' && !ShowResign" @click='DeleteData' :disabled='DisableAction'>Delete </button>
+      <button class='btn-spl btn-dlt' v-if="ViewType !== 'Department' && SubViewType === 'Update' && !ActiveDateisDefault && !ShowResign" @click='DeleteData' :disabled='DisableAction'>Delete </button>
       
     </div>
     <!-- <pre>{{EmployeeForm.label}}</pre> -->
@@ -511,6 +516,7 @@ export default {
       TempRole: "",
       TempApp: [],
       TeamOption: {},
+      ActiveDateisDefault: false,
       propToSkip: ["budgetApprover","financeApprover"],
     
 
@@ -518,9 +524,10 @@ export default {
   },
 
   computed : {
+    
     skip(){
       return {
-        "Employee" : ["approverList","personalEmail","startDate"],
+        "Employee" : ["approverList","personalEmail","startDate","canLetPassApproval"],
         "Department": [],
         "Team": (this.ModeOfWorking["travelDeskConfigApplicableStatus"] === "1" || this.ModeOfWorking["isTdFinalApprover"] === "1") ? [] : ["travelDesk"],
         "Designation": [] 
@@ -627,7 +634,7 @@ export default {
           let le = this.TeamOption["departments"].length;
           let le2 = this.DesignList.length;
           if(this.ModeOfWorking["departmentConfigApplicableStatus"] === "0"){
-            this.EmployeeForm.data['department'] = this.TeamOption["departments"].find(x => x.isDefault === "1");
+            this.EmployeeForm.data['department'] = this.TeamOption["departments"].find(x => x.isDefault === "1" && x.parent !== "0");
           }
           if(this.ModeOfWorking["designationConfigApplicableStatus"] === "0"){
             this.EmployeeForm.data['designation'] = this.DesignList.find(x => x.isDefault === "1");
@@ -664,6 +671,18 @@ export default {
 
         }
       },
+      ActiveData: {
+        immediate: true,
+        deep: true,
+        handler: function(val){
+          if("isDefault" in val && val["isDefault"] == "1"){
+            this.ActiveDateisDefault = true;
+            console.log(!this.ActiveDateisDefault);
+          }else{
+            this.ActiveDateisDefault = false;
+          }
+        }
+      }
       
     },
 
@@ -779,7 +798,7 @@ export default {
                          
                            };
                            break;  
-         case 'date' : if(self.SendData[index].trim() === '' || new Date(self.SendData[index]) === 'Invalid Date' || new Date(self.SendData[index]).getFullYear() > 2038 || new Date(self.SendData[index]).getFullYear() < 1970 ){self.Error.push(index +'_'+ obj.label); return};break;
+         case 'date' : if(self.SendData[index].trim() === '' || new Date(self.SendData[index]) === 'Invalid Date' || new Date(self.SendData[index]).getFullYear() > 2038 || new Date(self.SendData[index]).getFullYear() < 1970 ){self.Error.push(index); return};break;
        }
       if(self.Error.includes(index)){
         self.Error.splice(self.Error.indexOf(index),1);
@@ -796,6 +815,10 @@ export default {
           // console.log(self.SendData);
           // return;
         }
+        //foe employee
+        if(this.ViewType === "Employee"){
+          this.ActiveData["canLetPassApproval"] = (this.ActiveData["canLetPassApproval"]) ? "1" : "0";
+        }
       
        //error checking code when onblur is not at al fired
         // if(self.Error.length === 0){
@@ -807,8 +830,9 @@ export default {
            
             if(self.skip[self.ViewType].includes(i)){
              
-              if(self.Error.indexOf(self.ActiveLabel[i].label) !== -1){
-                self.Error.splice(self.Error.indexOf(self.ActiveLabel[i].label),1)
+              if(self.Error.indexOf(i) !== -1){
+                
+                self.Error.splice(self.Error.indexOf(i),1)
               }
               
               //to skipt he not manadatory field
@@ -861,7 +885,7 @@ export default {
               let le = self.TeamOption["departments"].length;
               let le2 = self.DesignList.length;
               if(self.ModeOfWorking["departmentConfigApplicableStatus"] === "0"){
-                self.EmployeeForm.data['department'] = self.TeamOption["departments"].find(x => x.isDefault === "1");
+                self.EmployeeForm.data['department'] = self.TeamOption["departments"].find(x => x.isDefault === "1" && x.parent !== "0");
               }
               if(self.ModeOfWorking["designationConfigApplicableStatus"] === "0"){
                 self.EmployeeForm.data['designation'] = self.DesignList.find(x => x.isDefault === "1");
@@ -897,7 +921,10 @@ export default {
           //update
           this.ActiveData['reservHandle'] = this.TempRole;
         }
-
+        ////
+        if(this.ViewType === "Employee"){
+          this.ActiveData["canLetPassApproval"] = (this.ActiveData["canLetPassApproval"]) ? "1" : "0";
+        }
       
       
      

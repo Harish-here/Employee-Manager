@@ -15,7 +15,8 @@ const Employee = {
     resign: '0',
     personalEmail: "",
     startDate: "",
-    status: "1"
+    status: "1",
+    canLetPassApproval: false
 };
 const EmployeeLabel = {
     travelAgencyUserId: null,
@@ -26,7 +27,7 @@ const EmployeeLabel = {
     employeeCode: {label: "Traveller Code",type:'text',mandatory: true},
     email: { label: "Official Email / Username", type: 'email',mandatory: true },
     mobile: { label: "Mobile Number", type: 'text',mandatory: true },
-    department: { label: "Department / Team", type: 'select',mandatory: true },
+    department: { label: "Team", type: 'select',mandatory: true },
     designation: { label: "Designation", type: 'select',mandatory: true },
     
     resign: null,
@@ -36,6 +37,7 @@ const EmployeeLabel = {
     personalEmail: { label: "Personal Email", type: 'email',mandatory: true },
     startDate: { label: "Date of Joining", type: 'date',mandatory: true },
     status: { label: "Account", type:'radio',mandatory: true},
+    canLetPassApproval: {label: "Allow to bypass travel approval?",type:'checkbox',mandatory:true},
     // travelDesk: {label: "Travel Desk",type:"select"},
     approverList: { label: "Approval Hierarchy", type:'select',mandatory: true},
     
