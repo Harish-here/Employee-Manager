@@ -180,9 +180,6 @@ export default {
       this.ActiveViewData = data.data;
       this.ActiveSubView = data.view;
       
-      // if(data.view === "Update" || data.view === "Create"){
-      //   this.EmpSub = 'create'
-      // }
     },
     SetDelete : function(data){
       this.ToDelete = data;
@@ -293,6 +290,7 @@ export default {
       //for url stuffs
      let arr = location.href.split('/');
      let type = (arr[arr.length -1 ] == 'employees' || arr[arr.length -1 ] == 'department' || arr[arr.length -1 ] == 'designations') ? arr[arr.length -1 ] : 'employees';//get last element
+      if(type === 'employees') return
       switch(type){
         case 'employees' : self.ActiveView = 'Employee';break;
         case 'department' : self.ActiveView = 'Department';break;

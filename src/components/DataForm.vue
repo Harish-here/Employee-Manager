@@ -7,7 +7,7 @@
     </transition>
     <div class="head bb b--light-silver flex justify-center items-center pa2">
       <div class='f4'>
-        {{ (SubViewType != 'Display') ? SubViewType : "" }} {{ (ViewType === 'Employee') ? "Travellers" : ViewType }} {{(SubViewType == 'Display') ? "Details" : ""}}
+        {{ (SubViewType != 'Display') ? SubViewType : "" }} {{ (ViewType === 'Employee') ? "Traveller" : ViewType }} {{(SubViewType == 'Display') ? "Details" : ""}}
       </div>
     </div>
     
@@ -292,7 +292,7 @@
         <li class='pa2 tc mt3' v-if="SubViewType === 'Update'">
           <button class='btn-spl --not-ghost' @click='UpdateData' :disabled='DisableAction'>Update <i v-if='DisableAction' class="fa fa-spinner fa-pulse" aria-hidden="true"></i></button>
           <button class='btn-spl'  @click='$emit("CancelViewType")' :disabled='DisableAction'><span v-if='SubViewType === "Update"'>Cancel</span><span v-else>Back to create</span></button>
-          <button class='btn-spl btn-dlt' @click='DeleteData' :disabled='DisableAction'>Delete </button>
+          <button class='btn-spl btn-dlt' v-if='!ActiveDateisDefault' @click='DeleteData' :disabled='DisableAction'>Delete </button>
         </li>
        </ul>
         <!-- Department Display View -->
@@ -474,7 +474,7 @@ export default {
    },
 
   data: function(){
-  //  var self = this
+  
     return {
     //  SubViewType: 'Create',
       userType: userType,
@@ -675,9 +675,9 @@ export default {
         immediate: true,
         deep: true,
         handler: function(val){
+          
           if("isDefault" in val && val["isDefault"] == "1"){
             this.ActiveDateisDefault = true;
-            console.log(!this.ActiveDateisDefault);
           }else{
             this.ActiveDateisDefault = false;
           }
@@ -779,6 +779,14 @@ export default {
        var emailreg = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,'g')
        const self = this;
       //  if(obj === undefined){ console.log(index)}
+      //mobile number checking
+      if(index === 'mobile'){
+        var regexConst = new RegExp('[a-zA-Z]','g');
+        if(regexConst.test(self.SendData[index])){
+          self.Error.push(index);
+          return
+        }
+      }
        switch(obj.type){
          case 'number': if(!(self.SendData[index].toString().length === 10) ||
                             self.SendData[index].trim() === '' ||
