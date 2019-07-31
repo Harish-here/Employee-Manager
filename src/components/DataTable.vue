@@ -56,7 +56,7 @@
                         <div class='flex w-75 justify-between'>
                             <button @click='MultipleAssign' class='btn btn-xs btn-primary fr'
                                     :disabled='(Department === "0") && Design === "0" && Policy === "0" && (Account === null || Account === "null")'>
-                                <!-- <i class="fa fa-check-square-o" aria-hidden="true"></i>  -->save
+                                <!-- <i class="fa fa-check-square-o" aria-hidden="true"></i>  -->Save
                             </button>
                             <button @click='ToDelete =[],Account=null,Policy="0",Design="0",Department="0"' class='btn btn-xs btn-default fr'>
                                 <!-- <i class="fa fa-check-square-o" aria-hidden="true"></i>  -->Clear
@@ -426,7 +426,7 @@ export default {
      },
      MultipleAssign: function(){
          const self = this;
-         if(confirm('Warning! Applying changes is permanent and cannot be undone. Are you sure you want to proceed?')){
+         if(confirm('Current changes will be applied to the selected employee(s). Are you sure you want to proceed?')){
             var delay = alertify.get('notifier','delay');
             alertify.set('notifier','delay', 200);
             alertify.warning('Assigning to the selected People');
